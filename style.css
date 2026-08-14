@@ -1,0 +1,225 @@
+/* =====================================================
+   준메디칼 주식회사 — 공통 스타일시트
+   색상 팔레트:
+     네이비  #1F3864  (메인 브랜드)
+     미드블루 #2E5395  (강조)
+     스카이  #5B9BD5  (포인트)
+     화이트  #FFFFFF
+     라이트그레이 #F5F7FA (섹션 배경)
+     텍스트  #222222
+     서브텍스트 #666666
+   ===================================================== */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:   #1F3864;
+  --mid:    #2E5395;
+  --sky:    #5B9BD5;
+  --white:  #FFFFFF;
+  --bg:     #F5F7FA;
+  --text:   #222222;
+  --sub:    #666666;
+  --radius: 6px;
+  --max:    1100px;
+  --shadow: 0 2px 16px rgba(31,56,100,0.10);
+}
+
+body {
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* ── 헤더 ── */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--white);
+  border-bottom: 2px solid var(--navy);
+  box-shadow: var(--shadow);
+}
+.header-inner {
+  max-width: var(--max); margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 68px;
+}
+.logo { display: flex; flex-direction: column; line-height: 1.1; }
+.logo-ko { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: 0.04em; }
+.logo-en { font-size: 10px; font-weight: 400; color: var(--sky); letter-spacing: 0.2em; }
+
+.site-nav { display: flex; gap: 0; list-style: none; }
+.site-nav > li { position: relative; }
+.site-nav > li > a {
+  display: block; padding: 24px 18px;
+  font-size: 14px; font-weight: 500; color: var(--navy);
+  transition: color .2s;
+}
+.site-nav > li > a:hover { color: var(--sky); }
+
+/* 드롭다운 */
+.dropdown {
+  display: none; position: absolute; top: 100%; left: 0;
+  background: var(--white); min-width: 160px;
+  border-top: 2px solid var(--sky);
+  box-shadow: var(--shadow);
+  list-style: none;
+}
+.site-nav > li:hover .dropdown { display: block; }
+.dropdown li a {
+  display: block; padding: 10px 18px;
+  font-size: 13px; color: var(--text);
+  border-bottom: 1px solid #eee;
+  transition: background .15s, color .15s;
+}
+.dropdown li a:hover { background: var(--bg); color: var(--mid); }
+
+.btn-inquiry {
+  background: var(--navy); color: var(--white) !important;
+  padding: 10px 20px !important; border-radius: var(--radius);
+  font-weight: 600; font-size: 13px !important;
+  transition: background .2s !important;
+}
+.btn-inquiry:hover { background: var(--sky) !important; color: var(--white) !important; }
+
+/* 햄버거 (모바일) */
+.nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+.nav-toggle span { display: block; width: 24px; height: 2px; background: var(--navy); margin: 5px 0; }
+
+/* ── 히어로 ── */
+.hero {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--mid) 100%);
+  color: var(--white); text-align: center;
+  padding: 80px 24px 72px;
+}
+.hero h1 { font-size: clamp(28px, 5vw, 48px); font-weight: 700; line-height: 1.25; margin-bottom: 16px; }
+.hero p  { font-size: 17px; opacity: .85; max-width: 600px; margin: 0 auto 32px; }
+.hero .cta-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--sky); color: var(--white);
+  padding: 14px 32px; border-radius: var(--radius);
+  font-weight: 600; font-size: 15px;
+  transition: background .2s;
+}
+.btn-primary:hover { background: #4a88c5; }
+.btn-outline {
+  border: 2px solid rgba(255,255,255,.6); color: var(--white);
+  padding: 12px 28px; border-radius: var(--radius);
+  font-weight: 500; font-size: 15px;
+  transition: border-color .2s;
+}
+.btn-outline:hover { border-color: var(--white); }
+
+/* ── 섹션 공통 ── */
+.section { padding: 72px 24px; }
+.section.bg-gray { background: var(--bg); }
+.section-inner { max-width: var(--max); margin: 0 auto; }
+.section-label {
+  font-size: 12px; font-weight: 600; letter-spacing: .15em;
+  color: var(--sky); text-transform: uppercase; margin-bottom: 8px;
+}
+.section-title {
+  font-size: clamp(22px, 3.5vw, 34px); font-weight: 700;
+  color: var(--navy); margin-bottom: 12px; line-height: 1.3;
+}
+.section-desc { color: var(--sub); max-width: 640px; margin-bottom: 40px; line-height: 1.8; }
+.divider { width: 40px; height: 3px; background: var(--sky); margin: 12px 0 32px; }
+
+/* ── 카드 그리드 ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+.card {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 28px 24px;
+  border-top: 3px solid var(--sky);
+  transition: transform .2s, box-shadow .2s;
+}
+.card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(31,56,100,.15); }
+.card-icon { font-size: 28px; margin-bottom: 14px; }
+.card h3 { font-size: 16px; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
+.card p  { font-size: 14px; color: var(--sub); line-height: 1.7; }
+
+/* ── 제품 페이지 전용 ── */
+.product-hero {
+  background: var(--bg); padding: 56px 24px 0;
+  border-bottom: 1px solid #e0e6ef;
+}
+.product-hero-inner {
+  max-width: var(--max); margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: end;
+}
+.product-brand {
+  font-size: 11px; font-weight: 600; letter-spacing: .18em;
+  color: var(--sky); text-transform: uppercase; margin-bottom: 8px;
+}
+.product-name { font-size: clamp(28px, 4vw, 44px); font-weight: 700; color: var(--navy); line-height: 1.15; margin-bottom: 6px; }
+.product-subtitle { font-size: 17px; color: var(--mid); font-weight: 500; margin-bottom: 20px; }
+.product-tagline { font-size: 15px; color: var(--sub); margin-bottom: 32px; line-height: 1.8; }
+.product-img-wrap { display: flex; justify-content: center; align-items: flex-end; }
+.product-img-wrap img { max-height: 380px; object-fit: contain; }
+
+.feature-list { list-style: none; margin-bottom: 32px; }
+.feature-list li {
+  padding: 10px 0; border-bottom: 1px solid #e8edf5;
+  display: flex; gap: 12px; align-items: flex-start;
+  font-size: 14px; color: var(--text);
+}
+.feature-list li::before { content: "✓"; color: var(--sky); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+.spec-table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+.spec-table th, .spec-table td { padding: 12px 16px; text-align: left; font-size: 14px; border-bottom: 1px solid #e0e6ef; }
+.spec-table th { background: var(--navy); color: var(--white); font-weight: 600; }
+.spec-table tr:nth-child(even) td { background: var(--bg); }
+.spec-table tr:hover td { background: #e8edf5; }
+
+.indication-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 8px;
+}
+.indication-item {
+  background: var(--white); border: 1px solid #d0daea;
+  border-radius: var(--radius); padding: 16px 18px;
+  font-size: 14px; color: var(--navy); font-weight: 500;
+}
+
+/* ── 문의 CTA 배너 ── */
+.cta-banner {
+  background: linear-gradient(135deg, var(--navy), var(--mid));
+  color: var(--white); text-align: center; padding: 56px 24px;
+}
+.cta-banner h2 { font-size: clamp(20px, 3vw, 30px); font-weight: 700; margin-bottom: 12px; }
+.cta-banner p { opacity: .85; margin-bottom: 28px; }
+.cta-banner .btn-primary { display: inline-block; }
+
+/* ── 푸터 ── */
+.site-footer {
+  background: #111a2e; color: #aab4c8;
+  padding: 40px 24px 28px;
+}
+.footer-inner { max-width: var(--max); margin: 0 auto; }
+.footer-name { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 12px; }
+.footer-info { font-size: 12px; line-height: 2; }
+.footer-info span { margin-right: 16px; }
+.footer-bottom {
+  margin-top: 24px; padding-top: 20px;
+  border-top: 1px solid #2a3a5a;
+  font-size: 11px; color: #6b7a96;
+}
+
+/* ── 반응형 ── */
+@media (max-width: 768px) {
+  .header-inner { padding: 0 16px; }
+  .site-nav { display: none; flex-direction: column; position: absolute; top: 68px; left: 0; right: 0; background: var(--white); box-shadow: var(--shadow); z-index: 99; }
+  .site-nav.open { display: flex; }
+  .site-nav > li > a { padding: 14px 20px; border-bottom: 1px solid #eee; }
+  .dropdown { position: static; display: none; box-shadow: none; border-top: none; }
+  .nav-toggle { display: block; }
+  .product-hero-inner { grid-template-columns: 1fr; }
+  .product-img-wrap img { max-height: 220px; }
+  .section { padding: 48px 16px; }
+}

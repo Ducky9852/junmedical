@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>견적·문의 | 준메디칼 주식회사</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── contact.html 전용 스타일 ── */
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 48px;
+      align-items: start;
+    }
+
+    /* 폼 카드 */
+    .contact-form-wrap {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 40px;
+    }
+
+    .form-group { margin-bottom: 20px; }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .form-label .req { color: var(--sky); margin-left: 2px; }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid #d0daea;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color .2s, background .2s;
+      outline: none;
+    }
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: var(--sky);
+      background: var(--white);
+    }
+    .form-textarea { resize: vertical; min-height: 130px; }
+
+    /* 체크박스 */
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      line-height: 1.6;
+    }
+    .checkbox-label input[type="checkbox"] {
+      margin-top: 2px;
+      accent-color: var(--navy);
+      flex-shrink: 0;
+    }
+
+    /* 개인정보 동의 */
+    .privacy-box {
+      background: var(--bg);
+      border: 1px solid #d0daea;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 12px;
+      color: var(--sub);
+      line-height: 1.85;
+      margin-bottom: 10px;
+    }
+    .privacy-agree {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--navy);
+      cursor: pointer;
+    }
+    .privacy-agree input[type="checkbox"] { accent-color: var(--navy); }
+
+    /* 제출 버튼 */
+    .btn-submit {
+      width: 100%;
+      background: var(--navy);
+      color: var(--white);
+      border: none;
+      padding: 15px;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background .2s;
+      margin-top: 8px;
+    }
+    .btn-submit:hover   { background: var(--mid); }
+    .btn-submit:disabled { background: #8a9ab5; cursor: not-allowed; }
+
+    /* 오류 메시지 */
+    .form-error-msg {
+      display: none;
+      background: #fff0f0;
+      border: 1px solid #ffb3b3;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #c0392b;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    /* 성공 메시지 */
+    .form-success-msg {
+      display: none;
+      text-align: center;
+      padding: 40px 24px;
+    }
+    .form-success-msg .s-icon  { font-size: 52px; margin-bottom: 16px; }
+    .form-success-msg h3       { color: var(--navy); font-size: 20px; margin-bottom: 10px; }
+    .form-success-msg p        { color: var(--sub); font-size: 14px; line-height: 1.8; }
+
+    /* 연락처 정보 */
+    .contact-info-wrap { display: flex; flex-direction: column; gap: 16px; }
+
+    .contact-info-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px 24px;
+      border-top: 3px solid var(--sky);
+    }
+    .contact-info-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 16px;
+    }
+    .contact-info-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    .contact-info-item:last-child { margin-bottom: 0; }
+    .ci-icon  { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .ci-text  { color: var(--text); line-height: 1.65; }
+    .ci-text a { color: var(--mid); }
+    .ci-text a:hover { color: var(--sky); }
+
+    .contact-hours {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--sub);
+      margin-top: 14px;
+      line-height: 1.75;
+    }
+
+    /* 지도 */
+    .map-container {
+      width: 100%;
+      height: 380px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid #d0daea;
+      margin-top: 24px;
+    }
+    .map-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+      .contact-grid        { grid-template-columns: 1fr; }
+      .contact-form-wrap   { padding: 24px 20px; }
+      .checkbox-group      { grid-template-columns: 1fr; }
+      .map-container       { height: 260px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ★ 헤더 (모든 페이지 동일 — 수정 금지) ★ -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-ko">준 메 디 칼</span>
+      <span class="logo-en">JUN MEDICAL Co., Ltd.</span>
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="메뉴">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="site-nav" id="siteNav">
+      <li>
+        <a href="about.html">회사소개</a>
+        <ul class="dropdown">
+          <li><a href="about.html#greeting">인사말</a></li>
+          <li><a href="about.html#history">연혁</a></li>
+          <li><a href="about.html#location">오시는 길</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="products.html">취급제품</a>
+        <ul class="dropdown">
+          <li><a href="products-laparoscopy.html">복강경 수술기구</a></li>
+          <li><a href="products-drape.html">수술포·멸균포</a></li>
+          <li><a href="products-dvt.html">DVT 예방장비</a></li>
+          <li><a href="products-etc.html">기타 의료소모품</a></li>
+        </ul>
+      </li>
+      <li><a href="brands.html">파트너 브랜드</a></li>
+      <li><a href="contact.html" class="btn-inquiry">견적·문의</a></li>
+    </ul>
+  </div>
+</header>
+
+<main>
+
+  <!-- ★ 히어로 ★ -->
+  <section class="hero">
+    <!-- ============================
+      ✏️ 수정 구역 1: 히어로 제목·설명
+      ============================ -->
+    <h1>견적 · 문의</h1>
+    <p>병원·의료기관 담당자분께 빠르게 안내해 드립니다.<br>
+       평일 09:00–18:00 운영 | 긴급 문의는 전화로 연락 주세요.</p>
+  </section>
+
+  <!-- ★ 문의 폼 + 연락처 ★ -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="contact-grid">
+
+        <!-- 왼쪽: 문의 폼 -->
+        <div class="contact-form-wrap">
+
+          <!-- 제출 완료 메시지 (JS로 표시) -->
+          <div id="form-success" class="form-success-msg">
+            <div class="s-icon">✅</div>
+            <h3>문의가 접수되었습니다</h3>
+            <!-- ============================
+              ✏️ 수정 구역 2: 접수 완료 안내 문구
+              ============================ -->
+            <p>담당자가 확인 후 빠르게 연락드리겠습니다.<br>
+               긴급 문의는 <strong>041-522-9917</strong>로 전화 주세요.</p>
+          </div>
+
+          <!-- 폼 본문 -->
+          <div id="form-body">
+            <div class="section-label">Contact Us</div>
+            <h2 class="section-title">견적·문의 작성</h2>
+            <div class="divider"></div>
+
+            <!-- 오류 메시지 (JS로 표시) -->
+            <div id="form-error" class="form-error-msg"></div>
+
+            <!-- ⚠️ action·method는 JS 미작동 시 폴백용. 수정 금지 -->
+            <form id="contact-form"
+                  action="https://formspree.io/f/xgawydda"
+                  method="POST">
+
+              <!-- ============================
+                ✏️ 수정 구역 3: 폼 입력 항목
+                항목 추가 시 아래 .form-group 블록을 복사해서 붙여넣기
+                (label의 for값과 input의 id값을 동일하게 맞춰야 함)
+                ============================ -->
+
+              <!-- 병원(기관)명 -->
+              <div class="form-group">
+                <label class="form-label" for="hospital">
+                  병원(기관)명 <span class="req">*</span>
+                </label>
+                <input class="form-input" type="text" id="hospital" name="hospital"
+                       placeholder="예) ○○병원, ○○의원" required>
+              </div>
+
+              <!-- 담당자 성함 -->
+              <div class="form-group">
+                <label class="form-label" for="name">
+                  담당자 성함 <span class="req">*</span>
+                </label>
+                <input class="form-input" type="text" id="name" name="name"
+                       placeholder="성함을 입력해 주세요" required>
+              </div>
+
+              <!-- 연락처 -->
+              <div class="form-group">
+                <label class="form-label" for="phone">
+                  연락처 <span class="req">*</span>
+                </label>
+                <input class="form-input" type="tel" id="phone" name="phone"
+                       placeholder="예) 010-0000-0000" required>
+              </div>
+
+              <!-- 이메일 -->
+              <div class="form-group">
+                <label class="form-label" for="email">이메일</label>
+                <input class="form-input" type="email" id="email" name="email"
+                       placeholder="example@email.com">
+              </div>
+
+              <!-- 관심 제품 (체크박스) -->
+              <!-- ============================
+                ✏️ 수정 구역 4: 관심 제품 목록
+                제품 추가 시 .checkbox-label 블록 복사해서 추가
+                value="" 안에 Formspree로 전달될 제품명 입력
+                ============================ -->
+              <div class="form-group">
+                <label class="form-label">관심 제품 <span style="font-weight:400;color:var(--sub)">(복수 선택 가능)</span></label>
+                <div class="checkbox-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="product" value="복강경 수술기구 (WISAP·CooperSurgical)">
+                    복강경 수술기구
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="product" value="수술포·멸균포 (세종헬스케어)">
+                    수술포·멸균포
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="product" value="DVT 예방장비 (MB2020)">
+                    DVT 예방장비
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="product" value="기타 의료소모품">
+                    기타 의료소모품
+                  </label>
+                </div>
+              </div>
+
+              <!-- 문의 내용 -->
+              <div class="form-group">
+                <label class="form-label" for="message">
+                  문의 내용 <span class="req">*</span>
+                </label>
+                <textarea class="form-textarea" id="message" name="message"
+                          placeholder="문의하실 내용을 자유롭게 작성해 주세요." required></textarea>
+              </div>
+
+              <!-- 개인정보 수집·이용 동의 -->
+              <div class="form-group">
+                <!-- ============================
+                  ✏️ 수정 구역 5: 개인정보 동의 문구
+                  ============================ -->
+                <div class="privacy-box">
+                  <strong>개인정보 수집·이용 안내</strong><br>
+                  수집 항목: 기관명, 성명, 연락처, 이메일<br>
+                  수집 목적: 견적 및 문의 상담 응대<br>
+                  보유 기간: 처리 완료 후 6개월
+                </div>
+                <label class="privacy-agree">
+                  <input type="checkbox" name="privacy_agreed" value="동의" required>
+                  개인정보 수집·이용에 동의합니다 <span class="req">*</span>
+                </label>
+              </div>
+
+              <button type="submit" id="submit-btn" class="btn-submit">견적·문의 보내기</button>
+
+            </form>
+          </div><!-- /form-body -->
+        </div><!-- /contact-form-wrap -->
+
+        <!-- 오른쪽: 연락처 정보 -->
+        <div class="contact-info-wrap">
+
+          <!-- 연락처 카드 -->
+          <div class="contact-info-card">
+            <!-- ============================
+              ✏️ 수정 구역 6: 연락처 정보
+              ============================ -->
+            <h3>연락처</h3>
+            <div class="contact-info-item">
+              <span class="ci-icon">📞</span>
+              <div class="ci-text">
+                <a href="tel:041-522-9917">041-522-9917</a>
+              </div>
+            </div>
+            <div class="contact-info-item">
+              <span class="ci-icon">📠</span>
+              <div class="ci-text">041-522-9918</div>
+            </div>
+            <div class="contact-info-item">
+              <span class="ci-icon">📧</span>
+              <div class="ci-text">
+                <a href="mailto:junmed14@naver.com">junmed14@naver.com</a>
+              </div>
+            </div>
+            <div class="contact-info-item">
+              <span class="ci-icon">📍</span>
+              <div class="ci-text">
+                충청남도 천안시 서북구<br>도원8길 38, 402호(성정동)
+              </div>
+            </div>
+            <!-- ============================
+              ✏️ 수정 구역 7: 운영시간
+              ============================ -->
+            <div class="contact-hours">
+              🕐 운영시간: 평일 09:00 – 18:00<br>
+              토·일·공휴일 휴무
+            </div>
+          </div>
+
+          <!-- 사업자 정보 카드 -->
+          <div class="contact-info-card">
+            <h3>사업자 정보</h3>
+            <div class="contact-info-item">
+              <span class="ci-icon">🏢</span>
+              <div class="ci-text" style="font-size:13px; color:var(--sub); line-height:1.95;">
+                준메디칼 주식회사<br>
+                대표: 이우진<br>
+                사업자등록번호: 869-87-03464<br>
+                의료기기판매업 신고번호:<br>
+                제2026-4490261-00002호
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /contact-info-wrap -->
+      </div><!-- /contact-grid -->
+
+      <!-- 오시는 길 (지도) -->
+      <div style="margin-top: 56px;">
+        <div class="section-label">Location</div>
+        <h2 class="section-title">오시는 길</h2>
+        <div class="divider"></div>
+        <!-- ============================
+          ✏️ 수정 구역 8: 지도 iframe
+          지도를 변경하려면 아래 <iframe> 의 src 주소만 교체하세요.
+
+          네이버 지도 embed 코드 받는 방법:
+          1. map.naver.com 에서 "준메디칼" 또는 주소 검색
+          2. 공유 버튼 → [지도 퍼가기] 클릭
+          3. 표시된 iframe 코드에서 src="..." 부분 복사해서 아래 src에 붙여넣기
+          ============================ -->
+        <div class="map-container">
+          <iframe
+            src="https://maps.google.com/maps?q=충청남도+천안시+서북구+도원8길+38&t=&z=16&ie=UTF8&iwloc=&output=embed"
+            allowfullscreen
+            loading="lazy"
+            title="준메디칼 주식회사 위치">
+          </iframe>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ★ 문의 CTA 배너 (모든 페이지 동일 — 수정 금지) ★ -->
+<section class="cta-banner">
+  <h2>제품 문의 및 견적이 필요하신가요?</h2>
+  <p>병원·의료기관 담당자분께 빠르게 안내해 드립니다.</p>
+  <a href="contact.html" class="btn-primary">견적·문의하기</a>
+</section>
+
+<!-- ★ 푸터 (모든 페이지 동일 — 수정 금지) ★ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-name">준메디칼 주식회사 JUN MEDICAL Co., Ltd.</div>
+    <div class="footer-info">
+      <span>대표 이우진</span>
+      <span>충청남도 천안시 서북구 도원8길 38, 402호(성정동)</span><br>
+      <span>사업자등록번호 869-87-03464</span>
+      <span>의료기기판매업 신고번호 제2026-4490261-00002호</span><br>
+      <span>Tel 041-522-9917</span>
+      <span>Fax 041-522-9918</span>
+      <span>E-mail junmed14@naver.com</span>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 준메디칼 주식회사. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── 네비게이션 토글 ── */
+function toggleNav() {
+  document.getElementById('siteNav').classList.toggle('open');
+}
+
+/* ── 문의 폼 제출 (Formspree Ajax) ──
+   ⚠️ 수정 금지 구역
+   Formspree 엔드포인트가 바뀔 경우에만 아래 URL 수정
+   ──────────────────────────────────── */
+document.getElementById('contact-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  var btn   = document.getElementById('submit-btn');
+  var errEl = document.getElementById('form-error');
+
+  // 버튼 비활성화 + 로딩 표시
+  btn.disabled    = true;
+  btn.textContent = '전송 중...';
+  errEl.style.display = 'none';
+
+  try {
+    var res = await fetch('https://formspree.io/f/xgawydda', {
+      method:  'POST',
+      body:    new FormData(this),
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (res.ok) {
+      // 성공: 폼 숨기고 완료 메시지 표시
+      document.getElementById('form-body').style.display    = 'none';
+      document.getElementById('form-success').style.display = 'block';
+    } else {
+      // Formspree 오류
+      errEl.textContent   = '전송 중 오류가 발생했습니다. 잠시 후 다시 시도하거나 전화(041-522-9917)로 문의해 주세요.';
+      errEl.style.display = 'block';
+      btn.disabled        = false;
+      btn.textContent     = '견적·문의 보내기';
+    }
+  } catch (err) {
+    // 네트워크 오류
+    errEl.textContent   = '네트워크 오류가 발생했습니다. 041-522-9917로 전화 주시면 빠르게 도와드리겠습니다.';
+    errEl.style.display = 'block';
+    btn.disabled        = false;
+    btn.textContent     = '견적·문의 보내기';
+  }
+});
+</script>
+
+</body>
+</html>

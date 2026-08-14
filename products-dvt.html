@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DVT 예방장비 | 준메디칼 주식회사</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .notice-box {
+      background: #EBF3FB; border-left: 4px solid var(--sky);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 16px 20px; margin-top: 24px;
+      font-size: 13px; color: var(--mid); line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ★ 헤더 (수정 금지) ★ -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-ko">준 메 디 칼</span>
+      <span class="logo-en">JUN MEDICAL Co., Ltd.</span>
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="메뉴">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="site-nav" id="siteNav">
+      <li>
+        <a href="about.html">회사소개</a>
+        <ul class="dropdown">
+          <li><a href="about.html#greeting">인사말</a></li>
+          <li><a href="about.html#history">연혁</a></li>
+          <li><a href="about.html#location">오시는 길</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="products.html">취급제품</a>
+        <ul class="dropdown">
+          <li><a href="products-laparoscopy.html">복강경 수술기구</a></li>
+          <li><a href="products-drape.html">수술포·멸균포</a></li>
+          <li><a href="products-dvt.html">DVT 예방장비</a></li>
+          <li><a href="products-etc.html">기타 의료소모품</a></li>
+        </ul>
+      </li>
+      <li><a href="brands.html">파트너 브랜드</a></li>
+      <li><a href="contact.html" class="btn-inquiry">견적·문의</a></li>
+    </ul>
+  </div>
+</header>
+
+<main>
+
+  <!-- 제품 히어로 -->
+  <section class="product-hero">
+    <div class="product-hero-inner">
+      <div>
+        <!-- ============================
+          ✏️ 수정 구역 1: 제품 기본 정보
+          ============================ -->
+        <div class="product-brand">MB2020 · DVT 예방장비</div>
+        <h1 class="product-name">DVT 예방장비</h1>
+        <p class="product-subtitle">Intermittent Pneumatic Compression (IPC) System</p>
+        <p class="product-tagline">
+          수술 중·후 심부정맥혈전증(DVT) 예방을 위한 간헐적 공기 압박 장치.<br>
+          환자 안전과 수술 후 빠른 회복을 지원합니다.
+        </p>
+        <a href="contact.html" class="btn-primary">견적·문의하기</a>
+      </div>
+      <div class="product-img-wrap">
+        <!-- ============================
+          ✏️ 수정 구역 2: 제품 이미지
+          이미지 파일을 images/ 폴더에 넣고 아래 src 경로 수정
+          ============================ -->
+        <img src="images/dvt-main.png" alt="DVT 예방장비 IPC — MB2020">
+      </div>
+    </div>
+  </section>
+
+  <!-- DVT 개요 -->
+  <section class="section bg-gray">
+    <div class="section-inner">
+      <div class="section-label">About DVT</div>
+      <h2 class="section-title">심부정맥혈전증(DVT)이란?</h2>
+      <div class="divider"></div>
+      <p class="section-desc">
+        DVT(Deep Vein Thrombosis)는 심부정맥에 혈전이 생성되는 질환으로, 장시간 수술·부동 자세·입원 중인 환자에게 발생 위험이 높습니다.
+        혈전이 폐로 이동하면 폐색전증(PE)으로 이어져 생명을 위협할 수 있어 수술 전후 예방이 필수적입니다.
+      </p>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">💨</div>
+          <h3>간헐적 공기 압박(IPC)</h3>
+          <p>하지에 압박을 주기적으로 가해 정맥 혈류를 촉진하고 혈전 형성을 억제합니다. 약물 없이 물리적으로 혈전을 예방합니다.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔄</div>
+          <h3>순차적 압박 방식</h3>
+          <p>발목 → 종아리 → 허벅지 순으로 순차적 압박을 적용해 심장 방향으로 혈류를 유도합니다.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏥</div>
+          <h3>수술 중에도 사용 가능</h3>
+          <p>수술 중 마취 상태에서도 지속적으로 사용 가능하며, 수술 후 회복실·병동에서도 연속 적용합니다.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📱</div>
+          <h3>간편한 조작</h3>
+          <p>직관적인 패널 조작으로 의료진 누구나 쉽게 설정할 수 있으며, 압력·시간 자동 제어 기능을 제공합니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 주요 특징 -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-label">Key Features</div>
+      <h2 class="section-title">MB2020 IPC 주요 특징</h2>
+      <div class="divider"></div>
+      <!-- ============================
+        ✏️ 수정 구역 3: 주요 특징 목록
+        ============================ -->
+      <ul class="feature-list">
+        <li>순차 압박(Sequential) 및 단일 압박(Single) 모드 선택 가능</li>
+        <li>압력 범위: 30~60mmHg (단계별 조절)</li>
+        <li>압박 주기: 20~60초 (임상 프로토콜에 따라 설정)</li>
+        <li>경량 컴팩트 디자인 — 수술실·병실·회복실 어디서나 사용 편리</li>
+        <li>일회용 슬리브 사용 — 환자 간 교차 감염 방지</li>
+        <li>알람 기능 내장 — 슬리브 탈락·과압·기계 이상 즉시 알림</li>
+        <li>저소음 모터 설계 — 수술실 환경에서도 소음 최소화</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 사양 -->
+  <section class="section bg-gray">
+    <div class="section-inner">
+      <div class="section-label">Product Specifications</div>
+      <h2 class="section-title">제품 사양</h2>
+      <div class="divider"></div>
+      <!-- ============================
+        ✏️ 수정 구역 4: 제품 사양 표
+        ============================ -->
+      <table class="spec-table">
+        <thead>
+          <tr><th>항목</th><th>사양</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>제품명</td><td>MB2020 IPC System (간헐적 공기 압박 장치)</td></tr>
+          <tr><td>압박 방식</td><td>순차 압박 / 단일 압박 (선택 가능)</td></tr>
+          <tr><td>압력 범위</td><td>30 ~ 60 mmHg</td></tr>
+          <tr><td>압박 주기</td><td>20 ~ 60초 (조절 가능)</td></tr>
+          <tr><td>적용 부위</td><td>하지 (종아리·무릎 이하 전체)</td></tr>
+          <tr><td>슬리브 종류</td><td>종아리형 / 전 하지형 (S / M / L / XL)</td></tr>
+          <tr><td>전원</td><td>AC 220V, 50/60Hz</td></tr>
+          <tr><td>소음</td><td>45dB 이하</td></tr>
+        </tbody>
+      </table>
+      <div class="notice-box">
+        ※ 상기 제품은 의료기기로, 반드시 의료 전문가의 처방 및 감독 하에 사용되어야 합니다.<br>
+        ※ 정확한 제품 사양 및 재고 문의는 준메디칼 영업팀으로 연락 주시기 바랍니다.<br>
+        ※ 제조사: MB2020 (대한민국)
+      </div>
+    </div>
+  </section>
+
+  <!-- 적응증 -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-label">Indications</div>
+      <h2 class="section-title">적용 대상</h2>
+      <div class="divider"></div>
+      <!-- ============================
+        ✏️ 수정 구역 5: 적응증 목록
+        ============================ -->
+      <div class="indication-grid">
+        <div class="indication-item">장시간 수술 환자</div>
+        <div class="indication-item">산부인과·복강경 수술</div>
+        <div class="indication-item">정형외과 수술 후</div>
+        <div class="indication-item">중환자실(ICU) 환자</div>
+        <div class="indication-item">장기 입원·부동 환자</div>
+        <div class="indication-item">항응고제 사용 불가 환자</div>
+        <div class="indication-item">비만·고령 수술 환자</div>
+        <div class="indication-item">암 수술 후 혈전 고위험군</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ★ CTA 배너 (수정 금지) ★ -->
+<section class="cta-banner">
+  <h2>DVT 예방장비 도입을 검토 중이신가요?</h2>
+  <p>제품 데모 및 견적 문의를 주시면 빠르게 안내해 드립니다.</p>
+  <a href="contact.html" class="btn-primary">견적·문의하기</a>
+</section>
+
+<!-- ★ 푸터 (수정 금지) ★ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-name">준메디칼 주식회사 JUN MEDICAL Co., Ltd.</div>
+    <div class="footer-info">
+      <span>대표 이우진</span>
+      <span>충청남도 천안시 서북구 도원8길 38, 402호(성정동)</span><br>
+      <span>사업자등록번호 869-87-03464</span>
+      <span>의료기기판매업 신고번호 제2026-4490261-00002호</span><br>
+      <span>Tel 041-522-9917</span>
+      <span>Fax 041-522-9918</span>
+      <span>E-mail junmed14@naver.com</span>
+    </div>
+    <div class="footer-bottom">&copy; 2026 준메디칼 주식회사. All rights reserved.</div>
+  </div>
+</footer>
+<script>function toggleNav(){document.getElementById('siteNav').classList.toggle('open');}</script>
+</body>
+</html>

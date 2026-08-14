@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>파트너 브랜드 | 준메디칼 주식회사</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── brands.html 전용 스타일 ── */
+
+    /* 브랜드 카드 */
+    .brand-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      overflow: hidden;
+      transition: box-shadow .2s;
+    }
+    .brand-card:hover { box-shadow: 0 8px 28px rgba(31,56,100,.16); }
+
+    /* 로고 영역 */
+    .brand-logo-wrap {
+      background: var(--bg);
+      border-right: 1px solid #e0e6ef;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      gap: 12px;
+    }
+    .brand-logo-wrap img {
+      max-width: 140px;
+      max-height: 80px;
+      object-fit: contain;
+    }
+    /* 이미지가 없을 때 보여줄 텍스트 로고 */
+    .brand-logo-text {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      text-align: center;
+      line-height: 1.3;
+      letter-spacing: .02em;
+    }
+    .brand-country {
+      font-size: 11px;
+      color: var(--sub);
+      letter-spacing: .08em;
+    }
+
+    /* 내용 영역 */
+    .brand-info {
+      padding: 32px 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .brand-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .brand-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      color: var(--sky);
+      background: #eaf3fb;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+    .brand-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 6px;
+      line-height: 1.25;
+    }
+    .brand-name-sub {
+      font-size: 13px;
+      color: var(--sub);
+      margin-bottom: 14px;
+    }
+    .brand-desc {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+    .brand-products {
+      list-style: none;
+      margin-bottom: 20px;
+    }
+    .brand-products li {
+      font-size: 13px;
+      color: var(--sub);
+      padding: 4px 0;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .brand-products li::before {
+      content: "·";
+      color: var(--sky);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .btn-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--navy);
+      color: var(--white);
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      width: fit-content;
+      transition: background .2s;
+    }
+    .btn-brand:hover { background: var(--sky); color: var(--white); }
+
+    /* 브랜드 목록 간격 */
+    .brand-list {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* 구분선 */
+    .brand-divider {
+      border: none;
+      border-top: 1px solid #e0e6ef;
+      margin: 8px 0;
+    }
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+      .brand-card          { grid-template-columns: 1fr; }
+      .brand-logo-wrap     { border-right: none; border-bottom: 1px solid #e0e6ef; padding: 24px; }
+      .brand-info          { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ★ 헤더 (모든 페이지 동일 — 수정 금지) ★ -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-ko">준 메 디 칼</span>
+      <span class="logo-en">JUN MEDICAL Co., Ltd.</span>
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="메뉴">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="site-nav" id="siteNav">
+      <li>
+        <a href="about.html">회사소개</a>
+        <ul class="dropdown">
+          <li><a href="about.html#greeting">인사말</a></li>
+          <li><a href="about.html#history">연혁</a></li>
+          <li><a href="about.html#location">오시는 길</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="products.html">취급제품</a>
+        <ul class="dropdown">
+          <li><a href="products-laparoscopy.html">복강경 수술기구</a></li>
+          <li><a href="products-drape.html">수술포·멸균포</a></li>
+          <li><a href="products-dvt.html">DVT 예방장비</a></li>
+          <li><a href="products-etc.html">기타 의료소모품</a></li>
+        </ul>
+      </li>
+      <li><a href="brands.html">파트너 브랜드</a></li>
+      <li><a href="contact.html" class="btn-inquiry">견적·문의</a></li>
+    </ul>
+  </div>
+</header>
+
+<main>
+
+  <!-- ★ 히어로 ★ -->
+  <section class="hero">
+    <!-- ============================
+      ✏️ 수정 구역 1: 히어로 제목·설명
+      ============================ -->
+    <h1>파트너 브랜드</h1>
+    <p>준메디칼이 공식 취급하는 국내·해외 브랜드를 소개합니다.<br>
+       신뢰할 수 있는 파트너와 함께 최고의 제품을 공급합니다.</p>
+  </section>
+
+  <!-- ★ 브랜드 목록 ★ -->
+  <section class="section bg-gray">
+    <div class="section-inner">
+
+      <div class="section-label">Our Partners</div>
+      <h2 class="section-title">공식 파트너 브랜드</h2>
+      <div class="divider"></div>
+
+      <!-- ============================
+        ✏️ 수정 구역 2: 브랜드 카드 목록
+        브랜드 추가 시 아래 .brand-card 블록을 복사해서 붙여넣기
+        ============================ -->
+      <div class="brand-list">
+
+        <!-- ── 브랜드 1: WISAP ── -->
+        <!-- ============================
+          ✏️ 수정 구역 2-1: WISAP 브랜드 정보
+          로고 이미지: images/brand-wisap.png 로 교체
+          ============================ -->
+        <div class="brand-card">
+          <div class="brand-logo-wrap">
+            <!-- 로고 이미지가 준비되면 아래 주석 해제하고 텍스트 로고 블록 삭제 -->
+            <!-- <img src="images/brand-wisap.png" alt="WISAP Laparoscopy 로고"> -->
+            <div class="brand-logo-text">WISAP</div>
+            <div class="brand-country">🇩🇪 Germany</div>
+          </div>
+          <div class="brand-info">
+            <div class="brand-tags">
+              <span class="brand-tag">복강경 수술기구</span>
+              <span class="brand-tag">Laparoscopy</span>
+            </div>
+            <div class="brand-name">WISAP Laparoscopy</div>
+            <div class="brand-name-sub">WISAP Medical Technology GmbH · 독일</div>
+            <hr class="brand-divider">
+            <p class="brand-desc">
+              40년 이상의 임상 노하우를 바탕으로 정밀한 복강경 수술기구를 제공하는 독일 전문 브랜드입니다.
+              유럽 CE 인증을 획득한 고품질 제품으로 전 세계 의료기관에서 신뢰받고 있습니다.
+            </p>
+            <ul class="brand-products">
+              <li>복강경 수술용 트로카 및 캐뉼라</li>
+              <li>겸자·가위·니들홀더 등 복강경 기구류</li>
+              <li>초음파 절삭·지혈 장비</li>
+            </ul>
+            <a href="products-laparoscopy.html" class="btn-brand">제품 보기 →</a>
+          </div>
+        </div>
+
+        <!-- ── 브랜드 2: CooperSurgical ── -->
+        <!-- ============================
+          ✏️ 수정 구역 2-2: CooperSurgical 브랜드 정보
+          로고 이미지: images/brand-coopersurgical.png 로 교체
+          ============================ -->
+        <div class="brand-card">
+          <div class="brand-logo-wrap">
+            <!-- <img src="images/brand-coopersurgical.png" alt="CooperSurgical 로고"> -->
+            <div class="brand-logo-text">Cooper<br>Surgical</div>
+            <div class="brand-country">🇺🇸 USA</div>
+          </div>
+          <div class="brand-info">
+            <div class="brand-tags">
+              <span class="brand-tag">복강경 수술기구</span>
+              <span class="brand-tag">여성 건강</span>
+            </div>
+            <div class="brand-name">CooperSurgical</div>
+            <div class="brand-name-sub">CooperSurgical, Inc. · 미국</div>
+            <hr class="brand-divider">
+            <p class="brand-desc">
+              여성 건강 분야에 특화된 미국의 글로벌 의료기기 기업입니다.
+              복강경 자궁 수술 분야의 혁신적인 제품으로 전 세계 산부인과 수술의 표준을 선도하고 있습니다.
+            </p>
+            <ul class="brand-products">
+              <li>RUMI® II System — 고급 자궁 조작 시스템</li>
+              <li>Koh-Efficient™ — TLH 전용 질원개 절개 보조 장치</li>
+              <li>복강경 부인과 수술 관련 소모품</li>
+            </ul>
+            <a href="product-rumi2.html" class="btn-brand">제품 보기 →</a>
+          </div>
+        </div>
+
+        <!-- ── 브랜드 3: 세종헬스케어 ── -->
+        <!-- ============================
+          ✏️ 수정 구역 2-3: 세종헬스케어 브랜드 정보
+          로고 이미지: images/brand-sejong.png 로 교체
+          ============================ -->
+        <div class="brand-card">
+          <div class="brand-logo-wrap">
+            <!-- <img src="images/brand-sejong.png" alt="세종헬스케어 로고"> -->
+            <div class="brand-logo-text">세종<br>헬스케어</div>
+            <div class="brand-country">🇰🇷 Korea</div>
+          </div>
+          <div class="brand-info">
+            <div class="brand-tags">
+              <span class="brand-tag">수술포·멸균포</span>
+              <span class="brand-tag">Surgical Drape</span>
+            </div>
+            <div class="brand-name">세종헬스케어</div>
+            <div class="brand-name-sub">SEJONG HEALTH CARE · 한국</div>
+            <hr class="brand-divider">
+            <p class="brand-desc">
+              국내 수술포·멸균포 전문 제조사로, 병원 현장의 다양한 요구에 맞춘 제품을 안정적으로 공급합니다.
+              엄격한 품질관리와 신속한 납기로 전국 의료기관에서 신뢰받고 있습니다.
+            </p>
+            <ul class="brand-products">
+              <li>수술부위별 맞춤형 수술포 (Surgical Drape)</li>
+              <li>의료기기·기구 멸균 포장재</li>
+              <li>일회용 수술가운·마스크·커버류</li>
+            </ul>
+            <a href="products-drape.html" class="btn-brand">제품 보기 →</a>
+          </div>
+        </div>
+
+        <!-- ── 브랜드 4: MB2020 ── -->
+        <!-- ============================
+          ✏️ 수정 구역 2-4: MB2020 브랜드 정보
+          로고 이미지: images/brand-mb2020.png 로 교체
+          ============================ -->
+        <div class="brand-card">
+          <div class="brand-logo-wrap">
+            <!-- <img src="images/brand-mb2020.png" alt="MB2020 로고"> -->
+            <div class="brand-logo-text">MB2020</div>
+            <div class="brand-country">🇰🇷 Korea</div>
+          </div>
+          <div class="brand-info">
+            <div class="brand-tags">
+              <span class="brand-tag">DVT 예방장비</span>
+              <span class="brand-tag">혈전 예방</span>
+            </div>
+            <div class="brand-name">MB2020</div>
+            <div class="brand-name-sub">DVT 예방장비 전문 브랜드 · 한국</div>
+            <hr class="brand-divider">
+            <p class="brand-desc">
+              심부정맥혈전증(DVT) 예방에 특화된 의료장비 브랜드입니다.
+              수술 전후 혈전 예방을 위한 간헐적 공기 압박 장치(IPC)를 공급하며,
+              환자 안전과 수술 후 회복에 기여합니다.
+            </p>
+            <ul class="brand-products">
+              <li>간헐적 공기 압박 장치 (IPC Device)</li>
+              <li>DVT 예방용 압박 스타킹·슬리브</li>
+              <li>장기 수술·중환자실 전용 모델</li>
+            </ul>
+            <a href="products-dvt.html" class="btn-brand">제품 보기 →</a>
+          </div>
+        </div>
+
+      </div><!-- /brand-list -->
+    </div>
+  </section>
+
+  <!-- ★ 파트너십 안내 섹션 ★ -->
+  <section class="section">
+    <div class="section-inner" style="text-align: center;">
+      <!-- ============================
+        ✏️ 수정 구역 3: 파트너십 안내 문구
+        ============================ -->
+      <div class="section-label">Partnership</div>
+      <h2 class="section-title">새로운 브랜드 도입 문의</h2>
+      <div class="divider" style="margin: 12px auto 24px;"></div>
+      <p class="section-desc" style="margin: 0 auto 32px;">
+        취급 브랜드 외에도 병원·의료기관에서 필요로 하는 제품이 있으시면 언제든지 문의해 주세요.<br>
+        준메디칼은 지속적으로 파트너 브랜드를 확대해 나가고 있습니다.
+      </p>
+      <a href="contact.html" class="btn-primary">견적·문의하기</a>
+    </div>
+  </section>
+
+</main>
+
+<!-- ★ CTA 배너 (모든 페이지 동일 — 수정 금지) ★ -->
+<section class="cta-banner">
+  <h2>제품 문의 및 견적이 필요하신가요?</h2>
+  <p>병원·의료기관 담당자분께 빠르게 안내해 드립니다.</p>
+  <a href="contact.html" class="btn-primary">견적·문의하기</a>
+</section>
+
+<!-- ★ 푸터 (모든 페이지 동일 — 수정 금지) ★ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-name">준메디칼 주식회사 JUN MEDICAL Co., Ltd.</div>
+    <div class="footer-info">
+      <span>대표 이우진</span>
+      <span>충청남도 천안시 서북구 도원8길 38, 402호(성정동)</span><br>
+      <span>사업자등록번호 869-87-03464</span>
+      <span>의료기기판매업 신고번호 제2026-4490261-00002호</span><br>
+      <span>Tel 041-522-9917</span>
+      <span>Fax 041-522-9918</span>
+      <span>E-mail junmed14@naver.com</span>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 준메디칼 주식회사. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleNav() {
+  document.getElementById('siteNav').classList.toggle('open');
+}
+</script>
+</body>
+</html>

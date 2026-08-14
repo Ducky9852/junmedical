@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>수술포·멸균포 | 준메디칼 주식회사</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .notice-box {
+      background: #EBF3FB; border-left: 4px solid var(--sky);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 16px 20px; margin-top: 24px;
+      font-size: 13px; color: var(--mid); line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ★ 헤더 (수정 금지) ★ -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-ko">준 메 디 칼</span>
+      <span class="logo-en">JUN MEDICAL Co., Ltd.</span>
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="메뉴">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="site-nav" id="siteNav">
+      <li>
+        <a href="about.html">회사소개</a>
+        <ul class="dropdown">
+          <li><a href="about.html#greeting">인사말</a></li>
+          <li><a href="about.html#history">연혁</a></li>
+          <li><a href="about.html#location">오시는 길</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="products.html">취급제품</a>
+        <ul class="dropdown">
+          <li><a href="products-laparoscopy.html">복강경 수술기구</a></li>
+          <li><a href="products-drape.html">수술포·멸균포</a></li>
+          <li><a href="products-dvt.html">DVT 예방장비</a></li>
+          <li><a href="products-etc.html">기타 의료소모품</a></li>
+        </ul>
+      </li>
+      <li><a href="brands.html">파트너 브랜드</a></li>
+      <li><a href="contact.html" class="btn-inquiry">견적·문의</a></li>
+    </ul>
+  </div>
+</header>
+
+<main>
+
+  <!-- 제품 히어로 -->
+  <section class="product-hero">
+    <div class="product-hero-inner">
+      <div>
+        <!-- ============================
+          ✏️ 수정 구역 1: 제품 기본 정보
+          ============================ -->
+        <div class="product-brand">세종헬스케어 · 수술포·멸균포</div>
+        <h1 class="product-name">수술포 · 멸균포</h1>
+        <p class="product-subtitle">Surgical Drape &amp; Sterilization Wrap</p>
+        <p class="product-tagline">
+          수술 부위별 맞춤 설계로 감염을 차단하고 청결한 수술 환경을 유지합니다.<br>
+          엄격한 품질관리와 안정적인 공급으로 전국 의료기관의 신뢰를 받고 있습니다.
+        </p>
+        <a href="contact.html" class="btn-primary">견적·문의하기</a>
+      </div>
+      <div class="product-img-wrap">
+        <!-- ============================
+          ✏️ 수정 구역 2: 제품 이미지
+          이미지 파일을 images/ 폴더에 넣고 아래 src 경로 수정
+          ============================ -->
+        <img src="images/drape-main.png" alt="수술포·멸균포 — 세종헬스케어">
+      </div>
+    </div>
+  </section>
+
+  <!-- 제품 개요 -->
+  <section class="section bg-gray">
+    <div class="section-inner">
+      <div class="section-label">Product Overview</div>
+      <!-- ============================
+        ✏️ 수정 구역 3: 제품 개요 카드
+        카드 추가/수정 시 .card 블록 복사해서 편집
+        ============================ -->
+      <h2 class="section-title">안전한 수술 환경의 시작</h2>
+      <div class="divider"></div>
+      <p class="section-desc">
+        세종헬스케어의 수술포·멸균포는 국내 의료기기 기준에 적합한 소재와 공정으로 제조됩니다.
+        수술 부위별 최적화된 설계로 의료진의 편의성을 높이고 감염 위험을 최소화합니다.
+      </p>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🛡️</div>
+          <h3>감염 차단 소재</h3>
+          <p>SMS(Spunbond-Meltblown-Spunbond) 복합 부직포 소재로 우수한 방수성과 세균 차단 효과를 제공합니다.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">✂️</div>
+          <h3>수술 부위별 맞춤 설계</h3>
+          <p>복부, 정형외과, 안과, 산부인과 등 수술 종류에 따라 최적화된 형태와 규격으로 제공됩니다.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📦</div>
+          <h3>개별 멸균 포장</h3>
+          <p>제품 개봉 전까지 무균 상태를 유지하는 이중 포장으로 안전한 사용을 보장합니다.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🚚</div>
+          <h3>안정적 공급</h3>
+          <p>충분한 재고 확보와 신속한 납기로 병원 수술 일정에 차질이 없도록 지원합니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 주요 특징 -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-label">Key Features</div>
+      <h2 class="section-title">제품 주요 특징</h2>
+      <div class="divider"></div>
+      <!-- ============================
+        ✏️ 수정 구역 4: 주요 특징 목록
+        항목 추가/수정 시 <li> 태그 복사해서 편집
+        ============================ -->
+      <ul class="feature-list">
+        <li>일회용(Single Use) 설계 — 교차 감염 위험 원천 차단</li>
+        <li>SMS 3중 구조 부직포 — 방수·방균·통기성 동시 확보</li>
+        <li>점착 테이프(Adhesive Strip) 일체형 — 수술 중 위치 고정</li>
+        <li>흡수층 일체형 옵션 — 수술 중 혈액·체액 흡수 처리</li>
+        <li>Lint-Free 소재 — 수술 부위 이물질 오염 최소화</li>
+        <li>EO(에틸렌 옥사이드) 가스 멸균 처리</li>
+        <li>Latex Free 설계 — 알레르기 반응 우려 없음</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 제품 종류 및 사양 -->
+  <section class="section bg-gray">
+    <div class="section-inner">
+      <div class="section-label">Product Specifications</div>
+      <h2 class="section-title">제품 종류 및 사양</h2>
+      <div class="divider"></div>
+      <p class="section-desc">수술 종류와 용도에 따라 다양한 규격으로 공급됩니다. 정확한 규격 및 재고 문의는 영업팀으로 연락 주세요.</p>
+      <!-- ============================
+        ✏️ 수정 구역 5: 제품 사양 표
+        행 추가 시 <tr> 블록 복사해서 편집
+        ============================ -->
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>품목</th>
+            <th>규격/종류</th>
+            <th>소재</th>
+            <th>포장 단위</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>전신 수술포 세트</td>
+            <td>전신마취 수술용 (복부, 사지 등)</td>
+            <td>SMS 부직포</td>
+            <td>1세트/박스</td>
+          </tr>
+          <tr>
+            <td>복부 수술포</td>
+            <td>복강경·개복 수술용</td>
+            <td>SMS 부직포</td>
+            <td>5매/박스</td>
+          </tr>
+          <tr>
+            <td>정형외과 수술포</td>
+            <td>상지·하지·관절 수술용</td>
+            <td>SMS 부직포</td>
+            <td>5매/박스</td>
+          </tr>
+          <tr>
+            <td>안과 수술포</td>
+            <td>백내장·안과 수술용</td>
+            <td>SMS 부직포</td>
+            <td>10매/박스</td>
+          </tr>
+          <tr>
+            <td>멸균 포장지 (시트형)</td>
+            <td>다양한 규격 (30×30 ~ 120×120cm)</td>
+            <td>SMS/크레이프지</td>
+            <td>100매/박스</td>
+          </tr>
+          <tr>
+            <td>멸균 봉투 (자체접착형)</td>
+            <td>다양한 규격 (소·중·대)</td>
+            <td>PE+크라프트지</td>
+            <td>200매/박스</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="notice-box">
+        ※ 상기 제품은 의료기기로, 반드시 의료 전문가에 의해 사용되어야 합니다.<br>
+        ※ 정확한 규격·재고 및 납기 문의는 준메디칼 영업팀으로 연락 주시기 바랍니다.<br>
+        ※ 제조사: 세종헬스케어 (SEJONG HEALTH CARE, 대한민국)
+      </div>
+    </div>
+  </section>
+
+  <!-- 적용 수술 -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-label">Indications</div>
+      <h2 class="section-title">적용 가능 수술·시술</h2>
+      <div class="divider"></div>
+      <!-- ============================
+        ✏️ 수정 구역 6: 적응증 목록
+        항목 추가 시 .indication-item 블록 복사
+        ============================ -->
+      <div class="indication-grid">
+        <div class="indication-item">복강경 수술</div>
+        <div class="indication-item">개복 수술</div>
+        <div class="indication-item">정형외과 수술</div>
+        <div class="indication-item">산부인과 수술</div>
+        <div class="indication-item">안과 수술</div>
+        <div class="indication-item">비뇨기과 수술</div>
+        <div class="indication-item">신경외과 수술</div>
+        <div class="indication-item">응급 수술</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ★ CTA 배너 (수정 금지) ★ -->
+<section class="cta-banner">
+  <h2>수술포·멸균포 견적이 필요하신가요?</h2>
+  <p>병원·의료기관 담당자분께 빠르게 안내해 드립니다.</p>
+  <a href="contact.html" class="btn-primary">견적·문의하기</a>
+</section>
+
+<!-- ★ 푸터 (수정 금지) ★ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-name">준메디칼 주식회사 JUN MEDICAL Co., Ltd.</div>
+    <div class="footer-info">
+      <span>대표 이우진</span>
+      <span>충청남도 천안시 서북구 도원8길 38, 402호(성정동)</span><br>
+      <span>사업자등록번호 869-87-03464</span>
+      <span>의료기기판매업 신고번호 제2026-4490261-00002호</span><br>
+      <span>Tel 041-522-9917</span>
+      <span>Fax 041-522-9918</span>
+      <span>E-mail junmed14@naver.com</span>
+    </div>
+    <div class="footer-bottom">&copy; 2026 준메디칼 주식회사. All rights reserved.</div>
+  </div>
+</footer>
+<script>function toggleNav(){document.getElementById('siteNav').classList.toggle('open');}</script>
+</body>
+</html>

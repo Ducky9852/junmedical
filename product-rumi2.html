@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RUMI® II System | 복강경 수술기구 | 준메디칼 주식회사</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .product-hero { padding-top: 48px; }
+    .koh-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 24px;
+    }
+    .koh-card {
+      background: var(--white); border-radius: var(--radius);
+      border: 1px solid #d0daea; padding: 24px;
+    }
+    .koh-card h4 { color: var(--navy); font-size: 15px; margin-bottom: 8px; }
+    .koh-card p  { font-size: 13px; color: var(--sub); line-height: 1.7; }
+    .tips-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 20px;
+    }
+    .tip-item {
+      background: var(--white); border: 1px solid #d0daea; border-radius: var(--radius);
+      padding: 14px; text-align: center; font-size: 13px; color: var(--navy);
+    }
+    .tip-size { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+    .tip-color { font-size: 11px; color: var(--sub); }
+    .notice-box {
+      background: #EBF3FB; border-left: 4px solid var(--sky);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 16px 20px; margin-top: 24px;
+      font-size: 13px; color: var(--mid); line-height: 1.7;
+    }
+    @media(max-width:768px){ .koh-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-ko">준 메 디 칼</span>
+      <span class="logo-en">JUN MEDICAL Co., Ltd.</span>
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="메뉴">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="site-nav" id="siteNav">
+      <li>
+        <a href="about.html">회사소개</a>
+        <ul class="dropdown">
+          <li><a href="about.html#greeting">인사말</a></li>
+          <li><a href="about.html#history">연혁</a></li>
+          <li><a href="about.html#location">오시는 길</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="products.html">취급제품</a>
+        <ul class="dropdown">
+          <li><a href="products-laparoscopy.html">복강경 수술기구</a></li>
+          <li><a href="products-drape.html">수술포·멸균포</a></li>
+          <li><a href="products-dvt.html">DVT 예방장비</a></li>
+          <li><a href="products-etc.html">기타 의료소모품</a></li>
+        </ul>
+      </li>
+      <li><a href="brands.html">파트너 브랜드</a></li>
+      <li><a href="contact.html" class="btn-inquiry">견적·문의</a></li>
+    </ul>
+  </div>
+</header>
+
+<main>
+
+  <!-- 제품 히어로 -->
+  <section class="product-hero">
+    <div class="product-hero-inner">
+      <div>
+        <div class="product-brand">CooperSurgical · 복강경 수술기구</div>
+        <h1 class="product-name">RUMI<sup>®</sup> II System</h1>
+        <p class="product-subtitle">Advanced Uterine Manipulation System</p>
+        <p class="product-tagline">
+          모든 골반 복강경 시술을 위한 최적의 선택.<br>
+          탁월한 가시성과 정밀한 자궁 조작으로 수술의 완성도를 높입니다.
+        </p>
+        <a href="contact.html" class="btn-primary">견적·문의하기</a>
+      </div>
+      <div class="product-img-wrap">
+        <!-- 제품 이미지: 브로셔 표지의 RUMI II 기기 사진으로 교체 -->
+        <img src="images/rumi2-main.png" alt="RUMI II System — CooperSurgical 자궁 조작기">
+      </div>
+    </div>
+  </section>
+
+  <!-- 제품 개요 -->
+  <section class="section bg-gray">
+    <div class="section-inner">
+      <div class="section-label">Product Overview</div>
+      <h2 class="section-title">자궁 조작의 새로운 기준</h2>
+      <div class="divider"></div>
+      <p class="section-desc">
+        RUMI II System은 복강경 수술 중 탁월한 자궁 노출과 골반 접근성을 제공하도록 설계된 고급 자궁 조작 시스템입니다.
+        다양한 일회용 자궁내 팁과 140도 관절 운동으로 환자 개인의 해부학적 구조에 맞춘 최적의 시술이 가능합니다.
+      </p>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-icon">🔧</div>
+          <h3>140° 관절 운동</h3>
+          <p>자궁 경부에서 전굴 90°, 후굴 50° 구현. 해부학적 구조에 맞는 탁월한 노출과 접근성을 제공합니다.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔒</div>
+          <h3>마찰 없는 잠금 핸들</h3>
+          <p>팁 방향과 자궁 위치를 안정적으로 유지. 절제 중 추가적인 수술 제어와 안전성을 보장합니다.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📏</div>
+          <h3>6가지 팁 사이즈</h3>
+          <p>5.1mm ~ 6.7mm, 3.75cm ~ 12cm 범위로 다양한 환자 해부학에 맞는 최적의 팁을 선택할 수 있습니다.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏥</div>
+          <h3>광범위한 적응증</h3>
+          <p>진단적 복강경, 근종절제술, 자궁절제술, 자궁내막증 절제, 천골질고정술 등 다양한 시술에 적용됩니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 주요 특징 -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-label">Key Features</div>
+      <h2 class="section-title">RUMI II만의 차별화된 설계</h2>
+      <div class="divider"></div>
+      <ul class="feature-list">
+        <li>기존 대비 2인치 더 긴 샤프트로 더 나은 접근성 확보</li>
+        <li>식염수 주입식 실리콘 풍선 팁 — 삽입 시 외상 최소화, 안정적 고정</li>
+        <li>새로운 카테터 관리 시스템 내장으로 수술 현장 정리 향상</li>
+        <li>시각·청각 잠금 표시 기능 — Koh-Efficient 장착 확인</li>
+        <li>Latex Free 설계</li>
+        <li>천골질고정술·천골자궁고정술 전용 팁 별도 제공</li>
+        <li>RUMI, RUMI Arch 핸들 모두와 팁 호환</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Koh-Efficient 소개 -->
+  <section class="section bg-gray">
+    <div class="section-inner">
+      <div class="section-label">Accessory System</div>
+      <h2 class="section-title">Koh-Efficient™ 시스템</h2>
+      <div class="divider"></div>
+      <p class="section-desc">
+        KOH Cup과 공기차단 풍선을 하나로 통합한 Koh-Efficient는
+        RUMI II 핸들에 신속·정확하게 장착되어 TLH(전복강경 자궁절제술)를 더욱 쉽고 빠르고 안전하게 만들어 줍니다.
+      </p>
+      <div class="koh-grid">
+        <div class="koh-card">
+          <h4>안전한 절개 마진 확보</h4>
+          <p>요관과의 안전 거리를 유지하면서 질 원개를 신장시켜 정확한 질원개 절개가 가능합니다. 수술 중 신뢰감 있는 진행을 보장합니다.</p>
+        </div>
+        <div class="koh-card">
+          <h4>4가지 사이즈</h4>
+          <p>2.5cm / 3.0cm / 3.5cm / 4.0cm — Cervical Sizer로 환자에게 맞는 크기를 정확히 측정 후 선택할 수 있습니다.</p>
+        </div>
+        <div class="koh-card">
+          <h4>간편 장착 (Easy Load)</h4>
+          <p>광범위한 테스트와 외과의 피드백을 반영한 장착 메커니즘으로 빠르고 정확한 위치 결정이 가능합니다.</p>
+        </div>
+        <div class="koh-card">
+          <h4>RUMI Arch II 호환</h4>
+          <p>RUMI II 핸들 및 RUMI Arch II 핸들에 모두 적용 가능. 단, 구형 RUMI 및 RUMI Arch 핸들과는 호환되지 않습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 팁 사양 -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-label">Product Specifications</div>
+      <h2 class="section-title">RUMI II 팁 규격</h2>
+      <div class="divider"></div>
+      <p class="section-desc">6가지 사이즈로 다양한 환자 해부학에 최적화된 팁을 선택할 수 있습니다.</p>
+      <div class="tips-grid">
+        <div class="tip-item"><div class="tip-size">5.1mm × 3.75cm</div><div class="tip-color">Yellow (UMY514)</div></div>
+        <div class="tip-item"><div class="tip-size">5.1mm × 6cm</div><div class="tip-color">Lavender (UML516)</div></div>
+        <div class="tip-item"><div class="tip-size">6.7mm × 6cm</div><div class="tip-color">White (UMW676)</div></div>
+        <div class="tip-item"><div class="tip-size">6.7mm × 8cm</div><div class="tip-color">Blue (UMB678)</div></div>
+        <div class="tip-item"><div class="tip-size">6.7mm × 10cm</div><div class="tip-color">Green (UMG670)</div></div>
+        <div class="tip-item"><div class="tip-size">6.7mm × 12cm</div><div class="tip-color">Orange (UMO672)</div></div>
+      </div>
+
+      <br>
+      <h3 style="color:var(--navy);margin-bottom:12px;">주요 제품 코드</h3>
+      <table class="spec-table">
+        <thead>
+          <tr><th>제품 코드</th><th>제품명</th><th>수량</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>UMH650</td><td>RUMI II Handle (자궁 조작기 핸들)</td><td>1개</td></tr>
+          <tr><td>UMH750</td><td>RUMI Arch II Handle</td><td>1개</td></tr>
+          <tr><td>KC-RUMI-25~40</td><td>RUMI II / Koh-Efficient (2.5~4.0cm)</td><td>5개/box</td></tr>
+          <tr><td>KC-ARCH-25~40</td><td>RUMI Arch II / Koh-Efficient (2.5~4.0cm)</td><td>5개/box</td></tr>
+          <tr><td>KC-SIZER</td><td>Cervical Sizer</td><td>1개</td></tr>
+          <tr><td>SACRO-1</td><td>Sacrocolpopexy Tip - Large</td><td>3개/box</td></tr>
+          <tr><td>371550-03</td><td>Uterine Positioning System (UPS)</td><td>1식</td></tr>
+        </tbody>
+      </table>
+      <div class="notice-box">
+        ※ 상기 제품은 의료기기로, 반드시 의료 전문가에 의해 사용되어야 합니다.<br>
+        ※ 정확한 재고 및 납기 문의는 준메디칼 영업팀으로 연락 주시기 바랍니다.<br>
+        ※ All RUMI Products are Latex Free. / 제조사: CooperSurgical, Inc. (USA)
+      </div>
+    </div>
+  </section>
+
+  <!-- 적응 시술 -->
+  <section class="section bg-gray">
+    <div class="section-inner">
+      <div class="section-label">Indications</div>
+      <h2 class="section-title">적용 가능 시술</h2>
+      <div class="divider"></div>
+      <div class="indication-grid">
+        <div class="indication-item">진단적 복강경</div>
+        <div class="indication-item">자궁근종절제술 (Myomectomy)</div>
+        <div class="indication-item">난소절제술 (Oophorectomy)</div>
+        <div class="indication-item">자궁내막증 절제</div>
+        <div class="indication-item">복강경 자궁절제술 (TLH)</div>
+        <div class="indication-item">천골질고정술 (Sacrocolpopexy)</div>
+        <div class="indication-item">불임 시술 (Chromopertubation)</div>
+        <div class="indication-item">로봇 복강경 수술</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- 문의 CTA -->
+<section class="cta-banner">
+  <h2>RUMI II System 도입을 검토 중이신가요?</h2>
+  <p>제품 데모 및 견적 문의를 주시면 빠르게 안내해 드립니다.</p>
+  <a href="contact.html" class="btn-primary">견적·문의하기</a>
+</section>
+
+<!-- 푸터 -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-name">준메디칼 주식회사 JUN MEDICAL Co., Ltd.</div>
+    <div class="footer-info">
+      <span>대표 이우진</span>
+      <span>충청남도 천안시 서북구 도원8길 38, 402호(성정동)</span><br>
+      <span>사업자등록번호 869-87-03464</span>
+      <span>의료기기판매업 신고번호 제2026-4490261-00002호</span><br>
+      <span>Tel 041-522-9917</span>
+      <span>Fax 041-522-9918</span>
+      <span>E-mail junmed14@naver.com</span>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 준메디칼 주식회사. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleNav() {
+  document.getElementById('siteNav').classList.toggle('open');
+}
+</script>
+</body>
+</html>
