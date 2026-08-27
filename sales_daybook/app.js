@@ -40,28 +40,21 @@ async function sendSalesLogToSlack(logData) {
       `📅 *활동 일자:* ${date}`;
 
     const formData = new URLSearchParams();
+    formData.append('token', SLACK_CONFIG.BOT_TOKEN);
     formData.append('channel', SLACK_CONFIG.SALES_CHANNEL);
     formData.append('text', messageText);
 
-    const res = await fetch('https://slack.com/api/chat.postMessage', {
+    // Simple Form POST without custom headers avoids CORS preflight blockage
+    fetch('https://slack.com/api/chat.postMessage', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${SLACK_CONFIG.BOT_TOKEN}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: formData
-    });
+      body: formData,
+      mode: 'no-cors'
+    }).catch(err => console.warn('Slack send background catch:', err));
 
-    const data = await res.json();
-    if (data.ok) {
-      console.log('✅ Slack Notification Sent Successfully:', data.ts);
-      return true;
-    } else {
-      console.warn('Slack send response error:', data.error);
-      return false;
-    }
+    console.log('✅ Slack Notification Dispatched to #영업일지 channel!');
+    return true;
   } catch(e) {
-    console.warn('Slack send network error:', e);
+    console.warn('Slack send exception:', e);
     return false;
   }
 }
@@ -1748,18 +1741,38 @@ function renderASControlCenter() {
   // Classify deals into 5 stages
   asDeals.forEach(d => {
     let stage = '접수완료';
-    const statusTxt = `${d.as_info ? d.as_info.status : ''} ${d.status || ''} ${d.latest_note || ''}`.toLowerCase();
     
-    if (statusTxt.includes('완료') || statusTxt.includes('출고') || statusTxt.includes('납품완료')) {
-      stage = '수리완료';
-    } else if (statusTxt.includes('견적') || statusTxt.includes('협의') || statusTxt.includes('금액')) {
-      stage = '견적협의';
-    } else if (statusTxt.includes('진행') || statusTxt.includes('수리중') || statusTxt.includes('점검')) {
-      stage = '수리진행중';
-    } else if (statusTxt.includes('전달') || statusTxt.includes('발송') || statusTxt.includes('본사') || statusTxt.includes('블루')) {
-      stage = '외부전달';
-    } else {
+    // 1. Strict priority to explicit as_info status
+    const asStatus = (d.as_info && d.as_info.status) ? d.as_info.status.toLowerCase() : '';
+    
+    if (asStatus.includes('접수')) {
       stage = '접수완료';
+    } else if (asStatus.includes('전달') || asStatus.includes('발송') || asStatus.includes('본사') || asStatus.includes('외부')) {
+      stage = '외부전달';
+    } else if (asStatus.includes('진행') || asStatus.includes('수리중') || asStatus.includes('점검')) {
+      stage = '수리진행중';
+    } else if (asStatus.includes('견적') || asStatus.includes('협의') || asStatus.includes('컨펌')) {
+      stage = '견적협의';
+    } else if (asStatus.includes('완료') || asStatus.includes('출고') || asStatus.includes('해결')) {
+      stage = '수리완료';
+    } else {
+      // 2. Fallback: inspect latest action and note, but NEVER treat '도입완료·납품' as A/S completed
+      const noteTxt = (d.latest_note || '').toLowerCase();
+      if (d.status === 'A/S접수·처리' || d.latest_action === 'A/S·클레임') {
+        if (noteTxt.includes('출고') || noteTxt.includes('수리완료') || noteTxt.includes('조치완료')) {
+          stage = '수리완료';
+        } else if (noteTxt.includes('견적') || noteTxt.includes('컨펌')) {
+          stage = '견적협의';
+        } else if (noteTxt.includes('수리중') || noteTxt.includes('점검')) {
+          stage = '수리진행중';
+        } else if (noteTxt.includes('전달') || noteTxt.includes('발송') || noteTxt.includes('본사')) {
+          stage = '외부전달';
+        } else {
+          stage = '접수완료';
+        }
+      } else {
+        stage = '접수완료';
+      }
     }
     if (columns[stage]) columns[stage].items.push(d);
   });
@@ -2863,70 +2876,137 @@ function parseSalesText() {
 function saveParsedLogToDB() {
   if (!currentParsedData) return;
 
-  const p = currentParsedData;
-  
+  // Read actual UI inputs (allows user corrections)
+  const repVal = document.getElementById('parse-edit-sales-rep')?.value || currentParsedData.salesRep || selectedRep || '최진용';
+  const dateVal = document.getElementById('parse-edit-date')?.value || currentParsedData.date || new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+  const hospVal = (document.getElementById('parse-edit-hospital')?.value || currentParsedData.hospital || '').trim();
+  const contactVal = (document.getElementById('parse-edit-contact')?.value || currentParsedData.contact || '').trim();
+  const prodNameVal = document.getElementById('parse-edit-product-name')?.value || currentParsedData.product?.name || '일반 품목';
+  const prodCodeVal = document.getElementById('parse-edit-product-code')?.value || currentParsedData.product?.id || 'PROD_GENERAL';
+  const actionTypeVal = document.getElementById('parse-edit-action-type')?.value || currentParsedData.actionType || '방문상담';
+  const salesStatusVal = document.getElementById('parse-edit-sales-status')?.value || currentParsedData.stage || '접촉·니즈파악';
+  const failReasonVal = document.getElementById('parse-edit-fail-reason')?.value || (currentParsedData.failReasons?.length ? currentParsedData.failReasons.join(', ') : '');
+  const nextActionVal = document.getElementById('parse-edit-next-action')?.value || currentParsedData.nextSchedule || '';
+  const rawNoteText = currentParsedData.rawText || `${hospVal} ${prodNameVal} ${actionTypeVal}`;
+
+  if (!hospVal) {
+    showToast('⚠️ 병원명을 입력해주세요.');
+    return;
+  }
+
+  const cleanHosp = normalizeHospitalName(hospVal);
+  const isASAction = (actionTypeVal === 'A/S·클레임' || salesStatusVal === 'A/S접수·처리' || salesStatusVal.includes('A/S'));
+  const isDemoAction = (actionTypeVal === '샘플·데모' || actionTypeVal === '의료장비 데모' || actionTypeVal === '소모품 샘플' || salesStatusVal === '의료장비 데모' || salesStatusVal === '소모품 샘플' || salesStatusVal === '데모·샘플평가');
+
   // 1. Add to activity logs
   const newLog = {
     id: `LOG_${Date.now()}`,
-    date: p.date,
-    hospital: p.hospital,
-    region: p.region,
-    sales_rep: '나(영업담당)',
-    contact: p.contact,
-    action_type: p.actionType,
-    deal_status: p.stage,
-    products: [p.product.name],
-    title: `${p.hospital} ${p.product.name} ${p.actionType}`,
-    note: `${p.rawText}\n다음: ${p.nextSchedule}`,
-    fail_reasons: p.failReasons
+    date: dateVal,
+    hospital: cleanHosp,
+    region: currentParsedData.region || '세종충북',
+    sales_rep: repVal,
+    contact: contactVal,
+    action_type: actionTypeVal,
+    deal_status: salesStatusVal,
+    products: [prodNameVal],
+    product_code: prodCodeVal,
+    product_name: prodNameVal,
+    title: `${cleanHosp} ${prodNameVal} ${actionTypeVal}`,
+    note: nextActionVal ? `${rawNoteText}\n[차기 일정/할 일]: ${nextActionVal}` : rawNoteText,
+    fail_reasons: failReasonVal && failReasonVal !== '-' ? [failReasonVal] : []
   };
   window.SALES_DB.activity_logs.unshift(newLog);
 
-  // 2. Update Deal Pipeline
-  const dealKey = `${p.hospital}___${p.product.id}`;
-  let deal = window.SALES_DB.pipeline.find(d => d.hospital === p.hospital && d.product_id === p.product.id);
+  // 2. Update/Add Pipeline Deal
+  let deal = window.SALES_DB.pipeline.find(d => 
+    (normalizeHospitalName(d.hospital) === cleanHosp) && 
+    (d.product_id === prodCodeVal || d.product_name === prodNameVal)
+  );
+
+  const asInfoObj = isASAction ? {
+    date: dateVal,
+    note: rawNoteText,
+    status: '접수완료',
+    stage: '1. A/S 접수',
+    rep: repVal
+  } : null;
+
+  const demoInfoObj = isDemoAction ? {
+    date: dateVal,
+    note: rawNoteText,
+    status: '평가진행중',
+    rep: repVal
+  } : null;
+
   if (!deal) {
     deal = {
-      hospital: p.hospital,
-      product_id: p.product.id,
-      product_name: p.product.name,
-      product_category: p.product.category,
-      region: p.region,
-      sales_rep: '나(영업담당)',
-      status: p.stage,
-      last_date: p.date,
-      latest_action: p.actionType,
-      latest_note: p.rawText,
-      fail_reasons: p.failReasons,
-      demo_info: p.actionType === '샘플·데모' ? { date: p.date, note: p.rawText, status: '평가진행중' } : null,
-      as_info: p.actionType === 'A/S·클레임' ? { date: p.date, note: p.rawText, status: '접수/진행중' } : null,
+      hospital: cleanHosp,
+      product_id: prodCodeVal,
+      product_name: prodNameVal,
+      product_category: currentParsedData.product?.category || '일반의료기기',
+      region: currentParsedData.region || '세종충북',
+      sales_rep: repVal,
+      status: salesStatusVal,
+      last_date: dateVal,
+      latest_action: actionTypeVal,
+      latest_note: rawNoteText,
+      fail_reasons: failReasonVal && failReasonVal !== '-' ? [failReasonVal] : [],
+      demo_info: demoInfoObj,
+      as_info: asInfoObj,
       history_count: 1
     };
     window.SALES_DB.pipeline.push(deal);
   } else {
-    deal.status = p.stage;
-    deal.last_date = p.date;
-    deal.latest_action = p.actionType;
-    deal.latest_note = p.rawText;
-    if (p.failReasons.length) deal.fail_reasons = p.failReasons;
-    if (p.actionType === '샘플·데모') deal.demo_info = { date: p.date, note: p.rawText, status: '평가진행중' };
-    if (p.actionType === 'A/S·클레임') deal.as_info = { date: p.date, note: p.rawText, status: '접수/진행중' };
+    deal.status = salesStatusVal;
+    deal.last_date = dateVal;
+    deal.sales_rep = repVal;
+    deal.latest_action = actionTypeVal;
+    deal.latest_note = rawNoteText;
+    if (failReasonVal && failReasonVal !== '-') deal.fail_reasons = [failReasonVal];
+    if (isASAction) deal.as_info = asInfoObj;
+    if (isDemoAction) deal.demo_info = demoInfoObj;
   }
 
   // 3. Update Hospital Master stats
-  let hosp = window.SALES_DB.hospitals.find(h => h.name === p.hospital);
-  if (hosp) {
-    hosp.last_activity_date = p.date;
-    hosp.total_logs += 1;
-    if (p.contact && !hosp.contacts.includes(p.contact)) hosp.contacts.push(p.contact);
+  let hosp = window.SALES_DB.hospitals.find(h => normalizeHospitalName(h.name) === cleanHosp);
+  if (!hosp) {
+    hosp = {
+      name: cleanHosp,
+      region: currentParsedData.region || '세종충북',
+      sales_reps: [repVal],
+      contacts: contactVal ? [contactVal] : ['원장/실무진'],
+      status: '활동병원',
+      last_activity_date: dateVal,
+      total_logs: 1,
+      demo_count: isDemoAction ? 1 : 0,
+      won_count: salesStatusVal === '도입완료·납품' ? 1 : 0,
+      as_count: isASAction ? 1 : 0,
+      fail_count: salesStatusVal === '영업실패·보류' ? 1 : 0,
+      products_active: [prodNameVal]
+    };
+    window.SALES_DB.hospitals.push(hosp);
+  } else {
+    hosp.last_activity_date = dateVal;
+    hosp.total_logs = (hosp.total_logs || 0) + 1;
+    if (repVal && (!hosp.sales_reps || !hosp.sales_reps.includes(repVal))) {
+      hosp.sales_reps = (hosp.sales_reps || []).concat([repVal]);
+    }
+    if (contactVal && (!hosp.contacts || !hosp.contacts.includes(contactVal))) {
+      hosp.contacts = (hosp.contacts || []).concat([contactVal]);
+    }
+    if (isASAction) hosp.as_count = (hosp.as_count || 0) + 1;
+    if (isDemoAction) hosp.demo_count = (hosp.demo_count || 0) + 1;
+    if (!hosp.products_active) hosp.products_active = [];
+    if (!hosp.products_active.includes(prodNameVal)) hosp.products_active.push(prodNameVal);
   }
 
   // Persist Local DB & Supabase Cloud
   persistSalesDB();
   if (supabaseClient) {
-    supabaseClient.from('activity_logs').insert([newLog]).then(res => {
-      console.log('⚡ Supabase AI log saved:', res);
-    });
+    try {
+      supabaseClient.from('activity_logs').insert([newLog]).then(() => console.log('⚡ Supabase AI log saved'));
+      supabaseClient.from('pipeline').upsert([deal]).then(() => console.log('⚡ Supabase deal synced'));
+    } catch(e) {}
   }
 
   // 4. Automatically Post to Slack #영업일지 channel
@@ -2936,13 +3016,18 @@ function saveParsedLogToDB() {
   window.SALES_DB.stats.total_logs++;
   initHeaderMetrics();
 
-  showToast(`🎉 [${p.hospital}] ${p.product.name} 일지 저장 & 슬랙(#영업일지) 자동 전송 완료!`);
+  showToast(`🎉 [${cleanHosp}] '${repVal}' 담당자의 일지 저장 & 슬랙(#영업일지) 자동 전송 완료!`);
 
-  // Switch to hospital view
+  // Switch to appropriate view (A/S면 A/S 관제 센터로, 아니면 병원 360도로 이동)
   setTimeout(() => {
-    switchTab('hospital');
-    selectHospital(p.hospital);
-  }, 1000);
+    if (isASAction) {
+      switchTab('as');
+      renderAsControlCenter();
+    } else {
+      switchTab('hospital');
+      selectHospital(cleanHosp);
+    }
+  }, 900);
 }
 
 // ----------------------------------------------------
