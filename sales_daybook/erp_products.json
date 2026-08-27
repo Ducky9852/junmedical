@@ -39031,52 +39031,6 @@
     "aliases": []
   },
   {
-    "id": "EN-SB024B",
-    "code": "EN-SB024B",
-    "name": "EN-Shot Biopsy 2.3cup",
-    "spec": "240mm (15EA=1BOX)",
-    "vendor": "한미메디텍",
-    "category": "일반의료기기",
-    "edi": "M0010038",
-    "unit": "EA",
-    "price_in": 24200.0,
-    "price_out": 0,
-    "keywords": [
-      "EN-SB024B",
-      "EN-Shot Biopsy 2.3cup",
-      "한미메디텍",
-      "M0010038",
-      "240mm (15EA=1BOX)"
-    ],
-    "aliases": [],
-    "use_by": "N",
-    "status": "사용중단",
-    "is_active": false
-  },
-  {
-    "id": "EN-SB024B-1",
-    "code": "EN-SB024B-1",
-    "name": "EN-Shot Biopsy 2.3cup",
-    "spec": "240mm (15EA=1BOX) 구형",
-    "vendor": "한미메디텍",
-    "category": "일반의료기기",
-    "edi": "M0010038",
-    "unit": "EA",
-    "price_in": 22000.0,
-    "price_out": 0,
-    "keywords": [
-      "EN-SB024B-1",
-      "EN-Shot Biopsy 2.3cup",
-      "한미메디텍",
-      "M0010038",
-      "240mm (15EA=1BOX) 구형"
-    ],
-    "aliases": [],
-    "use_by": "N",
-    "status": "사용중단",
-    "is_active": false
-  },
-  {
     "id": "EN-SB100A",
     "code": "EN-SB100A",
     "name": "EN-Shot Biopsy 2.3cup",
