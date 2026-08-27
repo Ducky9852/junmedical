@@ -1,13 +1,14 @@
 // Application State & Security
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V3_CLEAN";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V4_RECOVERED";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
-// Purge legacy storage versions containing discontinued items
+// Purge legacy storage versions containing corrupted remappings or discontinued items
 try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V1");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V2");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V3_CLEAN");
 } catch(e) {}
 
 let supabaseClient = null;
@@ -1416,23 +1417,30 @@ function applyGlobalProductRemap() {
 
   const oldProdId = selectedProductId;
   const newProd = targetGlobalRemapProduct;
+  const oldProd = (window.SALES_DB.products || []).find(p => p.id === oldProdId);
+  const oldProdName = oldProd ? oldProd.name : '';
 
   let changedHospitalCount = 0;
 
-  // Remap in pipeline
-  window.SALES_DB.pipeline.forEach(deal => {
-    if (deal.product_id === oldProdId) {
+  // 1. Remap ONLY matching pipeline deals
+  (window.SALES_DB.pipeline || []).forEach(deal => {
+    if (deal.product_id === oldProdId || (oldProdName && deal.product_name === oldProdName)) {
       deal.product_id = newProd.id;
       deal.product_name = newProd.name;
       changedHospitalCount++;
     }
   });
 
-  // Remap in activity logs
-  window.SALES_DB.activity_logs.forEach(log => {
+  // 2. Remap ONLY strictly matching activity logs
+  (window.SALES_DB.activity_logs || []).forEach(log => {
+    if (log.product_code === oldProdId) {
+      log.product_code = newProd.id;
+      log.product_name = newProd.name;
+    }
     if (log.products && Array.isArray(log.products)) {
       log.products = log.products.map(pName => {
-        if (pName.includes(oldProdId) || pName.includes(newProd.raw_name || '')) {
+        if (!pName) return pName;
+        if (pName === oldProdId || (oldProdName && (pName === oldProdName || pName.startsWith(oldProdName)))) {
           return newProd.name;
         }
         return pName;
