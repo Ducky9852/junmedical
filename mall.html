@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>준메디칼 온라인몰 | COMING SOON</title>
+  <!-- Google Fonts & Pretendard -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body.coming-soon-body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: radial-gradient(circle at 50% 15%, #0d284f 0%, #06152b 55%, #030a17 100%);
+      color: #ffffff;
+      font-family: 'Pretendard', sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* 배경 글로우 오브젝트 */
+    .bg-glow-orb {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(2, 132, 199, 0.25) 0%, rgba(2, 132, 199, 0) 70%);
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      filter: blur(40px);
+      animation: pulseGlow 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; }
+      100% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+    }
+
+    .coming-soon-header {
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .coming-soon-header .logo {
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .coming-soon-header .logo-ko {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: #ffffff;
+    }
+
+    .coming-soon-header .logo-en {
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+      color: #7dd3fc;
+    }
+
+    .coming-soon-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .coming-soon-card {
+      max-width: 640px;
+      width: 100%;
+      background: rgba(15, 39, 74, 0.65);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 24px;
+      padding: 56px 40px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(2, 132, 199, 0.2);
+    }
+
+    .shop-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      background: rgba(2, 132, 199, 0.18);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #7dd3fc;
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 28px;
+      letter-spacing: 0.05em;
+    }
+
+    .shop-badge svg {
+      width: 16px;
+      height: 16px;
+      stroke: #38bdf8;
+    }
+
+    .coming-soon-title {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(38px, 6vw, 56px);
+      font-weight: 900;
+      line-height: 1.1;
+      margin: 0 0 16px;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 30%, #38bdf8 70%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+    }
+
+    .coming-soon-subtitle {
+      font-size: 20px;
+      font-weight: 700;
+      color: #e0f2fe;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .coming-soon-desc {
+      font-size: 15.5px;
+      color: #94a3b8;
+      line-height: 1.8;
+      margin-bottom: 40px;
+      font-weight: 400;
+    }
+
+    .coming-soon-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-cs-home {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff !important;
+      padding: 13px 26px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 14.5px;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4);
+    }
+
+    .btn-cs-home:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+    }
+
+    .btn-cs-contact {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0 !important;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 13px 24px;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 14.5px;
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+
+    .btn-cs-contact:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #ffffff !important;
+      transform: translateY(-2px);
+    }
+
+    .cs-footer {
+      text-align: center;
+      padding: 24px 20px;
+      color: #64748b;
+      font-size: 13px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      position: relative;
+      z-index: 10;
+    }
+
+    .cs-footer a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+
+    @media (max-width: 640px) {
+      .coming-soon-card {
+        padding: 40px 24px;
+        border-radius: 20px;
+      }
+      .coming-soon-subtitle {
+        font-size: 18px;
+      }
+      .coming-soon-desc {
+        font-size: 14.5px;
+      }
+      .coming-soon-actions {
+        flex-direction: column;
+      }
+      .btn-cs-home, .btn-cs-contact {
+        width: 100%;
+        box-sizing: border-box;
+      }
+    }
+  </style>
+</head>
+<body class="coming-soon-body">
+
+  <div class="bg-glow-orb"></div>
+
+  <!-- 상단 헤더 -->
+  <header class="coming-soon-header">
+    <a href="index.html" class="logo">
+      <span class="logo-ko">준 메 디 칼</span>
+      <span class="logo-en">JUN MEDICAL Co., Ltd.</span>
+    </a>
+    <a href="index.html" class="btn-cs-contact" style="padding: 8px 16px; font-size: 13px;">
+      홈으로 돌아가기
+    </a>
+  </header>
+
+  <!-- 메인 Coming Soon 영역 -->
+  <main class="coming-soon-main">
+    <div class="coming-soon-card">
+      <div class="shop-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        JUN MEDICAL ONLINE STORE
+      </div>
+
+      <h1 class="coming-soon-title">COMING SOON</h1>
+      <div class="coming-soon-subtitle">온라인몰 오픈 준비 중입니다</div>
+
+      <p class="coming-soon-desc">
+        준메디칼 공식 B2B 의료기기 및 소모품 온라인 스토어를 준비하고 있습니다.<br>
+        보다 신속하고 편리한 주문 및 재고 확인 서비스를 곧 선보이겠습니다.<br>
+        급한 제품 문의 및 견적은 고객센터로 연락 주시면 빠르게 안내해 드립니다.
+      </p>
+
+      <div class="coming-soon-actions">
+        <a href="index.html" class="btn-cs-home">
+          공식 홈페이지 메인으로 이동
+        </a>
+        <a href="contact.html" class="btn-cs-contact">
+          견적 및 납기 문의하기
+        </a>
+        <a href="tel:041-522-9917" class="btn-cs-contact">
+          📞 041-522-9917
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="cs-footer">
+    &copy; 2026 준메디칼 주식회사 JUN MEDICAL Co., Ltd. All rights reserved. &nbsp;|&nbsp; 문의: <a href="mailto:junmed14@naver.com">junmed14@naver.com</a>
+  </footer>
+
+</body>
+</html>
