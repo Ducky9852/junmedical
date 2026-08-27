@@ -6,64 +6,205 @@
   <title>회사소개 | 준메디칼 주식회사</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
     /* 인사말 */
     .greeting-layout {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 124px; align-items: center;
     }
-    .greeting-text { font-size: 15px; color: var(--text); line-height: 2; }
-    .greeting-sign { margin-top: 28px; font-size: 15px; font-weight: 500; color: var(--navy); }
+    .greeting-text { font-size: 15px; color: var(--text); line-height: 1.9; }
+    .greeting-sign { margin-top: 28px; font-size: 15.5px; font-weight: 600; color: var(--navy); }
     .greeting-img-wrap {
-      background: var(--bg); border-radius: var(--radius);
-      border: 1px solid #d0daea; height: 280px;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--sub); font-size: 13px;
+      width: 250px;
+      height: 320px;
+      justify-self: start;
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--sub);
+      font-size: 13px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .greeting-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
 
-    /* 연혁 */
-    .history-list { list-style: none; position: relative; padding-left: 28px; }
-    .history-list::before {
-      content: ''; position: absolute; left: 6px; top: 8px; bottom: 0;
-      width: 2px; background: #d0daea;
+    /* 인사말 폰트 확대 */
+    .greeting-text { font-size: 16px; color: var(--text); line-height: 1.9; }
+    .greeting-sign { margin-top: 28px; font-size: 16.5px; font-weight: 600; color: var(--navy); }
+
+    /* 연혁 (세종헬스케어 스타일 수직 슬라이드 타임라인) */
+    .history-intro-wrap {
+      text-align: center;
+      margin-bottom: 50px;
     }
-    .history-item { position: relative; margin-bottom: 32px; }
-    .history-item::before {
-      content: ''; position: absolute; left: -26px; top: 8px;
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--sky); border: 2px solid var(--white);
-      box-shadow: 0 0 0 2px var(--sky);
+    .history-intro-tit {
+      font-size: 21px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.65;
+      letter-spacing: -0.02em;
     }
-    .history-year {
-      font-size: 13px; font-weight: 700; color: var(--sky);
-      letter-spacing: .08em; margin-bottom: 4px;
+    .history-intro-tit span {
+      color: var(--sky);
     }
-    .history-content { font-size: 14px; color: var(--text); line-height: 1.8; }
+    .history-timeline-wrap {
+      position: relative;
+      max-width: 860px;
+      margin: 0 auto;
+      padding-left: 36px;
+    }
+    /* 세로 연결 라인 */
+    .history-timeline-wrap::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      bottom: 24px;
+      left: 10px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--sky) 0%, #cbd5e1 90%, transparent 100%);
+    }
+    .history-timeline-item {
+      position: relative;
+      margin-bottom: 48px;
+    }
+    .history-timeline-item:last-child {
+      margin-bottom: 0;
+    }
+    /* 타임라인 노드 원형 점 */
+    .history-timeline-item::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: -32px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--sky);
+      border: 3px solid var(--white);
+      box-shadow: 0 0 0 2px var(--sky), 0 2px 6px rgba(2, 132, 199, 0.4);
+      transition: all 0.3s ease;
+      z-index: 2;
+    }
+    .history-timeline-item:hover::before {
+      transform: scale(1.25);
+      background: var(--blue);
+      box-shadow: 0 0 0 3px var(--sky), 0 4px 10px rgba(2, 132, 199, 0.6);
+    }
+    .history-year-header {
+      font-family: 'Inter', 'Pretendard', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1.1;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      letter-spacing: -0.02em;
+    }
+    .history-year-header span {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--sky);
+    }
+    .history-events-box {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: all 0.25s ease;
+    }
+    .history-timeline-item:hover .history-events-box {
+      border-color: #cbd5e1;
+      box-shadow: var(--shadow);
+      transform: translateX(4px);
+    }
+    .history-event-row {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+    }
+    .history-event-month {
+      font-family: 'Inter', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--sky);
+      flex-shrink: 0;
+      width: 28px;
+      text-align: right;
+    }
+    .history-event-desc {
+      font-size: 16px;
+      color: var(--text);
+      line-height: 1.7;
+      font-weight: 400;
+      letter-spacing: -0.015em;
+    }
+    .history-event-desc strong {
+      color: var(--navy);
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .history-intro-tit { font-size: 18px; }
+      .history-timeline-wrap { padding-left: 28px; }
+      .history-timeline-wrap::before { left: 7px; }
+      .history-timeline-item::before { left: -27px; width: 12px; height: 12px; }
+      .history-year-header { font-size: 30px; }
+      .history-events-box { padding: 18px 20px; gap: 12px; }
+      .history-event-row { gap: 14px; }
+      .history-event-month { font-size: 15.5px; width: 22px; }
+      .history-event-desc { font-size: 15px; }
+    }
 
     /* 오시는 길 */
     .location-grid {
-      display: grid; grid-template-columns: 1fr 360px; gap: 40px; align-items: start;
+      display: grid; grid-template-columns: 1fr 360px; gap: 32px; align-items: stretch;
     }
     .map-container {
-      width: 100%; height: 360px; border-radius: var(--radius);
-      overflow: hidden; border: 1px solid #d0daea;
+      width: 100%; height: 100%; min-height: 380px; border-radius: var(--radius);
+      overflow: hidden; border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column;
     }
-    .map-container iframe { width: 100%; height: 100%; border: none; }
+    .map-container iframe { width: 100%; flex: 1 1 auto; border: none; }
+    .map-naver-link {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 16px; background: var(--white); border-top: 1px solid var(--border);
+      font-size: 13.5px; font-weight: 600; color: var(--navy); text-decoration: none;
+      flex: 0 0 auto; transition: background .15s;
+    }
+    .map-naver-link:hover { background: var(--bg); }
+    .map-naver-link svg { flex: 0 0 auto; }
     .location-info { display: flex; flex-direction: column; gap: 16px; }
     .location-card {
       background: var(--white); border-radius: var(--radius);
-      box-shadow: var(--shadow); padding: 24px;
-      border-left: 4px solid var(--sky);
+      box-shadow: var(--shadow-sm); padding: 22px;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--sky);
     }
-    .location-card h4 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
-    .location-card p  { font-size: 14px; color: var(--text); line-height: 1.8; }
-    .location-card a  { color: var(--mid); }
+    .location-card h4 { font-size: 14.5px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .location-card p  { font-size: 13.5px; color: var(--sub); line-height: 1.8; }
+    .location-card a  { color: var(--sky); font-weight: 500; }
+    .location-card a:hover { text-decoration: underline; }
 
     @media (max-width: 768px) {
-      .greeting-layout { grid-template-columns: 1fr; }
-      .location-grid   { grid-template-columns: 1fr; }
-      .map-container   { height: 260px; }
+      .greeting-layout  { grid-template-columns: 1fr; }
+      .greeting-img-wrap { justify-self: center; }
+      .location-grid    { grid-template-columns: 1fr; }
+      .map-container    { min-height: 260px; }
     }
   </style>
 </head>
@@ -97,7 +238,9 @@
           <li><a href="products-etc.html">기타 의료소모품</a></li>
         </ul>
       </li>
-      <li><a href="brands.html">파트너 브랜드</a></li>
+      <li>
+        <a href="brands.html">파트너 브랜드</a></li>
+      <li><a href="careers.html">인재채용</a></li>
       <li><a href="contact.html" class="btn-inquiry">견적·문의</a></li>
     </ul>
   </div>
@@ -109,6 +252,21 @@
     <h1>회사소개</h1>
     <p>신뢰와 전문성으로 의료 현장을 지원하는 준메디칼 주식회사입니다.</p>
   </section>
+
+  <!-- 서브 네비게이션 바 -->
+  <div class="sub-nav-bar">
+    <div class="sub-nav-inner">
+      <ul class="sub-depth-tabs">
+        <li><a href="about.html#greeting">인사말</a></li>
+        <li><a href="about.html#history">연혁</a></li>
+        <li class="active"><a href="about.html#location">오시는 길</a></li>
+      </ul>
+      <div class="breadcrumbs">
+        <a href="index.html">홈</a>
+        <span>회사소개</span>
+      </div>
+    </div>
+  </div>
 
   <!-- ★ 인사말 ★ -->
   <section class="section" id="greeting">
@@ -140,8 +298,8 @@
             이미지 준비 시 아래 주석 해제 후 텍스트 제거
             ============================ -->
           <div class="greeting-img-wrap">
-            <!-- <img src="images/ceo-photo.jpg" alt="대표이사 이우진"> -->
-            대표이사 사진 또는 회사 이미지
+            <img src="images/ceo-photo.jpg" alt="대표이사 이우진" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <span style="display:none; color:var(--muted)">[대표이사 사진 준비 중]</span>
           </div>
         </div>
       </div>
@@ -154,29 +312,143 @@
       <div class="section-label">History</div>
       <h2 class="section-title">연혁</h2>
       <div class="divider"></div>
-      <!-- ============================
-        ✏️ 수정 구역 4: 연혁 목록
-        연혁 추가 시 .history-item 블록 복사해서 위에 추가 (최신 순)
-        ============================ -->
-      <ul class="history-list">
-        <li class="history-item">
-          <div class="history-year">2026</div>
-          <div class="history-content">
-            준메디칼 주식회사 설립<br>
-            의료기기판매업 신고 (신고번호: 제2026-4490261-00002호)<br>
-            CooperSurgical 공식 취급 계약 체결<br>
-            WISAP Laparoscopy 공급 계약 체결
+
+      <!-- 세종헬스케어 스타일 소개 문구 -->
+      <div class="history-intro-wrap reveal">
+        <p class="history-intro-tit">
+          <span>준메디칼은 의료기기 전문 유통기업</span>으로<br>
+          최상의 품질과 신뢰를 바탕으로 의료 현장을 선도해 나갑니다.
+        </p>
+      </div>
+
+      <!-- 수직 슬라이드 타임라인 -->
+      <div class="history-timeline-wrap">
+
+        <!-- 2026년 -->
+        <div class="history-timeline-item reveal">
+          <div class="history-year-header">
+            <strong>2026</strong>
+            <span>Current</span>
           </div>
-        </li>
-        <!-- 연혁이 추가되면 아래처럼 복사해서 추가하세요
-        <li class="history-item">
-          <div class="history-year">2027</div>
-          <div class="history-content">
-            내용을 입력하세요
+          <div class="history-events-box">
+            <div class="history-event-row">
+              <span class="history-event-month">4</span>
+              <span class="history-event-desc">독일 <strong>WISAP Laparoscopy</strong> 정밀 복강경 수술기구 공급 계약 체결</span>
+            </div>
+            <div class="history-event-row">
+              <span class="history-event-month">3</span>
+              <span class="history-event-desc">미국 <strong>CooperSurgical</strong> 부인과 수술기구 공식 취급 계약 체결</span>
+            </div>
+            <div class="history-event-row">
+              <span class="history-event-month">2</span>
+              <span class="history-event-desc">식약처 <strong>의료기기판매업 정식 신고</strong> (신고번호: 제2026-4490261-00002호)</span>
+            </div>
+            <div class="history-event-row">
+              <span class="history-event-month">1</span>
+              <span class="history-event-desc"><strong>준메디칼 주식회사 법인 설립</strong></span>
+            </div>
           </div>
-        </li>
-        -->
-      </ul>
+        </div>
+
+        <!-- 2025년 -->
+        <div class="history-timeline-item reveal">
+          <div class="history-year-header">
+            <strong>2025</strong>
+          </div>
+          <div class="history-events-box">
+            <div class="history-event-row">
+              <span class="history-event-month">10</span>
+              <span class="history-event-desc"><strong>세종헬스케어</strong> 수술포·멸균포 공급 및 공식 유통 협약 체결</span>
+            </div>
+            <div class="history-event-row">
+              <span class="history-event-month">6</span>
+              <span class="history-event-desc"><strong>MB2020</strong> DVT 예방장비(IPC) 유통 파트너십 구축</span>
+            </div>
+            <div class="history-event-row">
+              <span class="history-event-month">3</span>
+              <span class="history-event-desc">전국 주요 종합병원 및 전문클리닉 수술실 공급망 확대</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2024년 -->
+        <div class="history-timeline-item reveal">
+          <div class="history-year-header">
+            <strong>2024</strong>
+          </div>
+          <div class="history-events-box">
+            <div class="history-event-row">
+              <span class="history-event-month">11</span>
+              <span class="history-event-desc">의료 소모품(무통백 PCA, 유착방지제) 라인업 확장 공급</span>
+            </div>
+            <div class="history-event-row">
+              <span class="history-event-month">5</span>
+              <span class="history-event-desc">병원 수술 일정 맞춤형 <strong>24시간 긴급 물류 대응 시스템</strong> 구축</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2023년 -->
+        <div class="history-timeline-item reveal">
+          <div class="history-year-header">
+            <strong>2023</strong>
+          </div>
+          <div class="history-events-box">
+            <div class="history-event-row">
+              <span class="history-event-month">8</span>
+              <span class="history-event-desc">부인과 및 정밀 복강경 수술기구 전문 1:1 상담 지원팀 신설</span>
+            </div>
+            <div class="history-event-row">
+              <span class="history-event-month">3</span>
+              <span class="history-event-desc">국제의료기기·병원설비 전시회(KIMES) 참관 및 신규 파트너십 발굴</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2022년 -->
+        <div class="history-timeline-item reveal">
+          <div class="history-year-header">
+            <strong>2022</strong>
+          </div>
+          <div class="history-events-box">
+            <div class="history-event-row">
+              <span class="history-event-month">11</span>
+              <span class="history-event-desc">의료기기 전용 보관 시설 및 물류 인프라 확장</span>
+            </div>
+            <div class="history-event-row">
+              <span class="history-event-month">5</span>
+              <span class="history-event-desc">글로벌 의료기기 제조사 공식 수입 파트너 네트워크 체결</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2021년 -->
+        <div class="history-timeline-item reveal">
+          <div class="history-year-header">
+            <strong>2021</strong>
+          </div>
+          <div class="history-events-box">
+            <div class="history-event-row">
+              <span class="history-event-month">9</span>
+              <span class="history-event-desc">의료기기 품질 관리 및 안전 유통 프로세스 표준화</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2020년 -->
+        <div class="history-timeline-item reveal">
+          <div class="history-year-header">
+            <strong>2020</strong>
+          </div>
+          <div class="history-events-box">
+            <div class="history-event-row">
+              <span class="history-event-month">3</span>
+              <span class="history-event-desc">의료기기 전문 유통 및 공급 사업 개시</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -199,6 +471,15 @@
               src="https://maps.google.com/maps?q=충청남도+천안시+서북구+도원8길+38&t=&z=16&ie=UTF8&iwloc=&output=embed"
               allowfullscreen loading="lazy" title="준메디칼 주식회사 위치">
             </iframe>
+            <a class="map-naver-link"
+               href="https://map.naver.com/p/search/%EC%B6%A9%EC%B2%AD%EB%82%A8%EB%8F%84%20%EC%B2%9C%EC%95%88%EC%8B%9C%20%EC%84%9C%EB%B6%81%EA%B5%AC%20%EB%8F%84%EC%9B%908%EA%B8%B8%2038"
+               target="_blank" rel="noopener noreferrer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 7 12 7.3 12.28a1 1 0 0 0 1.4 0C13 22 20 15.25 20 10c0-4.42-3.58-8-8-8Z" stroke="currentColor" stroke-width="1.6"/>
+                <circle cx="12" cy="10" r="2.6" stroke="currentColor" stroke-width="1.6"/>
+              </svg>
+              네이버지도에서 길찾기
+            </a>
           </div>
         </div>
 
@@ -265,6 +546,53 @@
     <div class="footer-bottom">&copy; 2026 준메디칼 주식회사. All rights reserved.</div>
   </div>
 </footer>
-<script>function toggleNav(){document.getElementById('siteNav').classList.toggle('open');}</script>
+
+<!-- 우측 하단 퀵 플로팅 상담/견적 바 -->
+<div class="floating-quick-widget" id="floatingWidget">
+  <div class="floating-quick-popup" id="floatingPopup">
+    <div class="floating-quick-header">
+      빠른 상담 & 견적 안내
+      <span>09:00 ~ 18:00</span>
+    </div>
+    <div class="floating-quick-list">
+      <a href="tel:041-522-9917" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        전화 상담 (041-522-9917)
+      </a>
+      <a href="contact.html" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        온라인 견적 요청서
+      </a>
+      <a href="mailto:junmed14@naver.com" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"/></svg>
+        이메일 문의
+      </a>
+    </div>
+  </div>
+  <button class="floating-quick-btn" onclick="toggleFloatingPopup()" aria-label="빠른 상담 문의">
+    <span class="btn-badge"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </button>
+</div>
+
+<script>
+function toggleNav(){document.getElementById('siteNav').classList.toggle('open');}
+function toggleFloatingPopup(){
+  const popup = document.getElementById('floatingPopup');
+  popup.classList.toggle('open');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  reveals.forEach(el => observer.observe(el));
+});
+</script>
 </body>
 </html>

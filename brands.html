@@ -6,27 +6,34 @@
   <title>파트너 브랜드 | 준메디칼 주식회사</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
     /* ── brands.html 전용 스타일 ── */
+    .brand-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
 
-    /* 브랜드 카드 */
     .brand-card {
       background: var(--white);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
       display: grid;
-      grid-template-columns: 220px 1fr;
+      grid-template-columns: 240px 1fr;
       overflow: hidden;
-      transition: box-shadow .2s;
+      transition: all .25s ease;
     }
-    .brand-card:hover { box-shadow: 0 8px 28px rgba(31,56,100,.16); }
+    .brand-card:hover {
+      box-shadow: var(--shadow-hover);
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+    }
 
-    /* 로고 영역 */
     .brand-logo-wrap {
       background: var(--bg);
-      border-right: 1px solid #e0e6ef;
+      border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -35,26 +42,33 @@
       gap: 12px;
     }
     .brand-logo-wrap img {
-      max-width: 140px;
+      max-width: 150px;
       max-height: 80px;
       object-fit: contain;
     }
-    /* 이미지가 없을 때 보여줄 텍스트 로고 */
     .brand-logo-text {
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 700;
       color: var(--navy);
       text-align: center;
       line-height: 1.3;
-      letter-spacing: .02em;
+      letter-spacing: -0.01em;
     }
     .brand-country {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--sub);
-      letter-spacing: .08em;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .flag-icon {
+      width: 1.25em; height: 0.9em; vertical-align: -0.1em;
+      margin-right: 4px; border-radius: 2px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.08);
+      display: inline-block;
     }
 
-    /* 내용 영역 */
     .brand-info {
       padding: 32px 36px;
       display: flex;
@@ -65,32 +79,38 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .brand-tag {
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 600;
-      letter-spacing: .1em;
       color: var(--sky);
-      background: #eaf3fb;
-      padding: 3px 10px;
-      border-radius: 20px;
-      text-transform: uppercase;
+      background: var(--sky-subtle);
+      padding: 3px 12px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--sky-light);
     }
     .brand-name {
       font-size: 22px;
       font-weight: 700;
       color: var(--navy);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       line-height: 1.25;
+      letter-spacing: -0.02em;
     }
     .brand-name-sub {
-      font-size: 13px;
+      font-size: 13.5px;
       color: var(--sub);
       margin-bottom: 14px;
+      font-weight: 500;
+    }
+    .brand-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 8px 0 14px;
     }
     .brand-desc {
-      font-size: 14px;
+      font-size: 14.5px;
       color: var(--text);
       line-height: 1.8;
       margin-bottom: 16px;
@@ -100,7 +120,7 @@
       margin-bottom: 20px;
     }
     .brand-products li {
-      font-size: 13px;
+      font-size: 13.5px;
       color: var(--sub);
       padding: 4px 0;
       display: flex;
@@ -108,7 +128,7 @@
       align-items: flex-start;
     }
     .brand-products li::before {
-      content: "·";
+      content: "•";
       color: var(--sky);
       font-weight: 700;
       flex-shrink: 0;
@@ -120,32 +140,21 @@
       background: var(--navy);
       color: var(--white);
       padding: 10px 20px;
-      border-radius: var(--radius);
-      font-size: 13px;
+      border-radius: var(--radius-full);
+      font-size: 13.5px;
       font-weight: 600;
       width: fit-content;
-      transition: background .2s;
+      transition: all .2s ease;
     }
-    .btn-brand:hover { background: var(--sky); color: var(--white); }
-
-    /* 브랜드 목록 간격 */
-    .brand-list {
-      display: flex;
-      flex-direction: column;
-      gap: 28px;
+    .btn-brand:hover {
+      background: var(--sky);
+      color: var(--white);
+      transform: translateY(-1px);
     }
 
-    /* 구분선 */
-    .brand-divider {
-      border: none;
-      border-top: 1px solid #e0e6ef;
-      margin: 8px 0;
-    }
-
-    /* 반응형 */
     @media (max-width: 768px) {
       .brand-card          { grid-template-columns: 1fr; }
-      .brand-logo-wrap     { border-right: none; border-bottom: 1px solid #e0e6ef; padding: 24px; }
+      .brand-logo-wrap     { border-right: none; border-bottom: 1px solid var(--border); padding: 24px; }
       .brand-info          { padding: 24px 20px; }
     }
   </style>
@@ -181,6 +190,7 @@
         </ul>
       </li>
       <li><a href="brands.html">파트너 브랜드</a></li>
+      <li><a href="careers.html">인재채용</a></li>
       <li><a href="contact.html" class="btn-inquiry">견적·문의</a></li>
     </ul>
   </div>
@@ -197,6 +207,19 @@
     <p>준메디칼이 공식 취급하는 국내·해외 브랜드를 소개합니다.<br>
        신뢰할 수 있는 파트너와 함께 최고의 제품을 공급합니다.</p>
   </section>
+
+  <!-- 서브 네비게이션 바 -->
+  <div class="sub-nav-bar">
+    <div class="sub-nav-inner">
+      <ul class="sub-depth-tabs">
+        <li class="active"><a href="brands.html">파트너 브랜드</a></li>
+      </ul>
+      <div class="breadcrumbs">
+        <a href="index.html">홈</a>
+        <span>파트너 브랜드</span>
+      </div>
+    </div>
+  </div>
 
   <!-- ★ 브랜드 목록 ★ -->
   <section class="section bg-gray">
@@ -219,10 +242,9 @@
           ============================ -->
         <div class="brand-card">
           <div class="brand-logo-wrap">
-            <!-- 로고 이미지가 준비되면 아래 주석 해제하고 텍스트 로고 블록 삭제 -->
-            <!-- <img src="images/brand-wisap.png" alt="WISAP Laparoscopy 로고"> -->
-            <div class="brand-logo-text">WISAP</div>
-            <div class="brand-country">🇩🇪 Germany</div>
+            <img src="images/brand-wisap.png" alt="WISAP Laparoscopy 로고" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <div class="brand-logo-text" style="display:none;">WISAP</div>
+            <div class="brand-country"><svg class="flag-icon" viewBox="0 0 5 3" xmlns="http://www.w3.org/2000/svg"><rect width="5" height="1" y="0" fill="#000000"/><rect width="5" height="1" y="1" fill="#DD0000"/><rect width="5" height="1" y="2" fill="#FFCE00"/></svg> Germany</div>
           </div>
           <div class="brand-info">
             <div class="brand-tags">
@@ -252,9 +274,9 @@
           ============================ -->
         <div class="brand-card">
           <div class="brand-logo-wrap">
-            <!-- <img src="images/brand-coopersurgical.png" alt="CooperSurgical 로고"> -->
-            <div class="brand-logo-text">Cooper<br>Surgical</div>
-            <div class="brand-country">🇺🇸 USA</div>
+            <img src="images/brand-coopersurgical.png" alt="CooperSurgical 로고" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <div class="brand-logo-text" style="display:none;">Cooper<br>Surgical</div>
+            <div class="brand-country"><svg class="flag-icon" viewBox="0 0 19 10" xmlns="http://www.w3.org/2000/svg"><rect width="19" height="10" fill="#B22234"/><g fill="#ffffff"><rect y="0.77" width="19" height="0.77"/><rect y="2.31" width="19" height="0.77"/><rect y="3.85" width="19" height="0.77"/><rect y="5.38" width="19" height="0.77"/><rect y="6.92" width="19" height="0.77"/><rect y="8.46" width="19" height="0.77"/></g><rect width="7.6" height="5.38" fill="#3C3B6E"/><g fill="#ffffff"><circle cx="1.2" cy="1.1" r="0.35"/><circle cx="2.6" cy="1.1" r="0.35"/><circle cx="4" cy="1.1" r="0.35"/><circle cx="5.4" cy="1.1" r="0.35"/><circle cx="6.8" cy="1.1" r="0.35"/><circle cx="1.9" cy="2.2" r="0.35"/><circle cx="3.3" cy="2.2" r="0.35"/><circle cx="4.7" cy="2.2" r="0.35"/><circle cx="6.1" cy="2.2" r="0.35"/><circle cx="1.2" cy="3.3" r="0.35"/><circle cx="2.6" cy="3.3" r="0.35"/><circle cx="4" cy="3.3" r="0.35"/><circle cx="5.4" cy="3.3" r="0.35"/><circle cx="6.8" cy="3.3" r="0.35"/><circle cx="1.9" cy="4.4" r="0.35"/><circle cx="3.3" cy="4.4" r="0.35"/><circle cx="4.7" cy="4.4" r="0.35"/><circle cx="6.1" cy="4.4" r="0.35"/></g></svg> USA</div>
           </div>
           <div class="brand-info">
             <div class="brand-tags">
@@ -284,9 +306,9 @@
           ============================ -->
         <div class="brand-card">
           <div class="brand-logo-wrap">
-            <!-- <img src="images/brand-sejong.png" alt="세종헬스케어 로고"> -->
-            <div class="brand-logo-text">세종<br>헬스케어</div>
-            <div class="brand-country">🇰🇷 Korea</div>
+            <img src="images/brand-sejong.png" alt="세종헬스케어 로고" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <div class="brand-logo-text" style="display:none;">세종<br>헬스케어</div>
+            <div class="brand-country"><svg class="flag-icon" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg"><rect width="30" height="20" fill="#ffffff"/><g transform="translate(15,10)"><circle r="5" fill="#C60C30"/><path d="M0,-5 A2.5,2.5 0 0,0 0,0 A2.5,2.5 0 0,1 0,5 A5,5 0 0,1 0,-5 Z" fill="#003478"/></g><g fill="#000000"><rect x="3.5" y="2.3" width="5.5" height="0.9"/><rect x="3.5" y="3.9" width="5.5" height="0.9"/><rect x="3.5" y="5.5" width="5.5" height="0.9"/><rect x="21" y="12.6" width="2.2" height="0.9"/><rect x="24.3" y="12.6" width="2.2" height="0.9"/><rect x="21" y="14.2" width="2.2" height="0.9"/><rect x="24.3" y="14.2" width="2.2" height="0.9"/><rect x="21" y="15.8" width="2.2" height="0.9"/><rect x="24.3" y="15.8" width="2.2" height="0.9"/><rect x="3.5" y="12.6" width="5.5" height="0.9"/><rect x="3.5" y="14.2" width="2.2" height="0.9"/><rect x="6.8" y="14.2" width="2.2" height="0.9"/><rect x="3.5" y="15.8" width="5.5" height="0.9"/><rect x="21" y="2.3" width="2.2" height="0.9"/><rect x="24.3" y="2.3" width="2.2" height="0.9"/><rect x="21" y="3.9" width="5.5" height="0.9"/><rect x="21" y="5.5" width="2.2" height="0.9"/><rect x="24.3" y="5.5" width="2.2" height="0.9"/></g></svg> Korea</div>
           </div>
           <div class="brand-info">
             <div class="brand-tags">
@@ -316,9 +338,9 @@
           ============================ -->
         <div class="brand-card">
           <div class="brand-logo-wrap">
-            <!-- <img src="images/brand-mb2020.png" alt="MB2020 로고"> -->
+            <img src="images/brand-mb2020.png" alt="MB2020 로고" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
             <div class="brand-logo-text">MB2020</div>
-            <div class="brand-country">🇰🇷 Korea</div>
+            <div class="brand-country"><svg class="flag-icon" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg"><rect width="30" height="20" fill="#ffffff"/><g transform="translate(15,10)"><circle r="5" fill="#C60C30"/><path d="M0,-5 A2.5,2.5 0 0,0 0,0 A2.5,2.5 0 0,1 0,5 A5,5 0 0,1 0,-5 Z" fill="#003478"/></g><g fill="#000000"><rect x="3.5" y="2.3" width="5.5" height="0.9"/><rect x="3.5" y="3.9" width="5.5" height="0.9"/><rect x="3.5" y="5.5" width="5.5" height="0.9"/><rect x="21" y="12.6" width="2.2" height="0.9"/><rect x="24.3" y="12.6" width="2.2" height="0.9"/><rect x="21" y="14.2" width="2.2" height="0.9"/><rect x="24.3" y="14.2" width="2.2" height="0.9"/><rect x="21" y="15.8" width="2.2" height="0.9"/><rect x="24.3" y="15.8" width="2.2" height="0.9"/><rect x="3.5" y="12.6" width="5.5" height="0.9"/><rect x="3.5" y="14.2" width="2.2" height="0.9"/><rect x="6.8" y="14.2" width="2.2" height="0.9"/><rect x="3.5" y="15.8" width="5.5" height="0.9"/><rect x="21" y="2.3" width="2.2" height="0.9"/><rect x="24.3" y="2.3" width="2.2" height="0.9"/><rect x="21" y="3.9" width="5.5" height="0.9"/><rect x="21" y="5.5" width="2.2" height="0.9"/><rect x="24.3" y="5.5" width="2.2" height="0.9"/></g></svg> Korea</div>
           </div>
           <div class="brand-info">
             <div class="brand-tags">
@@ -391,10 +413,54 @@
   </div>
 </footer>
 
+<!-- 우측 하단 퀵 플로팅 상담/견적 바 -->
+<div class="floating-quick-widget" id="floatingWidget">
+  <div class="floating-quick-popup" id="floatingPopup">
+    <div class="floating-quick-header">
+      빠른 상담 & 견적 안내
+      <span>09:00 ~ 18:00</span>
+    </div>
+    <div class="floating-quick-list">
+      <a href="tel:041-522-9917" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        전화 상담 (041-522-9917)
+      </a>
+      <a href="contact.html" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        온라인 견적 요청서
+      </a>
+      <a href="mailto:junmed14@naver.com" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"/></svg>
+        이메일 문의
+      </a>
+    </div>
+  </div>
+  <button class="floating-quick-btn" onclick="toggleFloatingPopup()" aria-label="빠른 상담 문의">
+    <span class="btn-badge"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </button>
+</div>
+
 <script>
 function toggleNav() {
   document.getElementById('siteNav').classList.toggle('open');
 }
+function toggleFloatingPopup(){
+  const popup = document.getElementById('floatingPopup');
+  popup.classList.toggle('open');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  reveals.forEach(el => observer.observe(el));
+});
 </script>
 </body>
 </html>

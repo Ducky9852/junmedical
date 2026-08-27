@@ -6,34 +6,28 @@
   <title>RUMI® II System | 복강경 수술기구 | 준메디칼 주식회사</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    .product-hero { padding-top: 48px; }
     .koh-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 24px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;
     }
     .koh-card {
       background: var(--white); border-radius: var(--radius);
-      border: 1px solid #d0daea; padding: 24px;
+      border: 1px solid var(--border); padding: 24px;
+      box-shadow: var(--shadow-sm);
     }
-    .koh-card h4 { color: var(--navy); font-size: 15px; margin-bottom: 8px; }
-    .koh-card p  { font-size: 13px; color: var(--sub); line-height: 1.7; }
+    .koh-card h4 { color: var(--navy); font-size: 15.5px; font-weight: 700; margin-bottom: 8px; }
+    .koh-card p  { font-size: 13.5px; color: var(--sub); line-height: 1.7; }
     .tips-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 20px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 20px;
     }
     .tip-item {
-      background: var(--white); border: 1px solid #d0daea; border-radius: var(--radius);
-      padding: 14px; text-align: center; font-size: 13px; color: var(--navy);
+      background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 16px 14px; text-align: center; font-size: 13.5px; color: var(--navy);
+      box-shadow: var(--shadow-sm);
     }
-    .tip-size { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-    .tip-color { font-size: 11px; color: var(--sub); }
-    .notice-box {
-      background: #EBF3FB; border-left: 4px solid var(--sky);
-      border-radius: 0 var(--radius) var(--radius) 0;
-      padding: 16px 20px; margin-top: 24px;
-      font-size: 13px; color: var(--mid); line-height: 1.7;
-    }
+    .tip-size { font-weight: 700; font-size: 14px; margin-bottom: 4px; font-family: 'Inter', sans-serif; }
+    .tip-color { font-size: 12px; color: var(--sky); font-weight: 500; }
     @media(max-width:768px){ .koh-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -68,6 +62,7 @@
         </ul>
       </li>
       <li><a href="brands.html">파트너 브랜드</a></li>
+      <li><a href="careers.html">인재채용</a></li>
       <li><a href="contact.html" class="btn-inquiry">견적·문의</a></li>
     </ul>
   </div>
@@ -90,10 +85,28 @@
       </div>
       <div class="product-img-wrap">
         <!-- 제품 이미지: 브로셔 표지의 RUMI II 기기 사진으로 교체 -->
-        <img src="images/rumi2-main.png" alt="RUMI II System — CooperSurgical 자궁 조작기">
+        <img src="images/rumi2-main.png" alt="RUMI II System — CooperSurgical 자궁 조작기" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <span style="display:none; color:var(--muted)">[이미지: RUMI II System]</span>
       </div>
     </div>
   </section>
+
+  <!-- 서브 네비게이션 바 -->
+  <div class="sub-nav-bar">
+    <div class="sub-nav-inner">
+      <ul class="sub-depth-tabs">
+        <li><a href="products.html">전체 카테고리</a></li>
+        <li><a href="products-laparoscopy.html">복강경 수술기구</a></li>
+        <li class="active"><a href="product-rumi2.html">RUMI® II System</a></li>
+      </ul>
+      <div class="breadcrumbs">
+        <a href="index.html">홈</a>
+        <a href="products.html">취급제품</a>
+        <a href="products-laparoscopy.html">복강경 수술기구</a>
+        <span>RUMI® II</span>
+      </div>
+    </div>
+  </div>
 
   <!-- 제품 개요 -->
   <section class="section bg-gray">
@@ -107,22 +120,30 @@
       </p>
       <div class="card-grid">
         <div class="card">
-          <div class="card-icon">🔧</div>
+          <div class="card-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"/></svg>
+          </div>
           <h3>140° 관절 운동</h3>
           <p>자궁 경부에서 전굴 90°, 후굴 50° 구현. 해부학적 구조에 맞는 탁월한 노출과 접근성을 제공합니다.</p>
         </div>
         <div class="card">
-          <div class="card-icon">🔒</div>
+          <div class="card-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+          </div>
           <h3>마찰 없는 잠금 핸들</h3>
           <p>팁 방향과 자궁 위치를 안정적으로 유지. 절제 중 추가적인 수술 제어와 안전성을 보장합니다.</p>
         </div>
         <div class="card">
-          <div class="card-icon">📏</div>
+          <div class="card-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/></svg>
+          </div>
           <h3>6가지 팁 사이즈</h3>
           <p>5.1mm ~ 6.7mm, 3.75cm ~ 12cm 범위로 다양한 환자 해부학에 맞는 최적의 팁을 선택할 수 있습니다.</p>
         </div>
         <div class="card">
-          <div class="card-icon">🏥</div>
+          <div class="card-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-.778.099-1.533.284-2.253"/></svg>
+          </div>
           <h3>광범위한 적응증</h3>
           <p>진단적 복강경, 근종절제술, 자궁절제술, 자궁내막증 절제, 천골질고정술 등 다양한 시술에 적용됩니다.</p>
         </div>
@@ -149,7 +170,7 @@
   </section>
 
   <!-- Koh-Efficient 소개 -->
-  <section class="section bg-gray">
+  <section class="section bg-gray" id="koh">
     <div class="section-inner">
       <div class="section-label">Accessory System</div>
       <h2 class="section-title">Koh-Efficient™ 시스템</h2>
@@ -196,7 +217,7 @@
       </div>
 
       <br>
-      <h3 style="color:var(--navy);margin-bottom:12px;">주요 제품 코드</h3>
+      <h3 style="color:var(--navy);margin-bottom:12px;font-size:17px;font-weight:700;">주요 제품 코드</h3>
       <table class="spec-table">
         <thead>
           <tr><th>제품 코드</th><th>제품명</th><th>수량</th></tr>
@@ -211,6 +232,7 @@
           <tr><td>371550-03</td><td>Uterine Positioning System (UPS)</td><td>1식</td></tr>
         </tbody>
       </table>
+
       <div class="notice-box">
         ※ 상기 제품은 의료기기로, 반드시 의료 전문가에 의해 사용되어야 합니다.<br>
         ※ 정확한 재고 및 납기 문의는 준메디칼 영업팀으로 연락 주시기 바랍니다.<br>
@@ -266,10 +288,54 @@
   </div>
 </footer>
 
+<!-- 우측 하단 퀵 플로팅 상담/견적 바 -->
+<div class="floating-quick-widget" id="floatingWidget">
+  <div class="floating-quick-popup" id="floatingPopup">
+    <div class="floating-quick-header">
+      빠른 상담 & 견적 안내
+      <span>09:00 ~ 18:00</span>
+    </div>
+    <div class="floating-quick-list">
+      <a href="tel:041-522-9917" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        전화 상담 (041-522-9917)
+      </a>
+      <a href="contact.html" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        온라인 견적 요청서
+      </a>
+      <a href="mailto:junmed14@naver.com" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"/></svg>
+        이메일 문의
+      </a>
+    </div>
+  </div>
+  <button class="floating-quick-btn" onclick="toggleFloatingPopup()" aria-label="빠른 상담 문의">
+    <span class="btn-badge"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </button>
+</div>
+
 <script>
 function toggleNav() {
   document.getElementById('siteNav').classList.toggle('open');
 }
+function toggleFloatingPopup(){
+  const popup = document.getElementById('floatingPopup');
+  popup.classList.toggle('open');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  reveals.forEach(el => observer.observe(el));
+});
 </script>
 </body>
 </html>

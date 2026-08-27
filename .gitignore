@@ -8,3 +8,5 @@ __pycache__/
 .agents/
 *_push.py
 push_*.py
+.vscode/
+

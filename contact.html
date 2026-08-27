@@ -6,15 +6,13 @@
   <title>견적·문의 | 준메디칼 주식회사</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
     /* ── contact.html 전용 스타일 ── */
-
     .contact-grid {
       display: grid;
       grid-template-columns: 1fr 360px;
-      gap: 48px;
+      gap: 40px;
       align-items: start;
     }
 
@@ -22,84 +20,98 @@
     .contact-form-wrap {
       background: var(--white);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
       padding: 40px;
     }
 
-    .form-group { margin-bottom: 20px; }
+    .form-group { margin-bottom: 22px; }
 
     .form-label {
       display: block;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--navy);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
     .form-label .req { color: var(--sky); margin-left: 2px; }
 
     .form-input,
     .form-textarea {
       width: 100%;
-      padding: 11px 14px;
-      border: 1px solid #d0daea;
-      border-radius: var(--radius);
-      font-size: 14px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14.5px;
       font-family: inherit;
       color: var(--text);
-      background: var(--bg);
-      transition: border-color .2s, background .2s;
+      background: #ffffff;
+      transition: all .2s ease;
       outline: none;
     }
     .form-input:focus,
     .form-textarea:focus {
       border-color: var(--sky);
-      background: var(--white);
+      box-shadow: 0 0 0 3px var(--sky-subtle);
     }
-    .form-textarea { resize: vertical; min-height: 130px; }
+    .form-textarea { resize: vertical; min-height: 140px; line-height: 1.6; }
 
     /* 체크박스 */
     .checkbox-group {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 4px;
+      gap: 10px;
+      margin-top: 6px;
     }
     .checkbox-label {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 8px;
-      font-size: 13px;
+      font-size: 13.5px;
       color: var(--text);
       cursor: pointer;
-      line-height: 1.6;
+      line-height: 1.5;
+      padding: 8px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: background .2s;
+    }
+    .checkbox-label:hover {
+      background: #f1f5f9;
     }
     .checkbox-label input[type="checkbox"] {
-      margin-top: 2px;
-      accent-color: var(--navy);
+      accent-color: var(--sky);
       flex-shrink: 0;
+      width: 16px;
+      height: 16px;
     }
 
     /* 개인정보 동의 */
     .privacy-box {
       background: var(--bg);
-      border: 1px solid #d0daea;
-      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
       padding: 14px 16px;
-      font-size: 12px;
+      font-size: 12.5px;
       color: var(--sub);
-      line-height: 1.85;
-      margin-bottom: 10px;
+      line-height: 1.8;
+      margin-bottom: 12px;
     }
     .privacy-agree {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 500;
       color: var(--navy);
       cursor: pointer;
     }
-    .privacy-agree input[type="checkbox"] { accent-color: var(--navy); }
+    .privacy-agree input[type="checkbox"] {
+      accent-color: var(--sky);
+      width: 16px;
+      height: 16px;
+    }
 
     /* 제출 버튼 */
     .btn-submit {
@@ -108,27 +120,27 @@
       color: var(--white);
       border: none;
       padding: 15px;
-      border-radius: var(--radius);
+      border-radius: var(--radius-full);
       font-size: 15px;
       font-weight: 600;
       font-family: inherit;
       cursor: pointer;
-      transition: background .2s;
-      margin-top: 8px;
+      transition: all .2s ease;
+      margin-top: 10px;
     }
-    .btn-submit:hover   { background: var(--mid); }
-    .btn-submit:disabled { background: #8a9ab5; cursor: not-allowed; }
+    .btn-submit:hover   { background: var(--sky); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+    .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
 
     /* 오류 메시지 */
     .form-error-msg {
       display: none;
-      background: #fff0f0;
-      border: 1px solid #ffb3b3;
-      border-radius: var(--radius);
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius-sm);
       padding: 12px 16px;
-      font-size: 13px;
-      color: #c0392b;
-      margin-bottom: 16px;
+      font-size: 13.5px;
+      color: #b91c1c;
+      margin-bottom: 18px;
       line-height: 1.6;
     }
 
@@ -136,24 +148,25 @@
     .form-success-msg {
       display: none;
       text-align: center;
-      padding: 40px 24px;
+      padding: 48px 24px;
     }
-    .form-success-msg .s-icon  { font-size: 52px; margin-bottom: 16px; }
-    .form-success-msg h3       { color: var(--navy); font-size: 20px; margin-bottom: 10px; }
-    .form-success-msg p        { color: var(--sub); font-size: 14px; line-height: 1.8; }
+    .form-success-msg .s-icon  { font-size: 48px; margin-bottom: 16px; }
+    .form-success-msg h3       { color: var(--navy); font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+    .form-success-msg p        { color: var(--sub); font-size: 14.5px; line-height: 1.8; }
 
     /* 연락처 정보 */
-    .contact-info-wrap { display: flex; flex-direction: column; gap: 16px; }
+    .contact-info-wrap { display: flex; flex-direction: column; gap: 18px; }
 
     .contact-info-card {
       background: var(--white);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 28px 24px;
-      border-top: 3px solid var(--sky);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      padding: 26px 22px;
+      border-left: 3px solid var(--sky);
     }
     .contact-info-card h3 {
-      font-size: 15px;
+      font-size: 15.5px;
       font-weight: 700;
       color: var(--navy);
       margin-bottom: 16px;
@@ -166,14 +179,24 @@
       font-size: 14px;
     }
     .contact-info-item:last-child { margin-bottom: 0; }
-    .ci-icon  { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .ci-icon  {
+      font-size: 15px;
+      color: var(--sky);
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+    }
     .ci-text  { color: var(--text); line-height: 1.65; }
-    .ci-text a { color: var(--mid); }
-    .ci-text a:hover { color: var(--sky); }
+    .ci-text a { color: var(--sky); font-weight: 500; }
+    .ci-text a:hover { text-decoration: underline; }
 
     .contact-hours {
       background: var(--bg);
-      border-radius: var(--radius);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
       padding: 12px 14px;
       font-size: 13px;
       color: var(--sub);
@@ -187,8 +210,9 @@
       height: 380px;
       border-radius: var(--radius);
       overflow: hidden;
-      border: 1px solid #d0daea;
+      border: 1px solid var(--border);
       margin-top: 24px;
+      box-shadow: var(--shadow-sm);
     }
     .map-container iframe {
       width: 100%;
@@ -196,7 +220,6 @@
       border: none;
     }
 
-    /* 반응형 */
     @media (max-width: 768px) {
       .contact-grid        { grid-template-columns: 1fr; }
       .contact-form-wrap   { padding: 24px 20px; }
@@ -235,7 +258,9 @@
           <li><a href="products-etc.html">기타 의료소모품</a></li>
         </ul>
       </li>
-      <li><a href="brands.html">파트너 브랜드</a></li>
+      <li>
+        <a href="brands.html">파트너 브랜드</a></li>
+      <li><a href="careers.html">인재채용</a></li>
       <li><a href="contact.html" class="btn-inquiry">견적·문의</a></li>
     </ul>
   </div>
@@ -253,6 +278,19 @@
        평일 09:00–18:00 운영 | 긴급 문의는 전화로 연락 주세요.</p>
   </section>
 
+  <!-- 서브 네비게이션 바 -->
+  <div class="sub-nav-bar">
+    <div class="sub-nav-inner">
+      <ul class="sub-depth-tabs">
+        <li class="active"><a href="contact.html">견적·문의하기</a></li>
+      </ul>
+      <div class="breadcrumbs">
+        <a href="index.html">홈</a>
+        <span>견적·문의</span>
+      </div>
+    </div>
+  </div>
+
   <!-- ★ 문의 폼 + 연락처 ★ -->
   <section class="section">
     <div class="section-inner">
@@ -263,7 +301,9 @@
 
           <!-- 제출 완료 메시지 (JS로 표시) -->
           <div id="form-success" class="form-success-msg">
-            <div class="s-icon">✅</div>
+            <div class="s-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--sky)" style="width:52px;height:52px;margin:0 auto;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
             <h3>문의가 접수되었습니다</h3>
             <!-- ============================
               ✏️ 수정 구역 2: 접수 완료 안내 문구
@@ -288,8 +328,6 @@
 
               <!-- ============================
                 ✏️ 수정 구역 3: 폼 입력 항목
-                항목 추가 시 아래 .form-group 블록을 복사해서 붙여넣기
-                (label의 for값과 input의 id값을 동일하게 맞춰야 함)
                 ============================ -->
 
               <!-- 병원(기관)명 -->
@@ -329,8 +367,6 @@
               <!-- 관심 제품 (체크박스) -->
               <!-- ============================
                 ✏️ 수정 구역 4: 관심 제품 목록
-                제품 추가 시 .checkbox-label 블록 복사해서 추가
-                value="" 안에 Formspree로 전달될 제품명 입력
                 ============================ -->
               <div class="form-group">
                 <label class="form-label">관심 제품 <span style="font-weight:400;color:var(--sub)">(복수 선택 가능)</span></label>
@@ -396,25 +432,33 @@
               ============================ -->
             <h3>연락처</h3>
             <div class="contact-info-item">
-              <span class="ci-icon">📞</span>
+              <span class="ci-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+              </span>
               <div class="ci-text">
                 <a href="tel:041-522-9917">041-522-9917</a>
               </div>
             </div>
             <div class="contact-info-item">
-              <span class="ci-icon">📠</span>
-              <div class="ci-text">041-522-9918</div>
+              <span class="ci-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.72 13.829c-.24-1.056-.367-2.155-.367-3.284 0-4.97 4.03-9 9-9s9 4.03 9 9-4.03 9-9 9a8.96 8.96 0 01-4.93-1.464M3.75 21l3.75-3.75"/></svg>
+              </span>
+              <div class="ci-text">Fax: 041-522-9918</div>
             </div>
             <div class="contact-info-item">
-              <span class="ci-icon">📧</span>
+              <span class="ci-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+              </span>
               <div class="ci-text">
                 <a href="mailto:junmed14@naver.com">junmed14@naver.com</a>
               </div>
             </div>
             <div class="contact-info-item">
-              <span class="ci-icon">📍</span>
+              <span class="ci-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+              </span>
               <div class="ci-text">
-                충청남도 천안시 서북구<br>도원8길 38, 402호(성정동)
+                충청남도 천안시 서북구<br>도원8길 38, 402호 (성정동)
               </div>
             </div>
             <!-- ============================
@@ -430,9 +474,8 @@
           <div class="contact-info-card">
             <h3>사업자 정보</h3>
             <div class="contact-info-item">
-              <span class="ci-icon">🏢</span>
-              <div class="ci-text" style="font-size:13px; color:var(--sub); line-height:1.95;">
-                준메디칼 주식회사<br>
+              <div class="ci-text" style="font-size:13.5px; color:var(--sub); line-height:1.9;">
+                <strong style="color:var(--navy);font-weight:600;">준메디칼 주식회사</strong><br>
                 대표: 이우진<br>
                 사업자등록번호: 869-87-03464<br>
                 의료기기판매업 신고번호:<br>
@@ -445,18 +488,12 @@
       </div><!-- /contact-grid -->
 
       <!-- 오시는 길 (지도) -->
-      <div style="margin-top: 56px;">
+      <div style="margin-top: 64px;">
         <div class="section-label">Location</div>
         <h2 class="section-title">오시는 길</h2>
         <div class="divider"></div>
         <!-- ============================
           ✏️ 수정 구역 8: 지도 iframe
-          지도를 변경하려면 아래 <iframe> 의 src 주소만 교체하세요.
-
-          네이버 지도 embed 코드 받는 방법:
-          1. map.naver.com 에서 "준메디칼" 또는 주소 검색
-          2. 공유 버튼 → [지도 퍼가기] 클릭
-          3. 표시된 iframe 코드에서 src="..." 부분 복사해서 아래 src에 붙여넣기
           ============================ -->
         <div class="map-container">
           <iframe
@@ -468,17 +505,12 @@
         </div>
       </div>
 
+
+
     </div>
   </section>
 
 </main>
-
-<!-- ★ 문의 CTA 배너 (모든 페이지 동일 — 수정 금지) ★ -->
-<section class="cta-banner">
-  <h2>제품 문의 및 견적이 필요하신가요?</h2>
-  <p>병원·의료기관 담당자분께 빠르게 안내해 드립니다.</p>
-  <a href="contact.html" class="btn-primary">견적·문의하기</a>
-</section>
 
 <!-- ★ 푸터 (모든 페이지 동일 — 수정 금지) ★ -->
 <footer class="site-footer">
@@ -499,15 +531,59 @@
   </div>
 </footer>
 
+<!-- 우측 하단 퀵 플로팅 상담/견적 바 -->
+<div class="floating-quick-widget" id="floatingWidget">
+  <div class="floating-quick-popup" id="floatingPopup">
+    <div class="floating-quick-header">
+      빠른 상담 & 견적 안내
+      <span>09:00 ~ 18:00</span>
+    </div>
+    <div class="floating-quick-list">
+      <a href="tel:041-522-9917" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        전화 상담 (041-522-9917)
+      </a>
+      <a href="contact.html" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        온라인 견적 요청서
+      </a>
+      <a href="mailto:junmed14@naver.com" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"/></svg>
+        이메일 문의
+      </a>
+    </div>
+  </div>
+  <button class="floating-quick-btn" onclick="toggleFloatingPopup()" aria-label="빠른 상담 문의">
+    <span class="btn-badge"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </button>
+</div>
+
 <script>
 /* ── 네비게이션 토글 ── */
 function toggleNav() {
   document.getElementById('siteNav').classList.toggle('open');
 }
+function toggleFloatingPopup(){
+  const popup = document.getElementById('floatingPopup');
+  popup.classList.toggle('open');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  reveals.forEach(el => observer.observe(el));
+});
 
 /* ── 문의 폼 제출 (Formspree Ajax) ──
    ⚠️ 수정 금지 구역
-   Formspree 엔드포인트가 바뀔 경우에만 아래 URL 수정
    ──────────────────────────────────── */
 document.getElementById('contact-form').addEventListener('submit', async function (e) {
   e.preventDefault();
