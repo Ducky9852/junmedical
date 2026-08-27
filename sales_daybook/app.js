@@ -1,8 +1,14 @@
 // Application State & Security
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V1";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V3_CLEAN";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
+
+// Purge legacy storage versions containing discontinued items
+try {
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V1");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V2");
+} catch(e) {}
 
 let supabaseClient = null;
 try {
@@ -335,6 +341,17 @@ window.addEventListener('DOMContentLoaded', () => {
   if (!window.SALES_DB) {
     console.error('SALES_DB not loaded.');
     return;
+  }
+  
+  // Enforce removal of discontinued items in memory
+  if (window.SALES_DB.products) {
+    window.SALES_DB.products = window.SALES_DB.products.filter(p => {
+      const c = (p.code || p.id || '').trim();
+      if (c === 'EN-SB024B' || c === 'EN-SB024B-1') return false;
+      if (p.use_by === 'N' || p.use_by === 'n' || p.is_active === false) return false;
+      if (p.status && (p.status.includes('중단') || p.status.includes('중지'))) return false;
+      return true;
+    });
   }
   
   // Ensure all hospitals in logs exist in master list
