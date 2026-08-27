@@ -495,13 +495,28 @@
         <!-- ============================
           ✏️ 수정 구역 8: 지도 iframe
           ============================ -->
-        <div class="map-container">
+        <div class="location-map-box">
           <iframe
             src="https://maps.google.com/maps?q=충청남도+천안시+서북구+도원8길+38&t=&z=16&ie=UTF8&iwloc=&output=embed"
             allowfullscreen
             loading="lazy"
             title="준메디칼 주식회사 위치">
           </iframe>
+          <div class="map-bottom-bar" style="padding: 12px 16px; background: #fafafa; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap;">
+            <a href="https://map.kakao.com/link/search/충청남도 천안시 서북구 도원8길 38"
+               target="_blank" rel="noopener noreferrer"
+               class="btn-map-action btn-kakao-map" style="flex: 1; font-weight: 700; font-size: 13.5px; padding: 10px 14px;">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3c-5.52 0-10 3.58-10 8 0 2.82 1.83 5.3 4.6 6.7-.2.74-.75 2.68-.86 3.1-.14.5.18.5.38.36.16-.1 2.5-1.7 3.5-2.4.77.1 1.57.17 2.38.17 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
+              </svg>
+              카카오맵에서 길찾기
+            </a>
+            <a href="https://map.kakao.com/?q=충청남도%20천안시%20서북구%20도원8길%2038"
+               target="_blank" rel="noopener noreferrer"
+               class="btn-map-action btn-kakao-map" style="background:#f5e000; font-weight: 600; font-size: 13px; padding: 10px 12px;">
+              카카오맵 크게보기
+            </a>
+          </div>
         </div>
       </div>
 
