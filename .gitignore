@@ -1,0 +1,10 @@
+*.key
+*.pem
+*.env
+server_env.txt
+temp_sync_dir/
+__pycache__/
+*.zip
+.agents/
+*_push.py
+push_*.py

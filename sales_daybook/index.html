@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>의료기기 영업관리 360° 파이프라인 시스템</title>
+  <meta name="description" content="병원 360도 뷰, 제품별 파이프라인 매트릭스, A/S 긴급 알림, 데모 회수 관리 및 AI 스마트 영업일지 자동 정제 시스템">
+  <link rel="stylesheet" href="app.css?v=ecount_useby_filtered_v31">
+  <script src="sales_database.js?v=ecount_useby_filtered_v31"></script>
+</head>
+<body>
+
+  <!-- Employee Password Auth Lock Screen Overlay -->
+  <div id="auth-lock-overlay" class="auth-lock-overlay">
+    <div class="auth-lock-card">
+      <div class="auth-brand-badge">🩺 JUN MEDICAL</div>
+      <h2>임직원 전용 보안 인증</h2>
+      <p>준메디칼 의료기기 영업관리 360° 인트라넷 시스템입니다.<br>사내 접근 비밀번호를 입력해주세요.</p>
+      
+      <div class="auth-input-group">
+        <input type="password" id="auth-password-input" placeholder="사내 비밀번호 입력" autofocus onkeydown="if(event.key==='Enter') checkAuthPassword()">
+        <button class="btn-primary" onclick="checkAuthPassword()" style="margin-top:10px;">
+          <span>🔓 로그인 및 대시보드 접속</span>
+        </button>
+      </div>
+
+      <div id="auth-error-msg" class="auth-error-msg" style="display:none;">
+        ⚠️ 비밀번호가 일치하지 않습니다. 다시 입력해주세요.
+      </div>
+      
+      <div class="auth-footer-note">
+        🔒 준메디칼 사내 영업비밀 보호구역 (보안 세션 유지됨)
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Header Navigation -->
+  <header id="main-header">
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="brand-icon">🩺</div>
+        <div class="brand-text">
+          <h1>MEDI-SALES 360°</h1>
+          <p>의료기기 스마트 영업관리 & 파이프라인 플랫폼</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs" aria-label="메인 내비게이션">
+        <button class="nav-tab active" id="tab-btn-hospital" onclick="switchTab('hospital')">
+          <span>🏥 병원 360°</span>
+          <span class="badge" id="badge-hospital-count">178</span>
+        </button>
+        <button class="nav-tab" id="tab-btn-as" onclick="switchTab('as')" style="border-color:rgba(244,63,94,0.35);">
+          <span>🚨 A/S 관제</span>
+          <span class="badge" id="badge-as-count" style="background:#f43f5e; color:#fff;">0</span>
+        </button>
+        <button class="nav-tab" id="tab-btn-demo-tracker" onclick="switchTab('demo-tracker')" style="border-color:rgba(245,158,11,0.35);">
+          <span>🔬 장비 데모</span>
+          <span class="badge" id="badge-demo-count" style="background:#f59e0b; color:#000;">0</span>
+        </button>
+        <button class="nav-tab" id="tab-btn-pipeline" onclick="switchTab('pipeline')">
+          <span>📦 파이프라인</span>
+          <span class="badge" id="badge-pipeline-count">268</span>
+        </button>
+        <button class="nav-tab" id="tab-btn-ai" onclick="switchTab('ai')">
+          <span>✨ AI 일지입력</span>
+          <span class="badge" style="background: rgba(6, 182, 212, 0.3); color: #67e8f9;">AI</span>
+        </button>
+        <button class="nav-tab" id="tab-btn-analytics" onclick="switchTab('analytics')">
+          <span>📊 통계·분석</span>
+        </button>
+        <button class="nav-tab" id="tab-btn-expenditure" onclick="switchTab('expenditure')" style="border-color:rgba(16,185,129,0.35);">
+          <span>📑 지출보고서</span>
+          <span class="badge" id="badge-proof-count" style="background:#10b981; color:#fff;">K-보고서</span>
+        </button>
+      </nav>
+
+      <!-- Quick Metrics Header (Single Line Capsule) -->
+      <div class="header-actions">
+        <div class="quick-metric" style="cursor:pointer;" onclick="switchTab('as')" title="클릭하여 단독 A/S 관제 센터(5단계 칸반)로 이동">
+          <span>🚨 A/S 접수:</span>
+          <span class="val" id="header-as-val" style="color: var(--accent-rose);">0건</span>
+        </div>
+        <div class="quick-metric" style="cursor:pointer;" onclick="switchTab('demo-tracker')" title="클릭하여 의료장비 데모(A/S대체기 vs 판매평가) 트래커로 이동">
+          <span>🔬 장비 데모:</span>
+          <span class="val" id="header-demo-val" style="color: #f59e0b;">0건</span>
+        </div>
+        <div class="quick-metric" style="cursor:pointer;" onclick="filterHospitalsByKPI('sample')" title="클릭하여 일회용 소모품 샘플 평가 병원 필터링">
+          <span>🧪 소모품 샘플:</span>
+          <span class="val" id="header-sample-val" style="color: #38bdf8;">0건</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main>
+
+    <!-- Top KPI Grid (Clickable to Filter Hospitals) -->
+    <section class="kpi-grid" aria-label="핵심 영업 지표">
+      <div class="kpi-card blue" id="kpi-card-all" onclick="filterHospitalsByKPI('all', this)" title="클릭 시 전체 거래처 목록 표시">
+        <div class="kpi-title">
+          <span>총 관리 거래처</span>
+          <span>🏥</span>
+        </div>
+        <div class="kpi-val" id="kpi-total-hospitals">178</div>
+        <div class="kpi-sub">충청·경기권 6대 권역 (전체보기)</div>
+      </div>
+
+      <div class="kpi-card amber" id="kpi-card-demo" onclick="filterHospitalsByKPI('demo', this)" title="클릭 시 고가 의료장비 데모 진행 병원만 집중 조회 (회수 일정 관리)">
+        <div class="kpi-title">
+          <span>의료장비 데모</span>
+          <span>🔬</span>
+        </div>
+        <div class="kpi-val" id="kpi-active-demos" style="color:#f59e0b;">0</div>
+        <div class="kpi-sub">고가 기기 회수·반납 일정 추적 (클릭 필터)</div>
+      </div>
+
+      <div class="kpi-card cyan" id="kpi-card-sample" onclick="filterHospitalsByKPI('sample', this)" title="클릭 시 일회용 소모품 샘플 평가 중인 병원만 집중 조회">
+        <div class="kpi-title">
+          <span>소모품 샘플 평가</span>
+          <span>🧪</span>
+        </div>
+        <div class="kpi-val" id="kpi-active-samples" style="color:#38bdf8;">0</div>
+        <div class="kpi-sub">소공포·메스 등 일회용품 피드백 (클릭 필터)</div>
+      </div>
+
+      <div class="kpi-card rose" id="kpi-card-as" onclick="filterHospitalsByKPI('as', this)" title="클릭 시 긴급 A/S 및 수리 조치 필요 병원만 집중 조회">
+        <div class="kpi-title">
+          <span>A/S & 클레임 접수</span>
+          <span>🚨</span>
+        </div>
+        <div class="kpi-val" id="kpi-active-as">0</div>
+        <div class="kpi-sub">의료장비 수리 및 조치 요망 (클릭 필터)</div>
+      </div>
+
+      <div class="kpi-card emerald" id="kpi-card-won" onclick="filterHospitalsByKPI('won', this)" title="클릭 시 정규 도입 및 납품 병원만 집중 조회">
+        <div class="kpi-title">
+          <span>도입완료 및 정기납품</span>
+          <span>🏆</span>
+        </div>
+        <div class="kpi-val" id="kpi-won-deals">0</div>
+        <div class="kpi-sub">안정적 납품 파이프라인 (클릭 필터)</div>
+      </div>
+
+      <div class="kpi-card purple" id="kpi-card-active" onclick="filterHospitalsByKPI('active', this)" title="클릭 시 영업 제안 및 협의 중인 병원만 집중 조회">
+        <div class="kpi-title">
+          <span>영업 제안 & 협의중</span>
+          <span>⚡</span>
+        </div>
+        <div class="kpi-val" id="kpi-progress-deals">0</div>
+        <div class="kpi-sub">신규 및 추가 품목 제안 (클릭 필터)</div>
+      </div>
+
+      <div class="kpi-card" id="kpi-card-logs" onclick="openAllLogsExcelModal()" title="클릭 시 전체 누적 영업활동 일지 엑셀 시트 뷰어 및 검색/수정 열기" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1);">
+        <div class="kpi-title">
+          <span>누적 영업 일지</span>
+          <span>📝</span>
+        </div>
+        <div class="kpi-val" id="kpi-total-logs" style="color:var(--text-secondary);">0</div>
+        <div class="kpi-sub">전체 일지 엑셀 뷰어 & 검색/수정</div>
+      </div>
+    </section>
+
+    <!-- TAB 1: Hospital 360 View -->
+    <section id="tab-hospital" class="tab-content active" aria-label="병원 360도 상황실">
+      <div class="hospital-view-layout">
+        
+        <!-- Left Sidebar: Hospital Selector & Search -->
+        <aside class="sidebar-panel">
+          <div class="sidebar-search-box">
+            <div style="display:flex; gap:6px; align-items:center;">
+              <div class="search-input-wrap" style="flex:1; position:relative;">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="hospital-search-input" placeholder="병원명 또는 의료진 검색..." oninput="filterHospitals()">
+                <button type="button" id="hospital-search-clear" onclick="clearHospitalSearch()" style="display:none; position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem;" title="검색어 지우기">✕</button>
+              </div>
+              <button class="btn-save" style="padding:8px 12px; font-size:0.75rem; white-space:nowrap; border-radius:var(--radius-md);" onclick="openAddHospitalModal()" title="새로운 거래처/병원 마스터 등록">
+                <span>➕ 거래처 추가</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Active KPI Filter Banner (Conditional) -->
+          <div id="kpi-active-banner-wrap" style="display:none; margin-top:8px;"></div>
+
+          <!-- Region Filter Chips -->
+          <div class="region-filter-chips" id="region-filter-chips">
+            <button class="region-chip active" onclick="setRegionFilter('전체', this)">전체</button>
+            <button class="region-chip" onclick="setRegionFilter('서울경기', this)">서울경기</button>
+            <button class="region-chip" onclick="setRegionFilter('천안아산', this)">천안아산</button>
+            <button class="region-chip" onclick="setRegionFilter('평택', this)">평택</button>
+            <button class="region-chip" onclick="setRegionFilter('세종충북', this)">세종충북</button>
+            <button class="region-chip" onclick="setRegionFilter('대전논산', this)">대전논산</button>
+            <button class="region-chip" onclick="setRegionFilter('서산당진', this)">서산당진</button>
+          </div>
+
+          <!-- Hospital Cards List -->
+          <div class="hospital-list" id="hospital-list-container">
+            <!-- Dynamically populated by JS -->
+          </div>
+        </aside>
+
+        <!-- Right Main: Hospital 360 Detail Pane -->
+        <article class="hospital-detail-pane" id="hospital-detail-pane">
+          <!-- Hospital Header Card -->
+          <div class="hospital-header-card" id="hospital-header-card">
+            <div class="hospital-header-top">
+              <div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <h2 class="hospital-main-title" id="detail-hospital-name">병원 선택</h2>
+                  <button type="button" class="btn-save" style="padding:4px 10px; font-size:0.75rem; background:rgba(56,189,248,0.15); color:var(--accent-cyan); border:1px solid rgba(56,189,248,0.3); border-radius:6px; cursor:pointer;" onclick="openEditHospitalModal()" title="병원 권역, 등급, 담당자, 핵심 관계자 수정">
+                    <span>✏️ 병원 정보 / 관계자 수정</span>
+                  </button>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center; margin-top:6px;">
+                  <span class="hospital-region-tag" id="detail-hospital-region">권역</span>
+                  <span style="font-size:0.8rem; color:var(--text-secondary);" id="detail-hospital-type">기존 병원</span>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:0.75rem; color:var(--text-muted);">최근 방문일자</div>
+                <div style="font-size:1rem; font-weight:700; color:var(--accent-cyan); font-family:var(--font-en);" id="detail-hospital-last-date">-</div>
+              </div>
+            </div>
+
+            <!-- Meta Grid (Sales Reps & Key Contacts) -->
+            <div class="hospital-meta-grid">
+              <div class="meta-item">
+                <span class="meta-label">담당 영업사원</span>
+                <span class="meta-value" id="detail-hospital-reps">-</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">병원 내 핵심 관계자 / 의료진</span>
+                <span class="meta-value" id="detail-hospital-contacts">-</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">누적 영업활동</span>
+                <span class="meta-value" id="detail-hospital-log-count">- 건</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Urgent A/S Alert Box (Conditional) -->
+          <div class="urgent-alert-box" id="detail-as-alert" style="display:none; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div class="alert-icon">🚨</div>
+              <div class="alert-body">
+                <h4 id="detail-as-title">긴급 A/S 및 수리 접수 건이 있습니다!</h4>
+                <p id="detail-as-desc">-</p>
+              </div>
+            </div>
+            <button type="button" class="btn-save" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:none; padding:8px 14px; font-size:0.78rem; white-space:nowrap; border-radius:6px; cursor:pointer; font-weight:700; color:#fff; box-shadow:0 2px 8px rgba(16,185,129,0.3);" onclick="resolveCurrentHospitalAS()" title="이 병원의 A/S 수리 조치를 완료 상태로 변경하고 알림을 해제합니다.">
+              <span>✅ A/S 조치완료 처리</span>
+            </button>
+          </div>
+
+          <!-- Product Status Matrix Cards Grid (Demo, Sample, Won, In Progress, Lost) - Notion Style Drag & Drop Enabled -->
+          <div class="status-section-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            
+            <!-- 1. Active Equipment Demos -->
+            <div class="status-card demo-card" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToHospitalStatus(event, '의료장비 데모')" style="border-left:3px solid #f59e0b;">
+              <div class="status-card-header">
+                <h3><span style="color:#f59e0b;">🔬</span> 의료장비 데모 (회수관리)</h3>
+                <span class="mini-badge badge-demo" id="count-demo-items">0건</span>
+              </div>
+              <div class="item-list status-card-body" id="list-demo-items">
+                <div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:12px;">진행 중인 장비 데모가 없습니다.</div>
+              </div>
+            </div>
+
+            <!-- 2. Disposable Samples -->
+            <div class="status-card" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToHospitalStatus(event, '소모품 샘플')" style="background:rgba(56,189,248,0.03); border:1px solid rgba(56,189,248,0.2); border-left:3px solid #38bdf8; border-radius:10px; padding:12px;">
+              <div class="status-card-header">
+                <h3><span style="color:#38bdf8;">🧪</span> 소모품 샘플 평가 (임상테스트)</h3>
+                <span class="mini-badge" style="background:rgba(56,189,248,0.2); color:#38bdf8; border:1px solid rgba(56,189,248,0.4);" id="count-sample-items">0건</span>
+              </div>
+              <div class="item-list status-card-body" id="list-sample-items">
+                <div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:12px;">진행 중인 소모품 샘플이 없습니다.</div>
+              </div>
+            </div>
+
+            <!-- 3. Regular Won Products -->
+            <div class="status-card won-card" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToHospitalStatus(event, '도입완료·납품')">
+              <div class="status-card-header">
+                <h3><span>🏆</span> 정규 도입 및 납품 품목</h3>
+                <span class="mini-badge badge-won" id="count-won-items">0건</span>
+              </div>
+              <div class="item-list status-card-body" id="list-won-items">
+                <div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:12px;">도입된 품목이 없습니다.</div>
+              </div>
+            </div>
+
+            <!-- 4. In Progress Products -->
+            <div class="status-card active-card" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToHospitalStatus(event, '제품소개·영업중')">
+              <div class="status-card-header">
+                <h3><span>⚡</span> 영업 제안 & 협의 품목</h3>
+                <span class="mini-badge" style="background:rgba(6,182,212,0.2); color:#67e8f9; border:1px solid rgba(6,182,212,0.4);" id="count-active-items">0건</span>
+              </div>
+              <div class="item-list status-card-body" id="list-active-items">
+                <div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:12px;">진행 중인 제안이 없습니다.</div>
+              </div>
+            </div>
+
+            <!-- 5. Lost / Hold Products -->
+            <div class="status-card lost-card" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToHospitalStatus(event, '영업실패·보류')">
+              <div class="status-card-header">
+                <h3><span>❌</span> 실패 및 보류 품목 (사유 분석)</h3>
+                <span class="mini-badge badge-lost" id="count-lost-items">0건</span>
+              </div>
+              <div class="item-list status-card-body" id="list-lost-items">
+                <div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:12px;">실패/보류 품목이 없습니다.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Timeline (Split: Regular Sales Activities vs Delivery History) -->
+          <div class="timeline-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+              <h3 class="timeline-header" style="margin-bottom:0;">
+                <span>📜</span> 병원 영업활동 & 납품 히스토리
+              </h3>
+              <!-- Timeline Filter Tabs -->
+              <div class="timeline-filter-tabs" id="timeline-filter-tabs">
+                <button class="timeline-filter-chip active" onclick="setTimelineFilter('sales', this)">
+                  <span>📢 핵심 영업·상담</span>
+                  <span id="badge-timeline-sales-count" style="opacity:0.8;">(0)</span>
+                </button>
+                <button class="timeline-filter-chip" onclick="setTimelineFilter('delivery', this)">
+                  <span>📦 납품·배송 이력</span>
+                  <span id="badge-timeline-delivery-count" style="opacity:0.8;">(0)</span>
+                </button>
+                <button class="timeline-filter-chip" onclick="setTimelineFilter('all', this)">
+                  <span>전체 보기</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Dynamic Timeline List -->
+            <div class="timeline-list" id="hospital-timeline-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+        </article>
+      </div>
+    </section>
+
+    <!-- TAB: A/S 360° Control Center (5-Stage Kanban) -->
+    <section id="tab-as" class="tab-content" style="display:none;" aria-label="A/S 360 관제센터">
+      <div class="as-control-layout">
+        <!-- A/S Header & Actions -->
+        <div class="as-control-header">
+          <div class="as-header-title">
+            <h2><span>🚨</span> 의료기기 A/S & 클레임 360° 관제센터</h2>
+            <p>접수부터 외부 제조사 전달, 부품 수리, 견적 컨펌, 병원 재인도까지 5단계 원스톱 워크플로우 추적</p>
+          </div>
+          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            <div class="product-search-wrap" style="width:260px;">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="as-search-input" placeholder="병원명, 장비명, 증상 검색..." oninput="renderASControlCenter()">
+            </div>
+            <button class="btn-primary" onclick="openNewASModal()" style="background:#f43f5e; border-color:#f43f5e; color:#fff;">
+              <span>+ 신규 A/S 접수 등록</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 5-Stage Kanban Grid -->
+        <div class="as-kanban-board">
+          <!-- Col 1: Receipt -->
+          <div class="as-kanban-col" ondragover="handleASDragOver(event)" ondragleave="handleASDragLeave(event)" ondrop="handleASDrop(event, '접수완료')">
+            <div class="as-col-header col-receipt">
+              <span>📥 1. A/S 접수</span>
+              <span class="mini-badge" id="as-count-receipt" style="background:rgba(244,63,94,0.2); color:#f43f5e;">0건</span>
+            </div>
+            <div class="as-col-body" id="as-list-receipt">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Col 2: Vendor Forward -->
+          <div class="as-kanban-col" ondragover="handleASDragOver(event)" ondragleave="handleASDragLeave(event)" ondrop="handleASDrop(event, '외부전달')">
+            <div class="as-col-header col-vendor">
+              <span>🚚 2. 외부/본사 전달</span>
+              <span class="mini-badge" id="as-count-vendor" style="background:rgba(245,158,11,0.2); color:#f59e0b;">0건</span>
+            </div>
+            <div class="as-col-body" id="as-list-vendor">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Col 3: In Progress -->
+          <div class="as-kanban-col" ondragover="handleASDragOver(event)" ondragleave="handleASDragLeave(event)" ondrop="handleASDrop(event, '수리진행중')">
+            <div class="as-col-header col-progress">
+              <span>⚙️ 3. 수리·점검 진행중</span>
+              <span class="mini-badge" id="as-count-progress" style="background:rgba(59,130,246,0.2); color:#93c5fd;">0건</span>
+            </div>
+            <div class="as-col-body" id="as-list-progress">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Col 4: Quote & Confirm -->
+          <div class="as-kanban-col" ondragover="handleASDragOver(event)" ondragleave="handleASDragLeave(event)" ondrop="handleASDrop(event, '견적협의')">
+            <div class="as-col-header col-quote">
+              <span>📋 4. 수리 견적·컨펌</span>
+              <span class="mini-badge" id="as-count-quote" style="background:rgba(139,92,246,0.2); color:#c4b5fd;">0건</span>
+            </div>
+            <div class="as-col-body" id="as-list-quote">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Col 5: Completed -->
+          <div class="as-kanban-col" ondragover="handleASDragOver(event)" ondragleave="handleASDragLeave(event)" ondrop="handleASDrop(event, '수리완료')">
+            <div class="as-col-header col-done">
+              <span>✅ 5. 수리 완료·출고</span>
+              <span class="mini-badge" id="as-count-done" style="background:rgba(16,185,129,0.2); color:#6ee7b7;">0건</span>
+            </div>
+            <div class="as-col-body" id="as-list-done">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB: Equipment Demo Tracker (Loaner vs Sales Evaluation) -->
+    <section id="tab-demo-tracker" class="tab-content" style="display:none;" aria-label="장비 데모 트래커">
+      <div class="demo-tracker-layout">
+        <!-- Header & Filter Bar -->
+        <div class="demo-tracker-header">
+          <div class="demo-header-title">
+            <h2><span>🔬</span> 의료장비 데모 (A/S대체기 vs 판매평가) 트래커</h2>
+            <p>A/S 수리 기간 임시 지원된 [대체 대여기]와 신규 구매 전환을 위한 [판매 평가 데모]의 회수 일정/위치 실시간 추적</p>
+          </div>
+          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            <div class="product-search-wrap" style="width:240px;">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="demo-search-input" placeholder="병원명, 장비명 검색..." oninput="renderDemoTracker()">
+            </div>
+            <button class="btn-primary" onclick="openNewDemoModal()" style="background:#f59e0b; border-color:#f59e0b; color:#000; font-weight:700;">
+              <span>+ 신규 장비 데모 등록</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Buttons Bar -->
+        <div class="demo-filter-bar">
+          <button class="demo-filter-btn active" id="demo-filter-all" onclick="setDemoFilter('all')">
+            <span>🔬 전체 장비 데모</span>
+            <span id="demo-count-all" class="mini-badge" style="background:rgba(255,255,255,0.15); color:#fff;">0</span>
+          </button>
+          <button class="demo-filter-btn loaner" id="demo-filter-loaner" onclick="setDemoFilter('loaner')">
+            <span>🚨 [A/S 수리 대체기] 대여건 (수리 완료 시 회수 필수)</span>
+            <span id="demo-count-loaner" class="mini-badge" style="background:rgba(245,158,11,0.2); color:#fcd34d;">0</span>
+          </button>
+          <button class="demo-filter-btn sales" id="demo-filter-sales" onclick="setDemoFilter('sales')">
+            <span>🎯 [신규 판매·도입 평가] 데모건 (구매 전환 추적)</span>
+            <span id="demo-count-sales" class="mini-badge" style="background:rgba(6,182,212,0.2); color:#67e8f9;">0</span>
+          </button>
+        </div>
+
+        <!-- Demo Tracker Cards Grid -->
+        <div class="demo-tracker-grid" id="demo-tracker-grid-container">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: Product Pipeline Kanban Board -->
+    <section id="tab-pipeline" class="tab-content" aria-label="제품별 파이프라인 매트릭스">
+      <div class="product-pipeline-layout">
+        
+        <!-- Product Search & ERP Master Toolbar -->
+        <div class="product-toolbar-card">
+          <div class="product-search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="product-search-input" placeholder="품목명, 규격, 카테고리 검색... (예: 엔지오, 키트, 본드, PR03)" oninput="filterProductList()">
+          </div>
+
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span style="font-size:0.78rem; color:var(--text-muted);" id="product-count-display">전체 14개 품목</span>
+            <button class="btn-erp-import" onclick="openErpUploadModal()">
+              <span>📁 Ecount ERP 품목 마스터 업로드</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Product Selector Horizontal Pill Bar -->
+        <div class="product-selector-bar" id="product-selector-bar">
+          <!-- Dynamically populated -->
+        </div>
+
+        <!-- Product Summary Header & Kanban Internal Search -->
+        <div class="hospital-header-card" style="padding:18px 24px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <h2 id="pipeline-product-title" style="font-size:1.25rem; font-weight:800;">제품명</h2>
+                <span id="pipeline-product-erp-code" style="font-size:0.75rem; padding:2px 8px; background:rgba(59,130,246,0.2); color:#93c5fd; border:1px solid rgba(59,130,246,0.3); border-radius:4px; font-family:var(--font-en);">품목코드: -</span>
+                <span id="pipeline-product-edi-code" style="font-size:0.75rem; padding:2px 8px; background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid rgba(16,185,129,0.3); border-radius:4px; font-family:var(--font-en);">보험코드: -</span>
+                <button class="mini-badge" style="background:rgba(59,130,246,0.2); color:#93c5fd; border:1px solid rgba(59,130,246,0.4); cursor:pointer; padding:3px 8px;" onclick="openGlobalProductRemapModal()" title="이 제품에 매핑된 모든 병원(전체)의 품목코드/명칭을 일괄 교정">
+                  <span>✏️ 전체 병원 품목코드 일괄 교정</span>
+                </button>
+              </div>
+              <p id="pipeline-product-cat" style="font-size:0.8rem; color:var(--text-secondary); margin-top:4px;">카테고리</p>
+            </div>
+
+            <!-- Kanban Search inside current product -->
+            <div style="display:flex; align-items:center; gap:16px;">
+              <div class="search-input-wrap" style="width:220px;">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="kanban-hospital-search" placeholder="칸반 내 병원 검색..." oninput="filterKanbanCards()">
+              </div>
+
+              <div style="text-align:right;">
+                <span style="font-size:0.72rem; color:var(--text-muted);">전체 파이프라인</span>
+                <div style="font-size:1.1rem; font-weight:800; color:var(--accent-blue);" id="pipeline-stat-total">0개 병원</div>
+              </div>
+              <div style="text-align:right;">
+                <span style="font-size:0.72rem; color:var(--text-muted);">도입 성공률</span>
+                <div style="font-size:1.1rem; font-weight:800; color:var(--accent-emerald);" id="pipeline-stat-rate">0%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6-Column Kanban Board (Demo & Sample Separated) -->
+        <div class="kanban-board">
+          
+          <!-- Col 1: 제안 및 영업중 -->
+          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '제품소개·영업중')">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title" style="color:var(--accent-cyan);">🔵 제안·영업중</span>
+              <span class="kanban-count" id="kanban-count-active">0</span>
+            </div>
+            <div class="item-list" id="kanban-cards-active"></div>
+          </div>
+
+          <!-- Col 2: 의료장비 데모 (회수관리) -->
+          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '의료장비 데모')">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title" style="color:var(--accent-amber);">🔬 장비 데모</span>
+              <span class="kanban-count" id="kanban-count-demo">0</span>
+            </div>
+            <div class="item-list" id="kanban-cards-demo"></div>
+          </div>
+
+          <!-- Col 3: 소모품 샘플 평가 (임상테스트) -->
+          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '소모품 샘플')">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title" style="color:#67e8f9;">🧪 소모품 샘플</span>
+              <span class="kanban-count" id="kanban-count-sample">0</span>
+            </div>
+            <div class="item-list" id="kanban-cards-sample"></div>
+          </div>
+
+          <!-- Col 4: 도입완료 및 납품 -->
+          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '도입완료·납품')">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title" style="color:var(--accent-emerald);">🟢 도입완료·납품</span>
+              <span class="kanban-count" id="kanban-count-won">0</span>
+            </div>
+            <div class="item-list" id="kanban-cards-won"></div>
+          </div>
+
+          <!-- Col 5: A/S 및 클레임 -->
+          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, 'A/S접수·처리')">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title" style="color:var(--accent-rose);">🔴 A/S·수리진행</span>
+              <span class="kanban-count" id="kanban-count-as">0</span>
+            </div>
+            <div class="item-list" id="kanban-cards-as"></div>
+          </div>
+
+          <!-- Col 6: 영업실패 및 보류 -->
+          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '영업실패·보류')">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title" style="color:var(--text-secondary);">❌ 영업실패·보류</span>
+              <span class="kanban-count" id="kanban-count-lost">0</span>
+            </div>
+            <div class="item-list" id="kanban-cards-lost"></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: AI Natural Language Sales Assistant -->
+    <section id="tab-ai" class="tab-content" aria-label="AI 스마트 영업일지 입력기">
+      <div class="ai-assistant-layout">
+        
+        <!-- Left: Input Box -->
+        <div class="ai-input-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <h3 class="ai-card-title" style="margin-bottom:0;">
+              <span>✨</span> 영업사원 AI 스마트 일지 입력 (음성/줄글 파서)
+            </h3>
+            <span style="font-size:0.75rem; color:#67e8f9; background:rgba(56,189,248,0.12); padding:3px 10px; border-radius:15px; border:1px solid rgba(56,189,248,0.3); font-weight:700; display:flex; align-items:center; gap:4px;">
+              <span>✨ Google Gemini AI 탑재</span>
+            </span>
+          </div>
+          <p style="font-size:0.82rem; color:var(--text-secondary); margin-bottom:12px;">
+            노션 표의 복잡한 빈칸을 일일이 채울 필요 없이, 모바일 메신저로 보고하듯 두서없이 적어도 AI가 <strong>[병원, 제품, 활동유형, 파이프라인 단계, 다음할일]</strong>을 자동으로 정형화합니다.
+          </p>
+
+          <!-- Sales Rep One-Click Select Bar -->
+          <div class="sales-rep-select-wrap" style="margin-bottom:12px; background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:10px; border:1px solid var(--border-glass);">
+            <div style="font-size:0.8rem; font-weight:700; color:var(--accent-cyan); margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
+              <span>👤 영업 담당자 (작성자 선택):</span>
+              <span id="selected-rep-badge" style="font-size:0.75rem; background:var(--accent-blue); color:#fff; padding:2px 8px; border-radius:12px; font-weight:700;">최진웅</span>
+            </div>
+            <div class="rep-chips" style="display:flex; flex-wrap:wrap; gap:8px;">
+              <button type="button" class="rep-chip-btn active" onclick="setAiLogSalesRep('최진웅', this)">최진웅</button>
+              <button type="button" class="rep-chip-btn" onclick="setAiLogSalesRep('이은필', this)">이은필</button>
+              <button type="button" class="rep-chip-btn" onclick="setAiLogSalesRep('이재덕', this)">이재덕</button>
+              <button type="button" class="rep-chip-btn" onclick="setAiLogSalesRep('이우식', this)">이우식</button>
+              <button type="button" class="rep-chip-btn" onclick="setAiLogSalesRep('원유훈', this)">원유훈</button>
+              <button type="button" class="rep-chip-btn" onclick="setAiLogSalesRep('이상미', this)">이상미</button>
+              <button type="button" class="rep-chip-btn" onclick="setAiLogSalesRep('이우진', this)">이우진</button>
+            </div>
+          </div>
+
+          <!-- Fast Example Templates -->
+          <div class="example-chips-wrap">
+            <div class="example-label">빠른 테스트용 현장 예시 문장:</div>
+            <div class="example-chips">
+              <button class="example-btn" onclick="loadExample(1)">🔬 데모/샘플 전달 사례</button>
+              <button class="example-btn" onclick="loadExample(2)">🚨 A/S 수리 접수 사례</button>
+              <button class="example-btn" onclick="loadExample(3)">❌ 단가 거절/실패 사례</button>
+              <button class="example-btn" onclick="loadExample(4)">🏆 신규 도입/발주 사례</button>
+            </div>
+          </div>
+
+          <textarea id="ai-input-text" class="ai-textarea" placeholder="영업 활동 내용을 편하게 입력하세요.&#10;예: 오늘 대전한국병원 김희웅 영상의학실장님 미팅. 엔지오키트 4만5천원 약간 부담있어서 C라인키트 샘플 본사에 주문함."></textarea>
+
+          <div style="display:flex; gap:10px; margin-top:8px;">
+            <button class="btn-primary" id="btn-parse-ai-text" onclick="parseSalesText()">
+              <span id="btn-parse-ai-text-label">⚡ AI 실시간 구조화 분석</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Parsed Output & Confirmation (Editable) -->
+        <div class="ai-preview-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h3 class="ai-card-title" style="margin-bottom:0;">
+              <span>📋</span> AI 자동 구조화 분석 결과
+            </h3>
+            <span style="font-size:0.72rem; color:var(--accent-cyan); background:rgba(56,189,248,0.12); padding:3px 8px; border-radius:4px; border:1px solid rgba(56,189,248,0.3);">
+              ✏️ 클릭하여 즉시 직접 수정 가능
+            </span>
+          </div>
+
+          <div class="parsed-result-box" id="parsed-result-box" style="display:flex; flex-direction:column; gap:10px;">
+            <!-- 1. 작성자 & 활동일자 -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <div class="parsed-field-group">
+                <label class="parsed-field-lbl">👤 영업 담당자</label>
+                <select id="parse-edit-sales-rep" class="ai-edit-select" onchange="onSelectRepChange(this.value)">
+                  <option value="최진웅">최진웅</option>
+                  <option value="이은필">이은필</option>
+                  <option value="이재덕">이재덕</option>
+                  <option value="이우식">이우식</option>
+                  <option value="원유훈">원유훈</option>
+                  <option value="이상미">이상미</option>
+                  <option value="이우진">이우진</option>
+                </select>
+              </div>
+              <div class="parsed-field-group">
+                <label class="parsed-field-lbl">📅 활동 일자</label>
+                <input type="text" id="parse-edit-date" class="ai-edit-input" placeholder="2026/08/26">
+              </div>
+            </div>
+
+            <!-- 2. 거래처 (병원명) & 담당자(직함) -->
+            <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:10px;">
+              <div class="parsed-field-group">
+                <label class="parsed-field-lbl">🏥 거래처 (병원명)</label>
+                <input type="text" id="parse-edit-hospital" class="ai-edit-input highlight-blue" list="hospitals-datalist" placeholder="병원명을 입력하세요">
+                <datalist id="hospitals-datalist"></datalist>
+              </div>
+              <div class="parsed-field-group">
+                <label class="parsed-field-lbl">👨‍⚕️ 상대 담당자 (직함)</label>
+                <input type="text" id="parse-edit-contact" class="ai-edit-input" placeholder="예: 김희웅 영상의학실장">
+              </div>
+            </div>
+
+            <!-- 3. 추출 제품명 & ERP 4,069개 품목 교체 버튼 -->
+            <div class="parsed-field-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label class="parsed-field-lbl" style="margin-bottom:0;">📦 공식 ERP 제품 매핑</label>
+                <button type="button" class="mini-badge" style="background:rgba(56,189,248,0.2); color:var(--accent-cyan); border:1px solid rgba(56,189,248,0.4); cursor:pointer; font-size:0.7rem; padding:2px 8px; border-radius:4px;" onclick="toggleAiParsedProductSearch()">🔍 4,069개 품목 검색/교체</button>
+              </div>
+              <input type="text" id="parse-edit-product-name" class="ai-edit-input highlight-cyan" placeholder="제품명">
+              <input type="hidden" id="parse-edit-product-code" value="PROD_GENERAL">
+              
+              <!-- Inline Product Search Box -->
+              <div id="ai-parse-product-search-box" style="display:none; background:rgba(0,0,0,0.5); border:1px solid var(--accent-blue); border-radius:6px; padding:10px; margin-top:6px;">
+                <input type="text" id="ai-parse-product-search-input" class="ai-edit-input" placeholder="품목명 또는 코드 검색 (예: ST-ANG, PR03, 소공포, 펜코)..." oninput="searchErpProductsForAiParser(this.value)">
+                <div id="ai-parse-product-search-results" style="max-height:140px; overflow-y:auto; margin-top:6px; display:flex; flex-direction:column; gap:4px;"></div>
+              </div>
+            </div>
+
+            <!-- 4. 활동 유형 & 파이프라인 단계 -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <div class="parsed-field-group">
+                <label class="parsed-field-lbl">🎯 활동 유형</label>
+                <select id="parse-edit-action-type" class="ai-edit-select">
+                  <option value="제품설명·소개">제품설명·소개</option>
+                  <option value="의료장비 데모">🔬 의료장비 데모 (회수추적)</option>
+                  <option value="소모품 샘플">🧪 소모품 샘플 (임상평가)</option>
+                  <option value="납품·설치">납품·설치</option>
+                  <option value="A/S·클레임">A/S·클레임</option>
+                  <option value="견적제출">견적제출</option>
+                  <option value="관계관리">관계관리</option>
+                  <option value="수금·결제">수금·결제</option>
+                  <option value="신규접촉">신규접촉</option>
+                </select>
+              </div>
+              <div class="parsed-field-group">
+                <label class="parsed-field-lbl">📊 파이프라인 진행 상태</label>
+                <select id="parse-edit-sales-status" class="ai-edit-select highlight-yellow">
+                  <option value="제품소개·영업중">🔵 제품소개·영업중</option>
+                  <option value="의료장비 데모">🔬 의료장비 데모 (회수관리)</option>
+                  <option value="소모품 샘플">🧪 소모품 샘플 (임상피드백)</option>
+                  <option value="도입완료·납품">🟢 도입완료·납품</option>
+                  <option value="견적·의사결정">⚡ 견적·의사결정</option>
+                  <option value="A/S접수·처리">🔴 A/S접수·처리</option>
+                  <option value="영업실패·보류">❌ 영업실패·보류</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- 5. 실패 / 보류 / 특이 사유 -->
+            <div class="parsed-field-group">
+              <label class="parsed-field-lbl">⚠️ 실패 / 보류 / 특이 사유</label>
+              <input type="text" id="parse-edit-fail-reason" class="ai-edit-input" style="color:var(--accent-rose);" placeholder="특이사항이나 거절/보류 사유 (없으면 -)">
+            </div>
+
+            <!-- 6. 차기 실행 일정 / 다음 할 일 -->
+            <div class="parsed-field-group">
+              <label class="parsed-field-lbl">🗓️ 차기 실행 일정 / 다음 할 일</label>
+              <input type="text" id="parse-edit-next-action" class="ai-edit-input" placeholder="다음 방문 일정 및 구체적 계획">
+            </div>
+          </div>
+
+          <button class="btn-primary" id="btn-save-ai-log" style="margin-top:16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); display:none; width:100%; justify-content:center;" onclick="saveParsedLogToDB()">
+            <span>💾 파이프라인 & 병원 360°에 즉시 등록</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 4: Analytics & Insights -->
+    <section id="tab-analytics" class="tab-content" aria-label="영업 총괄 통계 및 인사이트">
+      <div class="analytics-grid">
+        
+        <!-- Chart 1: Sales Rep Activities -->
+        <div class="chart-card">
+          <div class="chart-card-title">
+            <span>👤 담당자별 영업활동량 (누적 745건)</span>
+          </div>
+          <div id="chart-rep-bars"></div>
+        </div>
+
+        <!-- Chart 2: Regional Distribution -->
+        <div class="chart-card">
+          <div class="chart-card-title">
+            <span>🗺️ 권역별 병원 및 활동 비중</span>
+          </div>
+          <div id="chart-region-bars"></div>
+        </div>
+
+        <!-- Chart 3: Action Type Breakdown -->
+        <div class="chart-card">
+          <div class="chart-card-title">
+            <span>🎯 활동 유형별 분포 (AI 정제 기준)</span>
+          </div>
+          <div id="chart-action-bars"></div>
+        </div>
+
+        <!-- Chart 4: Lost Reason Analysis -->
+        <div class="chart-card">
+          <div class="chart-card-title">
+            <span>⚠️ 영업 실패 및 거절 사유 분석</span>
+          </div>
+          <div id="chart-lost-bars"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB: Ministry of Health and Welfare Medical Device Expenditure Report (K-Sunshine Act) -->
+    <section id="tab-expenditure" class="tab-content" style="display:none;" aria-label="의료기기 지출보고서">
+      <div class="expenditure-layout">
+        <!-- Header & Action Buttons -->
+        <div class="expenditure-header">
+          <div>
+            <h2 style="font-size:1.25rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+              <span>📑</span> 보건복지부 법정 의료기기 공급·지출보고서 (K-Sunshine Act)
+            </h2>
+            <p style="font-size:0.82rem; color:var(--text-secondary); margin-top:4px;">
+              견본품(샘플) 제공 및 임상·성능평가(장비 데모) 법정 표준 서식 자동 집계 & 카톡 사진 클립보드(Ctrl+V) 서명 증빙 연동
+            </p>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <div class="product-search-wrap" style="width:240px;">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="expenditure-search-input" placeholder="병원명, 제품명, 담당자 검색..." oninput="renderExpenditureReport()">
+            </div>
+            <button class="btn-erp-import" onclick="exportExpenditureToCSV()" style="background:#10b981; border-color:#10b981; color:#fff;">
+              <span>📥 복지부 제출용 엑셀(CSV) 다운로드</span>
+            </button>
+            <button class="btn-primary" onclick="window.print()" style="background:rgba(255,255,255,0.1); border-color:var(--border-glass); color:#fff;">
+              <span>🖨️ 지출보고서 인쇄/PDF</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Sub-Tabs -->
+        <div class="demo-filter-bar" style="margin-bottom:0;">
+          <button class="demo-filter-btn active" id="exp-filter-all" onclick="setExpenditureFilter('all')">
+            <span>📋 전체 내역 (<span id="exp-count-all">0</span>건)</span>
+          </button>
+          <button class="demo-filter-btn sales" id="exp-filter-sample" onclick="setExpenditureFilter('sample')">
+            <span>🧪 견본품(샘플) 제공 내역서 (<span id="exp-count-sample">0</span>건)</span>
+          </button>
+          <button class="demo-filter-btn loaner" id="exp-filter-demo" onclick="setExpenditureFilter('demo')">
+            <span>🔬 임상·성능평가(장비데모) 대여 내역서 (<span id="exp-count-demo">0</span>건)</span>
+          </button>
+          <button class="demo-filter-btn" id="exp-filter-missing" onclick="setExpenditureFilter('missing')" style="border-color:rgba(244,63,94,0.4); color:#fda4af;">
+            <span>⚠️ 서명 증빙 미등록 추적 (<span id="exp-count-missing">0</span>건)</span>
+          </button>
+        </div>
+
+        <!-- Expenditure Report Table -->
+        <div class="expenditure-table-container">
+          <table class="expenditure-table" id="expenditure-master-table">
+            <thead>
+              <tr>
+                <th style="width:50px; text-align:center;">No</th>
+                <th>구분</th>
+                <th>요양기관명 (병원명)</th>
+                <th>지역</th>
+                <th>상대 의료인 / 직함</th>
+                <th>의료기기명 (제품명)</th>
+                <th>표준코드 / 규격</th>
+                <th>보험코드</th>
+                <th>제공/대여일자</th>
+                <th>수량</th>
+                <th>담당사원</th>
+                <th style="text-align:center;">📷 서명 인수증 / 증빙 (Ctrl+V)</th>
+              </tr>
+            </thead>
+            <tbody id="expenditure-table-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Clipboard Paste Proof Image Modal Dialog -->
+  <dialog id="proof-paste-modal" class="custom-modal">
+    <div class="modal-card" style="max-width:540px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.1rem; color:#fff; display:flex; align-items:center; gap:6px;">
+          <span>📷</span> 지출보고서 서명 인수증·전표 등록
+        </h3>
+        <button class="modal-close-btn" onclick="closeProofModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:14px; background:rgba(255,255,255,0.04); padding:10px 14px; border-radius:8px; border:1px solid var(--border-glass);">
+          <strong id="proof-modal-hosp" style="color:#fff; font-size:0.95rem;">-</strong>
+          <div id="proof-modal-prod" style="color:var(--accent-cyan); font-weight:600; margin-top:2px;">-</div>
+        </div>
+
+        <!-- Interactive Paste Drop Zone -->
+        <div class="paste-drop-zone" id="proof-paste-drop-zone" tabindex="0" title="클릭 후 Ctrl+V 로 사진 붙여넣기">
+          <span class="paste-icon">📋</span>
+          <div class="paste-title">PC 카톡에서 사진 복사 후 <span class="paste-kbd">Ctrl + V</span> 로 붙여넣기</div>
+          <div class="paste-desc">파일로 따로 저장할 필요 없이 카톡 사진 우클릭 [복사] 후 여기서 바로 붙여넣으세요!</div>
+          <input type="file" id="proof-file-input" accept="image/*" style="display:none;" onchange="handleProofFileSelect(event)">
+          <button type="button" class="mini-badge" style="margin-top:12px; background:rgba(255,255,255,0.1); color:#fff; border:none; padding:4px 10px; cursor:pointer;" onclick="document.getElementById('proof-file-input').click()">
+            📁 내 PC/스마트폰 파일에서 선택
+          </button>
+        </div>
+
+        <!-- Preview Area -->
+        <div id="proof-preview-container" style="display:none; margin-top:14px;">
+          <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+            <span>📷 등록된 증빙 사진 미리보기 (클릭 시 확대)</span>
+            <span id="proof-image-date" style="font-family:var(--font-en);"></span>
+          </div>
+          <div class="proof-preview-card">
+            <img id="proof-preview-img" src="" alt="서명 인수증" onclick="openLightbox(this.src)">
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
+            <button type="button" class="mini-badge" style="background:#f43f5e; color:#fff; border:none; padding:4px 10px; cursor:pointer;" onclick="removeProofImage()">
+              🗑️ 사진 삭제
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="padding:14px 20px; display:flex; justify-content:flex-end; gap:10px;">
+        <button type="button" class="btn-cancel" onclick="closeProofModal()">닫기</button>
+        <button type="button" class="btn-primary" id="btn-save-proof" style="background:var(--accent-blue);" onclick="saveProofImageChanges()">
+          <span>💾 증빙 저장 완료</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Image Lightbox Viewer Dialog -->
+  <dialog id="image-viewer-modal" class="custom-modal image-lightbox-modal" onclick="closeLightbox(event)">
+    <div class="image-lightbox-content" onclick="event.stopPropagation()">
+      <img id="lightbox-img" src="" alt="확대 증빙 사진">
+      <div style="display:flex; gap:12px; align-items:center;">
+        <button type="button" class="btn-primary" style="background:rgba(255,255,255,0.2); color:#fff; border:none;" onclick="closeLightbox()">
+          ✕ 닫기 (ESC)
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Edit Deal Modal Dialog -->
+  <dialog id="edit-deal-modal" class="custom-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title">📦 품목 진행상태 및 품목코드 수정</h3>
+        <button class="modal-close-btn" onclick="closeEditModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-field">
+          <label class="modal-label">병원명</label>
+          <input type="text" id="modal-hosp-name" class="modal-input" readonly>
+        </div>
+
+        <div class="modal-field">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="modal-label" style="margin-bottom:0;">현재 품목명 & 품목코드</label>
+            <button type="button" class="mini-badge" style="background:rgba(59,130,246,0.2); color:#93c5fd; border:1px solid rgba(59,130,246,0.4); cursor:pointer;" onclick="toggleDealProductSearchBox()">
+              🔍 다른 ERP 품목으로 변경
+            </button>
+          </div>
+          <input type="text" id="modal-prod-name" class="modal-input" readonly>
+          <input type="hidden" id="modal-deal-new-product-id">
+        </div>
+
+        <!-- SKU Selection for Product Groups (e.g. Sejong Sheet & Penko Surgi Sword) -->
+        <div id="modal-sku-selection-box" style="display:none; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.3); border-radius:8px; padding:12px; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="modal-label" id="modal-sku-title" style="color:var(--accent-cyan); font-weight:700; margin-bottom:0;">🎯 최종 채택/도입 세부 규격 선택</label>
+            <span id="modal-sku-edi-badge" style="font-size:0.7rem; color:var(--text-muted);">보험코드</span>
+          </div>
+          <select id="modal-sku-select" class="modal-select" onchange="onModalSkuSelectChange(this)">
+          </select>
+        </div>
+
+        <!-- Inline ERP Product Search Box (Hidden by default) -->
+        <div id="deal-product-search-box" style="display:none; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.3); border-radius:8px; padding:12px; margin-bottom:14px;">
+          <div style="font-size:0.8rem; font-weight:700; color:var(--accent-cyan); margin-bottom:6px;">
+            🔍 4,054개 이카운트 ERP 품목 실시간 검색 및 교체
+          </div>
+          <input type="text" id="deal-product-search-input" class="modal-input" placeholder="품목코드 또는 품목명/규격 검색... (예: ST-ANG, PR03, Trocar)" oninput="searchErpProductsForDeal(this.value)">
+          <div id="deal-product-search-results" style="max-height:160px; overflow-y:auto; margin-top:8px; display:flex; flex-direction:column; gap:4px;"></div>
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">파이프라인 진행 상태 변경</label>
+          <select id="modal-status-select" class="modal-select" onchange="onModalStatusChange()">
+            <option value="도입완료·납품">🟢 정규 도입 및 납품 완료</option>
+            <option value="의료장비 데모">🔬 의료장비 데모 (회수관리 대상)</option>
+            <option value="소모품 샘플">🧪 소모품 샘플 평가 (임상 피드백)</option>
+            <option value="제품소개·영업중">🔵 신규 소개 및 영업 제안중</option>
+            <option value="견적·의사결정">⚡ 견적 제출 및 의사결정중</option>
+            <option value="A/S접수·처리">🔴 긴급 A/S 및 수리 접수</option>
+            <option value="영업실패·보류">❌ 영업 실패 및 보류</option>
+          </select>
+        </div>
+
+        <div class="modal-field" id="modal-reasons-wrap" style="display:none;">
+          <label class="modal-label">실패 / 보류 사유</label>
+          <div class="reason-checkboxes">
+            <label><input type="checkbox" name="modal_reason" value="단가/가격 부담"> 단가/가격 부담</label>
+            <label><input type="checkbox" name="modal_reason" value="기존 거래처/경쟁사 선호"> 기존 거래처/경쟁사 선호 (타사 납품 등)</label>
+            <label><input type="checkbox" name="modal_reason" value="비급여 품목 거부"> 비급여 품목 거부</label>
+            <label><input type="checkbox" name="modal_reason" value="의료진 부재/면담 불가"> 의료진 부재/면담 불가</label>
+            <label><input type="checkbox" name="modal_reason" value="의료진 거절/사용 불가 피드백"> 의료진 거절/사용 불가 피드백</label>
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">진행 상황 메모</label>
+          <textarea id="modal-note-input" class="modal-textarea" placeholder="상세 진행 메모를 입력하세요."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-danger" onclick="deleteCurrentDeal()">🗑️ 품목 삭제</button>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-secondary" onclick="closeEditModal()">취소</button>
+          <button class="btn-save" onclick="saveModalChanges()">💾 변경사항 저장</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Global Product Remap Master Modal -->
+  <dialog id="global-product-remap-modal" class="custom-modal" style="max-width:650px;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🔄 전체 병원 대상 제품코드 일괄 교정</h3>
+        <button class="modal-close-btn" onclick="closeGlobalProductRemapModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:8px; padding:12px; margin-bottom:14px; font-size:0.82rem; color:#fca5a5; line-height:1.5;">
+          ⚠️ <strong>주의</strong>: 여기서 제품을 교정하시면 현재 제품(<span id="global-remap-cur-name" style="font-weight:bold; color:#fff;">-</span>)에 연결된 <strong>모든 병원(<span id="global-remap-deal-count">0</span>곳)</strong>의 품목코드 및 제품명이 새 ERP 품목으로 일괄 자동 교체됩니다.
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">올바른 Ecount ERP 품목 검색 (4,054개 마스터)</label>
+          <input type="text" id="global-remap-search-input" class="modal-input" placeholder="품목코드 또는 올바른 품목명 검색... (예: ST-ANG, PR03, Trocar, 봉합사)" oninput="searchErpProductsForGlobalRemap(this.value)">
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">검색된 ERP 품목 목록 (클릭하여 선택)</label>
+          <div id="global-remap-results-container" style="max-height:220px; overflow-y:auto; border:1px solid var(--border-glass); border-radius:8px; padding:8px; background:rgba(0,0,0,0.3); display:flex; flex-direction:column; gap:4px;">
+            <div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:20px;">검색어를 입력하세요.</div>
+          </div>
+        </div>
+
+        <div id="global-remap-selected-preview" style="display:none; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:8px; padding:12px; margin-top:10px;">
+          <div style="font-size:0.75rem; color:#6ee7b7; font-weight:bold;">✅ 선택된 교체 대상 품목:</div>
+          <div id="global-remap-target-title" style="font-size:0.95rem; font-weight:bold; color:#fff; margin-top:2px;">-</div>
+          <div id="global-remap-target-codes" style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">품목코드: - | 보험코드: -</div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeGlobalProductRemapModal()">취소</button>
+        <button class="btn-save" id="btn-apply-global-remap" disabled style="opacity:0.5;" onclick="applyGlobalProductRemap()">💾 전체 병원 일괄 교정 실행</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Activity Log Edit & Reassign Modal -->
+  <dialog id="edit-log-modal" class="custom-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>📝 영업활동 일지 수정 및 병원 재지정</h3>
+        <button class="modal-close-btn" onclick="closeEditLogModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="modal-log-id">
+        
+        <div class="modal-field">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="modal-label" style="margin-bottom:0;">귀속 병원 (오타/오등록 시 다른 병원으로 이동)</label>
+            <button type="button" class="mini-badge" style="background:rgba(59,130,246,0.2); color:#93c5fd; border:1px solid rgba(59,130,246,0.4); cursor:pointer;" onclick="selectAddNewHospitalInLogModal()">
+              ➕ 신규 거래처 직접 추가
+            </button>
+          </div>
+          <select id="modal-log-hospital-select" class="modal-select" onchange="handleLogHospitalSelectChange(this)">
+            <!-- Dynamically populated hospital options -->
+          </select>
+        </div>
+
+        <!-- Hidden New Hospital Input Box (Expanded when __NEW__ selected) -->
+        <div id="modal-new-hosp-box" style="display:none; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.3); border-radius:8px; padding:12px; margin-bottom:14px;">
+          <div style="font-size:0.8rem; font-weight:700; color:var(--accent-cyan); margin-bottom:8px;">
+            ✨ 새로운 거래처(병원) 등록 정보
+          </div>
+          <div class="modal-grid-2">
+            <div class="modal-field" style="margin-bottom:0;">
+              <label class="modal-label">신규 병원명 *</label>
+              <input type="text" id="modal-new-hosp-name" class="modal-input" placeholder="예: 세종 봄여성병원">
+            </div>
+            <div class="modal-field" style="margin-bottom:0;">
+              <label class="modal-label">권역 선택 *</label>
+              <select id="modal-new-hosp-region" class="modal-select">
+                <option value="세종충북">세종충북</option>
+                <option value="대전논산">대전논산</option>
+                <option value="천안아산">천안아산</option>
+                <option value="평택">평택</option>
+                <option value="서산당진">서산당진</option>
+                <option value="서울경기">서울경기</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-grid-2">
+          <div class="modal-field">
+            <label class="modal-label">활동 일자</label>
+            <input type="text" id="modal-log-date" class="modal-input" placeholder="YYYY/MM/DD">
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">영업 / 납품 담당자</label>
+            <input type="text" id="modal-log-rep" class="modal-input" placeholder="영업담당자 이름">
+          </div>
+        </div>
+
+        <div class="modal-grid-2">
+          <div class="modal-field">
+            <label class="modal-label">활동 구분 (유형)</label>
+            <select id="modal-log-action-type" class="modal-select">
+              <option value="제품설명·소개">제품설명·소개</option>
+              <option value="샘플·데모">샘플·데모</option>
+              <option value="납품·설치">납품·설치</option>
+              <option value="견적제출">견적제출</option>
+              <option value="A/S·클레임">A/S·클레임</option>
+              <option value="관계관리">관계관리</option>
+            </select>
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">면담자 / 의료진</label>
+            <input type="text" id="modal-log-contact" class="modal-input" placeholder="원장, 과장, 수간호사 등">
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">일지 제목 (요약)</label>
+          <input type="text" id="modal-log-title" class="modal-input" placeholder="예: 모태안여성병원 납품">
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">상세 활동 내용 및 비고</label>
+          <textarea id="modal-log-note" class="modal-textarea" placeholder="상세 영업 또는 납품 내용을 입력하세요."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-danger" onclick="deleteCurrentLog()">🗑️ 일지 삭제</button>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-secondary" onclick="closeEditLogModal()">취소</button>
+          <button class="btn-save" onclick="saveLogModalChanges()">💾 일지 수정 저장</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Standalone Add Hospital Master Modal -->
+  <dialog id="add-hospital-modal" class="custom-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🏥 신규 거래처(병원) 마스터 등록</h3>
+        <button class="modal-close-btn" onclick="closeAddHospitalModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-grid-2">
+          <div class="modal-field">
+            <label class="modal-label">병원 / 거래처명 *</label>
+            <input type="text" id="add-hosp-name" class="modal-input" placeholder="예: 세종 미래여성병원">
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">영업 권역 *</label>
+            <select id="add-hosp-region" class="modal-select">
+              <option value="세종충북">세종충북</option>
+              <option value="대전논산">대전논산</option>
+              <option value="천안아산">천안아산</option>
+              <option value="평택">평택</option>
+              <option value="서산당진">서산당진</option>
+              <option value="서울경기">서울경기</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-grid-2">
+          <div class="modal-field">
+            <label class="modal-label">담당 영업사원</label>
+            <input type="text" id="add-hosp-rep" class="modal-input" placeholder="예: 이우식, 최진웅">
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">주요 의료진 / 인맥</label>
+            <input type="text" id="add-hosp-contacts" class="modal-input" placeholder="예: 김원장, 박과장">
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">거래처 특징 및 초기 메모</label>
+          <textarea id="add-hosp-note" class="modal-textarea" placeholder="병원 규모, 관심 품목, 특이사항 등을 기록하세요."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeAddHospitalModal()">취소</button>
+        <button class="btn-save" onclick="saveNewHospital()">💾 신규 거래처 등록</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Google Gemini Free API Key Settings Modal -->
+  <dialog id="gemini-config-modal" class="custom-modal" style="max-width:550px;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>✨ Google Gemini 무료 AI 엔진 설정</h3>
+        <button class="modal-close-btn" onclick="closeGeminiConfigModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:8px; padding:12px; margin-bottom:14px; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">
+          💡 <strong>Google Gemini Flash</strong>는 구글에서 <strong>평생 무료(분당 15회 / 하루 1,500회)</strong>로 제공하는 초고성능 AI 모델입니다.<br>
+          아래 링크에서 구글 계정으로 1분 만에 무료 API Key를 발급받아 입력하시면 즉시 정밀한 문맥 분석을 사용하실 수 있습니다!
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; color:var(--accent-cyan); font-size:0.82rem; font-weight:700; text-decoration:underline;">
+            👉 Google AI Studio에서 무료 API Key 발급받기 (새 창 열기 ↗)
+          </a>
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">Google Gemini API Key</label>
+          <input type="password" id="gemini-api-key-input" class="modal-input" placeholder="AIzaSy... 형태의 키를 붙여넣으세요">
+          <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">
+            🔒 입력하신 API 키는 브라우저 내부(LocalStorage)에만 안전하게 저장되며 외부에 노출되지 않습니다.
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">AI 모델 선택</label>
+          <select id="gemini-model-select" class="modal-select">
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash (권장: 초고속 & 완전 무료)</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash (최신 모델)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeGeminiConfigModal()">닫기</button>
+        <button class="btn-save" onclick="saveGeminiApiKey()">💾 API Key 저장 & 활성화</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Ecount ERP Master Upload Modal -->
+  <dialog id="erp-upload-modal" class="custom-modal" style="max-width:600px;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>📁 Ecount ERP 품목 마스터 연동</h3>
+        <button class="modal-close-btn" onclick="closeErpUploadModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <p style="font-size:0.82rem; color:var(--text-secondary); line-height:1.5;">
+          이카운트 ERP의 <strong>[재고I > 기초등록 > 품목등록 > 엑셀다운로드]</strong>에서 내려받은 CSV 또는 엑셀 파일을 업로드하시면, 품목 마스터가 공식 표준으로 등록되며 슬랙/일지의 오타가 자동으로 이카운트 품목코드로 1:1 매핑됩니다.
+        </p>
+
+        <div class="erp-drop-zone" id="erp-drop-zone" onclick="document.getElementById('erp-file-input').click()">
+          <input type="file" id="erp-file-input" accept=".csv, .xlsx, .xls, .txt" style="display:none;" onchange="handleErpFileSelected(event)">
+          <div style="font-size:2rem; margin-bottom:8px;">📊</div>
+          <div style="font-weight:700; font-size:0.92rem;">Ecount ERP 엑셀/CSV 파일 선택 또는 드래그앤드롭</div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">(품목코드, 품목명, 규격, 그룹명 등이 포함된 파일)</div>
+        </div>
+
+        <div id="erp-preview-area" style="display:none;">
+          <div style="font-size:0.8rem; font-weight:700; color:var(--accent-cyan); margin-bottom:6px;" id="erp-parsed-summary">
+            품목 0건 인식 완료
+          </div>
+          <div style="max-height:160px; overflow-y:auto; background:rgba(0,0,0,0.25); border-radius:8px; padding:10px; font-size:0.75rem; font-family:monospace;" id="erp-parsed-preview"></div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeErpUploadModal()">닫기</button>
+        <button class="btn-save" id="btn-apply-erp" style="display:none;" onclick="applyErpMasterToDB()">
+          <span>✅ ERP 품목 마스터 적용 및 파이프라인 갱신</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- 1. All Logs Excel Spreadsheet Modal -->
+  <dialog id="all-logs-excel-modal" class="custom-modal excel-modal" style="max-width:1400px; width:96vw;">
+    <div class="modal-card excel-modal-card">
+      <div class="modal-header excel-modal-header">
+        <div class="excel-title-group">
+          <div class="excel-badge">EXCEL MASTER SHEET</div>
+          <h3 style="margin:0; font-size:1.15rem; font-weight:800; display:flex; align-items:center; gap:8px;">
+            <span>📊 전체 누적 영업활동 일지 마스터 시트</span>
+            <span class="badge-count" id="excel-log-total-count">758건</span>
+          </h3>
+        </div>
+        <div class="excel-header-actions">
+          <button class="btn-excel-action download" onclick="exportLogsToCSV()" title="현재 목록을 CSV 엑셀 파일로 다운로드">
+            <span>📥 엑셀(CSV) 내보내기</span>
+          </button>
+          <button class="btn-excel-action new-log" onclick="openNewActivityLogModal()" title="새 영업일지 직접 등록">
+            <span>➕ 일지 등록</span>
+          </button>
+          <button class="modal-close-btn" onclick="closeAllLogsExcelModal()">✕</button>
+        </div>
+      </div>
+
+      <!-- Excel Toolbar -->
+      <div class="excel-toolbar">
+        <div class="excel-search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="excel-log-search-input" class="excel-search-input" 
+                 placeholder="거래처 병원명, 아이템 품목명/코드, 영업사원, 대화 내용 실시간 통합 검색..." 
+                 oninput="handleExcelLogSearch()">
+          <button class="search-clear-btn" id="excel-search-clear" onclick="clearExcelLogSearch()" style="display:none;">✕</button>
+        </div>
+
+        <div class="excel-filter-group">
+          <select id="excel-filter-rep" class="excel-select" onchange="handleExcelLogSearch()">
+            <option value="">👤 전체 담당자</option>
+            <option value="최진웅">최진웅</option>
+            <option value="이은필">이은필</option>
+            <option value="이재덕">이재덕</option>
+            <option value="이우식">이우식</option>
+            <option value="원유훈">원유훈</option>
+            <option value="이상미">이상미</option>
+            <option value="이우진">이우진</option>
+          </select>
+
+          <select id="excel-filter-action" class="excel-select" onchange="handleExcelLogSearch()">
+            <option value="">🏷️ 전체 활동분류</option>
+            <option value="제품설명·소개">제품설명·소개</option>
+            <option value="샘플·데모">샘플·데모</option>
+            <option value="납품·설치">납품·설치</option>
+            <option value="A/S·클레임">A/S·클레임</option>
+            <option value="견적제출">견적제출</option>
+            <option value="관계관리">관계관리</option>
+            <option value="수금·결제">수금·결제</option>
+            <option value="신규접촉">신규접촉</option>
+          </select>
+
+          <select id="excel-filter-region" class="excel-select" onchange="handleExcelLogSearch()">
+            <option value="">🗺️ 전체 권역</option>
+            <option value="서울경기">서울경기</option>
+            <option value="천안아산">천안아산</option>
+            <option value="평택">평택</option>
+            <option value="세종충북">세종충북</option>
+            <option value="대전논산">대전논산</option>
+            <option value="서산당진">서산당진</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Hint Bar -->
+      <div class="excel-hint-bar">
+        <span class="hint-icon">💡</span>
+        <span>목록의 <strong>행을 더블클릭</strong>하거나 우측의 <strong>[✏️ 수정]</strong> 버튼을 누르면 해당 영업일지의 병원, 품목코드, 상담내용 등을 즉시 수정할 수 있습니다.</span>
+        <span class="hint-stats" id="excel-filtered-count-text">전체 758건 중 758건 표시</span>
+      </div>
+
+      <!-- Excel Table Container -->
+      <div class="excel-table-container">
+        <table class="excel-table">
+          <colgroup>
+            <col style="width: 45px;">
+            <col style="width: 115px;">
+            <col style="width: 155px;">
+            <col style="width: 80px;">
+            <col style="width: 220px;">
+            <col style="width: 105px;">
+            <col style="width: auto;">
+            <col style="width: 160px;">
+            <col style="width: 75px;">
+          </colgroup>
+          <thead>
+            <tr>
+              <th style="text-align:center;">No</th>
+              <th style="text-align:center;">일자</th>
+              <th>거래처 (병원명)</th>
+              <th style="text-align:center;">영업담당</th>
+              <th>매핑 ERP 품목명 [코드]</th>
+              <th style="text-align:center;">활동분류</th>
+              <th>핵심 영업내용 & 미팅 요약</th>
+              <th>다음 할 일 (Action)</th>
+              <th style="text-align:center;">관리</th>
+            </tr>
+          </thead>
+          <tbody id="excel-log-tbody">
+            <!-- Dynamic Rows rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-footer excel-modal-footer">
+        <div style="font-size:0.78rem; color:var(--text-muted);">
+          * 영업일지 수정 시 LocalStorage 및 파이프라인/병원 타임라인에 실시간 영구 반영됩니다.
+        </div>
+        <button class="btn-secondary" onclick="closeAllLogsExcelModal()">닫기 (ESC)</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- 2. Edit Activity Log Modal -->
+  <dialog id="edit-activity-log-modal" class="custom-modal" style="max-width:680px;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="edit-log-modal-title">✏️ 영업활동 일지 상세 수정</h3>
+        <button class="modal-close-btn" onclick="closeEditActivityLogModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="edit-log-index" value="-1">
+
+        <div class="modal-row">
+          <div class="modal-field flex-1">
+            <label class="modal-label">거래처 (병원명) *</label>
+            <input type="text" id="edit-log-hospital" class="modal-input" placeholder="예: 보은한양병원, 청주한국병원 등" required>
+          </div>
+          <div class="modal-field flex-1">
+            <label class="modal-label">영업담당자 *</label>
+            <select id="edit-log-sales-rep" class="modal-select">
+              <option value="최진웅">최진웅</option>
+              <option value="이은필">이은필</option>
+              <option value="이재덕">이재덕</option>
+              <option value="이우식">이우식</option>
+              <option value="원유훈">원유훈</option>
+              <option value="이상미">이상미</option>
+              <option value="이우진">이우진</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-row">
+          <div class="modal-field flex-1">
+            <label class="modal-label">활동 일자 *</label>
+            <input type="text" id="edit-log-date" class="modal-input" placeholder="YYYY/MM/DD" required>
+          </div>
+          <div class="modal-field flex-1">
+            <label class="modal-label">활동 분류 *</label>
+            <select id="edit-log-action-type" class="modal-select">
+              <option value="제품설명·소개">제품설명·소개</option>
+              <option value="샘플·데모">샘플·데모</option>
+              <option value="납품·설치">납품·설치</option>
+              <option value="A/S·클레임">A/S·클레임</option>
+              <option value="견적제출">견적제출</option>
+              <option value="관계관리">관계관리</option>
+              <option value="수금·결제">수금·결제</option>
+              <option value="신규접촉">신규접촉</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="modal-label" style="margin-bottom:0;">공식 ERP 품목 매핑 [4,054개 마스터]</label>
+            <button type="button" class="btn-text-sm" onclick="toggleEditLogProductSearchBox()" style="color:var(--accent-cyan); font-weight:700; background:none; border:none; cursor:pointer; font-size:0.78rem;">
+              🔍 다른 ERP 품목 검색 교체
+            </button>
+          </div>
+          
+          <div class="current-deal-prod-badge" id="edit-log-current-prod-badge" style="background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.3); border-radius:8px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <span style="font-weight:700; color:#fff;" id="edit-log-product-name-display">선택된 품목 없음</span>
+              <span style="font-size:0.75rem; color:var(--accent-cyan); margin-left:6px;" id="edit-log-product-code-display">[PROD_GENERAL]</span>
+            </div>
+            <span style="font-size:0.72rem; color:var(--text-muted);">ERP 매핑됨</span>
+          </div>
+
+          <input type="hidden" id="edit-log-product-name" value="">
+          <input type="hidden" id="edit-log-product-code" value="">
+
+          <!-- Expandable ERP Search Box -->
+          <div id="edit-log-erp-search-box" style="display:none; margin-top:8px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:10px;">
+            <input type="text" id="edit-log-erp-search-input" class="modal-input" placeholder="품목명, 규격, 카톡 별칭, 품목코드 실시간 검색..." oninput="searchErpProductsForLogEdit(this.value)">
+            <div id="edit-log-erp-search-results" style="max-height:140px; overflow-y:auto; margin-top:6px; font-size:0.8rem;"></div>
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">활동 제목</label>
+          <input type="text" id="edit-log-title" class="modal-input" placeholder="활동 요약 제목">
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">상세 영업내용 및 미팅 메모 *</label>
+          <textarea id="edit-log-note" class="modal-textarea" rows="4" placeholder="의료진 상담 내용, 피드백, 특이사항 등"></textarea>
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">다음 할 일 (Action Item)</label>
+          <input type="text" id="edit-log-next-action" class="modal-input" placeholder="예: 샘플 추가 전달, 견적서 발송 등">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-danger" onclick="deleteActivityLog()" style="margin-right:auto; background:rgba(239,68,68,0.2); border:1px solid rgba(239,68,68,0.5); color:#f87171; border-radius:8px; padding:8px 14px; cursor:pointer; font-weight:700;">
+          🗑️ 일지 삭제
+        </button>
+        <button class="btn-secondary" onclick="closeEditActivityLogModal()">취소</button>
+        <button class="btn-save" onclick="saveEditedActivityLog()">💾 수정사항 저장</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL: Edit Hospital Profile & Key Contacts -->
+  <dialog class="modal-dialog" id="edit-hospital-modal">
+    <div class="modal-content" style="max-width:560px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.1rem; color:#fff; display:flex; align-items:center; gap:8px;">
+          <span>🏥</span> <span id="modal-edit-hosp-title">병원 정보 및 핵심 관계자 수정</span>
+        </h3>
+        <button class="modal-close-btn" onclick="closeEditHospitalModal()">✕</button>
+      </div>
+
+      <div class="modal-body" style="display:flex; flex-direction:column; gap:12px;">
+        <input type="hidden" id="modal-edit-hosp-name-hidden">
+        
+        <div class="modal-grid-2">
+          <div class="modal-field flex-1">
+            <label class="modal-label">병원 권역 (지역) *</label>
+            <select id="modal-edit-hosp-region" class="modal-select">
+              <option value="천안아산">천안아산</option>
+              <option value="세종충북">세종충북</option>
+              <option value="대전논산">대전논산</option>
+              <option value="서산당진">서산당진</option>
+              <option value="서울경기">서울경기</option>
+              <option value="평택">평택</option>
+              <option value="원내">원내</option>
+            </select>
+          </div>
+
+          <div class="modal-field flex-1">
+            <label class="modal-label">병원 등급 / 분류</label>
+            <select id="modal-edit-hosp-type" class="modal-select">
+              <option value="중점 관리 병원">⭐ 중점 관리 병원</option>
+              <option value="활동 병원">🏥 활동 병원</option>
+              <option value="신규 발굴 병원">🌱 신규 발굴 병원</option>
+              <option value="휴면/보류 병원">⏸️ 휴면/보류 병원</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <label class="modal-label">주 담당 영업사원 (다중 선택 가능)</label>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;" id="modal-edit-hosp-rep-chips">
+            <label class="rep-checkbox-label" style="background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; font-size:0.8rem; display:flex; align-items:center; gap:6px;">
+              <input type="checkbox" name="edit-hosp-reps" value="최진웅"> 최진웅
+            </label>
+            <label class="rep-checkbox-label" style="background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; font-size:0.8rem; display:flex; align-items:center; gap:6px;">
+              <input type="checkbox" name="edit-hosp-reps" value="이은필"> 이은필
+            </label>
+            <label class="rep-checkbox-label" style="background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; font-size:0.8rem; display:flex; align-items:center; gap:6px;">
+              <input type="checkbox" name="edit-hosp-reps" value="이재덕"> 이재덕
+            </label>
+            <label class="rep-checkbox-label" style="background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; font-size:0.8rem; display:flex; align-items:center; gap:6px;">
+              <input type="checkbox" name="edit-hosp-reps" value="이우식"> 이우식
+            </label>
+            <label class="rep-checkbox-label" style="background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; font-size:0.8rem; display:flex; align-items:center; gap:6px;">
+              <input type="checkbox" name="edit-hosp-reps" value="원유훈"> 원유훈
+            </label>
+            <label class="rep-checkbox-label" style="background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; font-size:0.8rem; display:flex; align-items:center; gap:6px;">
+              <input type="checkbox" name="edit-hosp-reps" value="이상미"> 이상미
+            </label>
+            <label class="rep-checkbox-label" style="background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; font-size:0.8rem; display:flex; align-items:center; gap:6px;">
+              <input type="checkbox" name="edit-hosp-reps" value="이우진"> 이우진
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <label class="modal-label" style="margin-bottom:0;">👨‍⚕️ 병원 내 진짜 핵심 관계자 / 의료진 (Keyman)</label>
+            <span style="font-size:0.72rem; color:var(--text-muted);">쉼표(,) 또는 줄바꿈으로 구분</span>
+          </div>
+          <textarea id="modal-edit-hosp-contacts" class="modal-textarea" rows="3" placeholder="예: 박철종 원장 (산부인과), 서정한 과장, 이상훈 팀장 (원무과)"></textarea>
+          <div style="font-size:0.73rem; color:var(--accent-cyan); margin-top:4px;">
+            💡 일지 작성 시 무작위로 축적된 텍스트 대신, 실제 주요 결정권자 및 핵심 키맨만 깔끔하게 등록해 두세요.
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeEditHospitalModal()">취소</button>
+        <button class="btn-save" onclick="saveEditedHospitalProfile()">💾 병원 정보 저장</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Mobile Native Bottom Navigation Bar -->
+  <nav class="mobile-bottom-nav">
+    <button class="mobile-nav-item active" onclick="switchTab('hospital')" id="mob-tab-hospital">
+      <span class="icon">🏥</span>
+      <span>병원360°</span>
+    </button>
+    <button class="mobile-nav-item" onclick="switchTab('pipeline')" id="mob-tab-pipeline">
+      <span class="icon">📦</span>
+      <span>파이프라인</span>
+    </button>
+    <button class="mobile-nav-item" onclick="switchTab('analytics')" id="mob-tab-analytics">
+      <span class="icon">📊</span>
+      <span>통계분석</span>
+    </button>
+  </nav>
+
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- App Script -->
+  <script src="app.js?v=ecount_useby_filtered_v31"></script>
+</body>
+</html>

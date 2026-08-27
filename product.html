@@ -1,0 +1,346 @@
+<!--
+================================================================================
+준메디칼 주식회사 홈페이지 프로젝트 - products.html 소스 코드
+================================================================================
+※ 사용 방법:
+1. 이 파일의 전체 내용을 복사합니다.
+2. 로컬 작업 폴더 혹은 GitHub 웹 에디터에서 'products.html' 파일을 생성합니다.
+3. 복사한 내용을 붙여넣고 저장합니다.
+4. 'style.css' 파일과 동일한 경로(루트 폴더)에 배치해 주세요.
+================================================================================
+-->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>취급제품 | 준메디칼 주식회사</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- 기본 스타일시트 연동 -->
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* ✏️ 수정 구역 1: 추가 스타일 정의 */
+        /* style.css에 정의된 스타일 외에 이 페이지에만 특별히 적용할 추가 스타일을 작성합니다. */
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eef2f5;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-image-area {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background-color: #f7f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #eef2f5;
+            overflow: hidden;
+        }
+        
+        .product-image-area img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+        }
+        
+        .product-card:hover .product-image-area img {
+            transform: scale(1.05);
+        }
+        
+        .product-image-placeholder {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-weight: 500;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .product-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        
+        .product-category {
+            font-size: 0.8rem;
+            color: #10b981;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-title {
+            font-size: 1.25rem;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+        
+        .product-desc {
+            font-size: 0.95rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+        
+        .product-brand-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1.25rem;
+        }
+        
+        .brand-tag {
+            font-size: 0.75rem;
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        .product-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #0284c7;
+            text-decoration: none;
+            border-top: 1px solid #eef2f5;
+            padding-top: 1rem;
+            margin-top: auto;
+            transition: color 0.2s ease;
+        }
+        
+        .product-link::after {
+            content: " →";
+            transition: transform 0.2s ease;
+        }
+        
+        .product-link:hover {
+            color: #0369a1;
+        }
+        
+        .product-link:hover::after {
+            transform: translateX(4px);
+        }
+
+        /* 모바일 대응 미디어쿼리 */
+        @media (max-width: 768px) {
+            .product-image-area {
+                height: 180px;
+            }
+            .product-content {
+                padding: 1.25rem;
+            }
+            .product-title {
+                font-size: 1.15rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ★ 공통 헤더 영역 (수정 금지) ★ -->
+    <header class="site-header">
+        <div class="section-inner" style="display: flex; justify-content: space-between; align-items: center; height: 80px;">
+            <a href="index.html" style="font-weight: 700; font-size: 1.5rem; color: #1e293b; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                <span style="color: #0284c7;">준메디칼</span> 주식회사
+            </a>
+            <nav class="site-nav">
+                <ul style="display: flex; list-style: none; gap: 2rem; margin: 0; padding: 0;">
+                    <li><a href="about.html" style="text-decoration: none; color: #475569; font-weight: 500; transition: color 0.2s;">회사소개</a></li>
+                    <li><a href="products.html" style="text-decoration: none; color: #0284c7; font-weight: 700; transition: color 0.2s;">취급제품</a></li>
+                    <li><a href="brands.html" style="text-decoration: none; color: #475569; font-weight: 500; transition: color 0.2s;">파트너 브랜드</a></li>
+                    <li><a href="contact.html" style="text-decoration: none; color: #475569; font-weight: 500; transition: color 0.2s;">고객문의</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ✏️ 수정 구역 2: 서브페이지 히어로 영역 -->
+    <!-- 각 페이지의 성격에 맞게 타이틀과 설명 문구를 수정할 수 있습니다. -->
+    <section class="hero">
+        <div class="section-inner" style="text-align: center; color: #ffffff; padding: 5rem 1.5rem;">
+            <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; letter-spacing: -0.02em;">취급제품</h1>
+            <p style="font-size: 1.15rem; opacity: 0.9; max-width: 600px; margin: 0 auto; line-height: 1.6; word-break: keep-all;">
+                준메디칼 주식회사는 엄격한 글로벌 규격을 충족하는 우수한 수술 기구 및 최고 품질의 메디컬 소모품을 엄선하여 의료기관에 공급합니다.
+            </p>
+        </div>
+    </section>
+
+    <!-- ✏️ 수정 구역 3: 취급제품 카테고리 그리드 영역 -->
+    <!-- 신규 제품 카테고리가 추가되거나 설명 문구를 수정할 때 이 영역의 마크업을 편집하세요. -->
+    <section class="section">
+        <div class="section-inner" style="padding: 5rem 1.5rem;">
+            <div style="text-align: center; margin-bottom: 3.5rem;">
+                <h2 style="font-size: 2rem; color: #1e293b; margin-bottom: 1rem;">제품 카테고리</h2>
+                <p style="color: #64748b; font-size: 1.05rem;">각 카테고리를 선택하시면 상세 제품 라인업과 세부 정보를 확인하실 수 있습니다.</p>
+            </div>
+            
+            <div class="card-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                
+                <!-- 카테고리 1: 복강경 수술기구 -->
+                <article class="card">
+                    <div class="product-card">
+                        <div class="product-image-area">
+                            <!-- ✏️ 이미지 추가 준비 구역 -->
+                            <!-- 추후 실물 이미지가 업로드되면 아래 <img> 태그 주석을 해제하고 placeholder div를 삭제하세요. -->
+                            <!-- <img src="images/wisap-trocar.png" alt="복강경 수술기구"> -->
+                            <div class="product-image-placeholder">
+                                <span style="display: block; font-size: 2rem; margin-bottom: 0.5rem;">🔬</span>
+                                [이미지 준비중]<br>
+                                images/wisap-trocar.png
+                            </div>
+                        </div>
+                        <div class="product-content">
+                            <span class="product-category">Laparoscopy</span>
+                            <h3 class="product-title">복강경 수술기구</h3>
+                            <p class="product-desc">독일 WISAP 사의 정교한 엔지니어링 기술로 설계된 정밀 복강경 트로카, 일회용 겸자, 가위 및 니들홀더 제품군입니다.</p>
+                            <div class="product-brand-tags">
+                                <span class="brand-tag">WISAP(독일)</span>
+                            </div>
+                            <a href="products-laparoscopy.html" class="product-link">자세히 보기</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 카테고리 2: DVT 예방장비 -->
+                <article class="card">
+                    <div class="product-card">
+                        <div class="product-image-area">
+                            <!-- ✏️ 이미지 추가 준비 구역 -->
+                            <!-- 추후 실물 이미지가 업로드되면 아래 <img> 태그 주석을 해제하고 placeholder div를 삭제하세요. -->
+                            <!-- <img src="images/dvt-main.png" alt="DVT 예방장비"> -->
+                            <div class="product-image-placeholder">
+                                <span style="display: block; font-size: 2rem; margin-bottom: 0.5rem;">🏥</span>
+                                [이미지 준비중]<br>
+                                images/dvt-main.png
+                            </div>
+                        </div>
+                        <div class="product-content">
+                            <span class="product-category">DVT Prevention</span>
+                            <h3 class="product-title">DVT 예방장비</h3>
+                            <p class="product-desc">수술 전후 및 장기 입원 환자의 혈액 순환을 도와 심부정맥혈전증(DVT) 예방을 돕는 정밀 간헐적 공기압박 치료 장치입니다.</p>
+                            <div class="product-brand-tags">
+                                <span class="brand-tag">DVT 예방시스템</span>
+                            </div>
+                            <a href="products-dvt.html" class="product-link">자세히 보기</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 카테고리 3: 수술포 / 멸균포 -->
+                <article class="card">
+                    <div class="product-card">
+                        <div class="product-image-area">
+                            <!-- ✏️ 이미지 추가 준비 구역 -->
+                            <!-- 추후 실물 이미지가 업로드되면 아래 <img> 태그 주석을 해제하고 placeholder div를 삭제하세요. -->
+                            <!-- <img src="images/drape-main.png" alt="수술포 및 멸균포"> -->
+                            <div class="product-image-placeholder">
+                                <span style="display: block; font-size: 2rem; margin-bottom: 0.5rem;">🛡️</span>
+                                [이미지 준비중]<br>
+                                images/drape-main.png
+                            </div>
+                        </div>
+                        <div class="product-content">
+                            <span class="product-category">Surgical Drapes</span>
+                            <h3 class="product-title">수술포 및 멸균포</h3>
+                            <p class="product-desc">철저한 감염 예방과 수술실 위생을 보장하는 일회용 멸균 수술포 및 특수 수술실 린넨 대용 소모품군입니다.</p>
+                            <div class="product-brand-tags">
+                                <span class="brand-tag">세종헬스케어</span>
+                            </div>
+                            <a href="products-drape.html" class="product-link">자세히 보기</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 카테고리 4: 기타 소모품 -->
+                <article class="card">
+                    <div class="product-card">
+                        <div class="product-image-area">
+                            <!-- ✏️ 이미지 추가 준비 구역 -->
+                            <!-- 추후 실물 이미지가 업로드되면 아래 <img> 태그 주석을 해제하고 placeholder div를 삭제하세요. -->
+                            <!-- <img src="images/brand-mb2020.png" alt="기타 소모품"> -->
+                            <div class="product-image-placeholder">
+                                <span style="display: block; font-size: 2rem; margin-bottom: 0.5rem;">💉</span>
+                                [이미지 준비중]<br>
+                                특수 의료소모품
+                            </div>
+                        </div>
+                        <div class="product-content">
+                            <span class="product-category">Medical Supplies</span>
+                            <h3 class="product-title">기타 의료 소모품</h3>
+                            <p class="product-desc">환자의 빠른 통증 완화와 회복을 위한 고품질 PCA 무통백(일회용 자가통증조절장치) 및 조직 유착방지제 제품군입니다.</p>
+                            <div class="product-brand-tags">
+                                <span class="brand-tag">MB2020</span>
+                                <span class="brand-tag">자가통증조절기</span>
+                            </div>
+                            <a href="products-etc.html" class="product-link">자세히 보기</a>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ★ 공통 CTA 배너 영역 (수정 금지) ★ -->
+    <section class="cta-banner" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; text-align: center; padding: 4rem 1.5rem;">
+        <div class="section-inner">
+            <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem;">준메디칼의 제품 및 파트너십이 궁금하십니까?</h2>
+            <p style="font-size: 1.05rem; opacity: 0.9; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+                B2B 병원 유통, 대리점 개설 문의 등 궁금하신 사안을 남겨주시면 담당자가 빠른 시일 내에 상세히 답변드리겠습니다.
+            </p>
+            <a href="contact.html" style="display: inline-block; background-color: #ffffff; color: #0284c7; padding: 0.8rem 2rem; font-weight: 700; border-radius: 4px; text-decoration: none; transition: background-color 0.2s;">문의하기</a>
+        </div>
+    </section>
+
+    <!-- ★ 공통 푸터 영역 (수정 금지) ★ -->
+    <footer class="site-footer" style="background-color: #0f172a; color: #94a3b8; font-size: 0.9rem; padding: 3rem 1.5rem; border-top: 1px solid #1e293b;">
+        <div class="section-inner">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem; margin-bottom: 2rem;">
+                <div>
+                    <h4 style="color: #ffffff; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">준메디칼 주식회사</h4>
+                    <p style="line-height: 1.6; margin-bottom: 0.5rem;">충청남도 천안시 서북구 도원8길 38, 402호 (성정동)</p>
+                    <p style="line-height: 1.6; margin-bottom: 0.5rem;">대표자: 이우진 | 사업자등록번호: 869-87-03464</p>
+                    <p style="line-height: 1.6;">의료기기판매업 신고번호: 제2026-4490261-00002호</p>
+                </div>
+                <div>
+                    <h4 style="color: #ffffff; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">고객지원 및 문의</h4>
+                    <p style="line-height: 1.6; margin-bottom: 0.5rem;">Tel: 041-522-9917 | Fax: 041-522-9918</p>
+                    <p style="line-height: 1.6;">E-mail: junmed14@naver.com</p>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #1e293b; padding-top: 1.5rem; text-align: center; font-size: 0.8rem;">
+                <p>&copy; 2026 JUN MEDICAL Co., Ltd. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
