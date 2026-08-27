@@ -2,11 +2,22 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>의료기기 영업관리 360° 파이프라인 시스템</title>
   <meta name="description" content="병원 360도 뷰, 제품별 파이프라인 매트릭스, A/S 긴급 알림, 데모 회수 관리 및 AI 스마트 영업일지 자동 정제 시스템">
-  <link rel="stylesheet" href="app.css?v=20260827_1705_as_slack_perfect">
-  <script src="sales_database.js?v=20260827_1705_as_slack_perfect"></script>
+  
+  <!-- PWA & Mobile Web App Meta -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e293b">
+  
+  <!-- Apple iOS Native App Meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MEDI-SALES">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  
+  <link rel="stylesheet" href="app.css?v=20260827_1820_pwa_ios">
+  <script src="sales_database.js?v=20260827_1820_pwa_ios"></script>
 </head>
 <body>
 
@@ -1613,6 +1624,16 @@
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- App Script -->
-  <script src="app.js?v=20260827_1705_as_slack_perfect"></script>
+  <script src="app.js?v=20260827_1820_pwa_ios"></script>
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then(reg => {
+          console.log('⚡ PWA Service Worker Ready:', reg.scope);
+        }).catch(err => console.warn('SW register error:', err));
+      });
+    }
+  </script>
 </body>
 </html>
