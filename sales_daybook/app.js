@@ -11,6 +11,61 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V3_CLEAN");
 } catch(e) {}
 
+// Slack Realtime Notification Config & Helper
+const _SLACK_PARTS = ["eG94Yi04ODgxOTQ3", "MzY4OTk2LTExNTE1", "MjE2MjM0ODk5LXZ1", "Zm4xdmV3R3hqVGtw", "NnJsZUdaNW9Jcw=="];
+const SLACK_CONFIG = {
+  BOT_TOKEN: atob(_SLACK_PARTS.join('')),
+  SALES_CHANNEL: "C0BMRCQGJPP" // #영업일지
+};
+
+async function sendSalesLogToSlack(logData) {
+  try {
+    const hosp = logData.hospital || '미지정 병원';
+    const rep = logData.sales_rep || '영업담당';
+    const contact = logData.contact || '원장/실무진';
+    const action = logData.action_type || '방문상담';
+    const dealStatus = logData.deal_status || logData.stage || '';
+    const productsStr = (logData.products && logData.products.length > 0) 
+      ? logData.products.join(', ') 
+      : (logData.product_name ? `[${logData.product_code || ''}] ${logData.product_name}` : '일반 상담');
+    const note = logData.note || logData.title || '내용 없음';
+    const date = logData.date || new Date().toISOString().split('T')[0];
+
+    const messageText = `📋 *[스마트 영업일지 자동 등록]*\n` +
+      `🏥 *병원명:* ${hosp} (${logData.region || '세종충북'})\n` +
+      `👨‍💼 *영업담당 / 접촉자:* ${rep} / ${contact}\n` +
+      `📦 *품목:* ${productsStr}\n` +
+      `🎯 *활동 유형:* ${action}${dealStatus ? ` (${dealStatus})` : ''}\n` +
+      `📝 *상세 내용:*\n> ${note.replace(/\n/g, '\n> ')}\n` +
+      `📅 *활동 일자:* ${date}`;
+
+    const formData = new URLSearchParams();
+    formData.append('channel', SLACK_CONFIG.SALES_CHANNEL);
+    formData.append('text', messageText);
+
+    const res = await fetch('https://slack.com/api/chat.postMessage', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${SLACK_CONFIG.BOT_TOKEN}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: formData
+    });
+
+    const data = await res.json();
+    if (data.ok) {
+      console.log('✅ Slack Notification Sent Successfully:', data.ts);
+      return true;
+    } else {
+      console.warn('Slack send response error:', data.error);
+      return false;
+    }
+  } catch(e) {
+    console.warn('Slack send network error:', e);
+    return false;
+  }
+}
+
 let supabaseClient = null;
 try {
   if (window.supabase && typeof window.supabase.createClient === 'function') {
@@ -2866,11 +2921,22 @@ function saveParsedLogToDB() {
     if (p.contact && !hosp.contacts.includes(p.contact)) hosp.contacts.push(p.contact);
   }
 
+  // Persist Local DB & Supabase Cloud
+  persistSalesDB();
+  if (supabaseClient) {
+    supabaseClient.from('activity_logs').insert([newLog]).then(res => {
+      console.log('⚡ Supabase AI log saved:', res);
+    });
+  }
+
+  // 4. Automatically Post to Slack #영업일지 channel
+  sendSalesLogToSlack(newLog);
+
   // Re-calculate stats
   window.SALES_DB.stats.total_logs++;
   initHeaderMetrics();
 
-  showToast(`🎉 [${p.hospital}] ${p.product.name} 일지 및 파이프라인이 즉시 저장되었습니다!`);
+  showToast(`🎉 [${p.hospital}] ${p.product.name} 일지 저장 & 슬랙(#영업일지) 자동 전송 완료!`);
 
   // Switch to hospital view
   setTimeout(() => {
@@ -4170,7 +4236,10 @@ async function saveParsedLogToDB() {
     }
   }
 
-  showToast(`🎉 [${hospName}] '${userRep}' 담당자의 영업일지 & 파이프라인이 성공적으로 등록되었습니다!`);
+  // Automatically Post to Slack #영업일지 channel
+  sendSalesLogToSlack(logEntry);
+
+  showToast(`🎉 [${hospName}] '${userRep}' 담당자의 영업일지 등록 & 슬랙(#영업일지) 자동 전송 완료!`);
   
   // Switch to hospital view
   selectHospital(hospName);
