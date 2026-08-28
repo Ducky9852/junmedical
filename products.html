@@ -235,7 +235,30 @@ function toggleFloatingPopup(){
   const popup = document.getElementById('floatingPopup');
   popup.classList.toggle('open');
 }
+
+// 빠른 견적·문의 아이콘 마우스 호버 시 팝업 열기/닫기
 document.addEventListener('DOMContentLoaded', () => {
+  const popup = document.getElementById('floatingPopup');
+  const quickBtn = document.querySelector('.floating-quick-btn');
+
+  if (popup && quickBtn) {
+    let hideTimer;
+    const show = () => {
+      clearTimeout(hideTimer);
+      popup.classList.add('show');
+    };
+    const hide = () => {
+      hideTimer = setTimeout(() => {
+        popup.classList.remove('show');
+      }, 150);
+    };
+
+    quickBtn.addEventListener('mouseenter', show);
+    quickBtn.addEventListener('mouseleave', hide);
+    popup.addEventListener('mouseenter', show);
+    popup.addEventListener('mouseleave', hide);
+  }
+
   const reveals = document.querySelectorAll('.reveal');
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
