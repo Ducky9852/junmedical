@@ -84686,9 +84686,9 @@ window.SALES_DB = {
       "hospital": "대전 한국병원",
       "region": "대전논산",
       "sales_rep": "최진웅",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "status": "데모·샘플평가",
+      "product_id": "ST-ANG-PR03",
+      "product_name": "ANGIO 시술용 키트 (PR03 / Adv.)",
+      "status": "소모품 샘플",
       "last_date": "2026/08/10",
       "latest_action": "샘플·데모",
       "latest_note": "대전한국병원 심장혈관센터에 ANGIO 시술용 키트 PR03 샘플을 제공하였습니다.\n다음: 목요일 또는 금요일 중 재방문하여 실장 면담 예정",
@@ -84700,7 +84700,11 @@ window.SALES_DB = {
       "as_info": null,
       "fail_reasons": [],
       "created_at": "2026-08-26T07:07:25.969055+00:00",
-      "updated_at": "2026-08-26T07:07:25.969055+00:00"
+      "updated_at": "2026-08-26T07:07:25.969055+00:00",
+      "product_category": "일반의료기기",
+      "vendor": "(주)세종헬스케어",
+      "erp_code": "ST-ANG-PR03",
+      "edi": "BM5107SJ"
     },
     {
       "id": 618,
@@ -84728,9 +84732,9 @@ window.SALES_DB = {
       "hospital": "서산의료원",
       "region": "서산당진",
       "sales_rep": "이은필",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "status": "데모·샘플평가",
+      "product_id": "ST-ANG-PR03",
+      "product_name": "ANGIO 시술용 키트 (PR03 / Adv.)",
+      "status": "소모품 샘플",
       "last_date": "2026/07/14",
       "latest_action": "샘플·데모",
       "latest_note": "서산의료원 심뇌혈관센터를 방문하여 미팅을 진행하고 ANGIO 시술용 키트 샘플 1개를 전달하였습니다.",
@@ -84742,7 +84746,11 @@ window.SALES_DB = {
       "as_info": null,
       "fail_reasons": [],
       "created_at": "2026-08-26T07:07:25.969055+00:00",
-      "updated_at": "2026-08-26T07:07:25.969055+00:00"
+      "updated_at": "2026-08-26T07:07:25.969055+00:00",
+      "product_category": "일반의료기기",
+      "vendor": "(주)세종헬스케어",
+      "erp_code": "ST-ANG-PR03",
+      "edi": "BM5107SJ"
     },
     {
       "id": 829,
@@ -84809,8 +84817,8 @@ window.SALES_DB = {
       "hospital": "제천명지병원",
       "region": "세종충북",
       "sales_rep": "이재덕",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
+      "product_id": "ST-ANG-PR03",
+      "product_name": "ANGIO 시술용 키트 (PR03 / Adv.)",
       "status": "영업실패·보류",
       "last_date": "2026/08/20",
       "latest_action": "제품설명·소개",
@@ -84825,7 +84833,11 @@ window.SALES_DB = {
         "기존 거래처/경쟁사 선호"
       ],
       "created_at": "2026-08-26T07:07:25.969055+00:00",
-      "updated_at": "2026-08-26T07:07:25.969055+00:00"
+      "updated_at": "2026-08-26T07:07:25.969055+00:00",
+      "product_category": "일반의료기기",
+      "vendor": "(주)세종헬스케어",
+      "erp_code": "ST-ANG-PR03",
+      "edi": "BM5107SJ"
     },
     {
       "id": 624,
@@ -84856,8 +84868,8 @@ window.SALES_DB = {
       "hospital": "청주성모병원",
       "region": "세종충북",
       "sales_rep": "이재덕",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
+      "product_id": "ST-ANG-PR03",
+      "product_name": "ANGIO 시술용 키트 (PR03 / Adv.)",
       "status": "제품소개·영업중",
       "last_date": "2026/08/24",
       "latest_action": "제품설명·소개",
@@ -84866,7 +84878,11 @@ window.SALES_DB = {
       "as_info": null,
       "fail_reasons": [],
       "created_at": "2026-08-26T07:07:25.969055+00:00",
-      "updated_at": "2026-08-26T07:07:25.969055+00:00"
+      "updated_at": "2026-08-26T07:07:25.969055+00:00",
+      "product_category": "일반의료기기",
+      "vendor": "(주)세종헬스케어",
+      "erp_code": "ST-ANG-PR03",
+      "edi": "BM5107SJ"
     },
     {
       "id": 626,
@@ -84890,8 +84906,8 @@ window.SALES_DB = {
       "hospital": "청주효성병원",
       "region": "세종충북",
       "sales_rep": "이재덕",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
+      "product_id": "ST-ANG-PR03",
+      "product_name": "ANGIO 시술용 키트 (PR03 / Adv.)",
       "status": "도입완료·납품",
       "last_date": "2026/08/10",
       "latest_action": "제품설명·소개",
@@ -84900,7 +84916,11 @@ window.SALES_DB = {
       "as_info": null,
       "fail_reasons": [],
       "created_at": "2026-08-26T07:07:25.969055+00:00",
-      "updated_at": "2026-08-26T07:07:25.969055+00:00"
+      "updated_at": "2026-08-26T07:07:25.969055+00:00",
+      "product_category": "일반의료기기",
+      "vendor": "(주)세종헬스케어",
+      "erp_code": "ST-ANG-PR03",
+      "edi": "BM5107SJ"
     },
     {
       "id": 628,
@@ -85133,56 +85153,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-26T07:07:25.969055+00:00"
     },
     {
-      "id": 833,
-      "hospital": "광제산부인과",
-      "region": "세종충북",
-      "sales_rep": "최진웅",
-      "product_id": "201.023",
-      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
-      "status": "A/S접수·처리",
-      "last_date": "2026/08/27",
-      "latest_action": "샘플·데모",
-      "latest_note": "광제산부인과 모슬레이터 핸들 데모 줬음",
-      "demo_info": {
-        "date": "2026/08/27",
-        "note": "광제산부인과 모슬레이터 핸들 데모 줬음",
-        "status": "평가진행중"
-      },
-      "as_info": {
-        "status": "외부전달",
-        "stage": "2. 외부전달",
-        "repair_vendor": "블루메디칼",
-        "loaner": true,
-        "note": "광제산부인과 모슬레이터 핸들 블루메디칼 외부 전달 및 데모 대체기 지급 완료"
-      },
-      "fail_reasons": [],
-      "created_at": "2026-08-27T00:48:39.274557+00:00",
-      "updated_at": "2026-08-27T00:48:39.274557+00:00"
-    },
-    {
-      "id": 834,
-      "hospital": "광제산부인과",
-      "region": "세종충북",
-      "sales_rep": "최진웅",
-      "product_id": "201.023",
-      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
-      "status": "A/S접수·처리",
-      "last_date": "2026/08/27",
-      "latest_action": "A/S·클레임",
-      "latest_note": "광제산부인과 모슬레이터 핸들 A/S 블루메디칼에서 받아 데모줌",
-      "demo_info": null,
-      "as_info": {
-        "status": "외부전달",
-        "stage": "2. 외부전달",
-        "repair_vendor": "블루메디칼",
-        "loaner": true,
-        "note": "광제산부인과 모슬레이터 핸들 블루메디칼 외부 전달 및 데모 대체기 지급 완료"
-      },
-      "fail_reasons": [],
-      "created_at": "2026-08-27T00:49:06.120819+00:00",
-      "updated_at": "2026-08-27T00:49:06.120819+00:00"
-    },
-    {
       "id": 835,
       "hospital": "영훈의료재단 유성선병원",
       "region": "세종충북",
@@ -85270,23 +85240,6 @@ window.SALES_DB = {
       "last_date": "2026/02/19",
       "latest_action": "제품설명·소개",
       "latest_note": "서지소드 디테일 설명. 사용제품있어 고려해보겠다고함.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:07:26.071243+00:00",
-      "updated_at": "2026-08-26T07:07:26.071243+00:00"
-    },
-    {
-      "id": 762,
-      "hospital": "건국대학교 충주병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/02/24",
-      "latest_action": "제품설명·소개",
-      "latest_note": "서지소드 디테일",
       "demo_info": null,
       "as_info": null,
       "fail_reasons": [],
@@ -85621,46 +85574,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-26T07:07:26.071243+00:00"
     },
     {
-      "id": 782,
-      "hospital": "청주성모병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "status": "데모·샘플평가",
-      "last_date": "2026/04/08",
-      "latest_action": "관계관리",
-      "latest_note": "서지소드 er에서 피드백은 별로라고함. Er을 직접 공략해 봐야겠음.",
-      "demo_info": {
-        "date": "2026/02/20",
-        "note": "청주성모병원 샘플 제공 서지소드 샘플제공. 피드백 주겠다함.",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:07:26.071243+00:00",
-      "updated_at": "2026-08-26T07:07:26.071243+00:00"
-    },
-    {
-      "id": 783,
-      "hospital": "충청북도 청주의료원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "status": "영업실패·보류",
-      "last_date": "2026/08/18",
-      "latest_action": "제품설명·소개",
-      "latest_note": "청주의료원 정형외과 김윤호 과장에게 써지패드를 소개했으나 기존 사용 제품이 있다고 하였습니다. 향후 써지패드 x-ray 제품으로 계속 방문할 예정입니다.\n다음: 써지패드 x-ray 제품으로 지속 방문 및 영업 진행",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [
-        "기존 거래처/경쟁사 선호"
-      ],
-      "created_at": "2026-08-26T07:07:26.071243+00:00",
-      "updated_at": "2026-08-26T07:07:26.071243+00:00"
-    },
-    {
       "id": 784,
       "hospital": "충주 별산부인과",
       "region": "세종충북",
@@ -85671,23 +85584,6 @@ window.SALES_DB = {
       "last_date": "2026/08/20",
       "latest_action": "제품설명·소개",
       "latest_note": "충주 별산부인과 사무장에게 써지패드 제품에 대해 상세히 설명하였으나 특별한 반응을 보이지 않았습니다.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:07:26.071243+00:00",
-      "updated_at": "2026-08-26T07:07:26.071243+00:00"
-    },
-    {
-      "id": 785,
-      "hospital": "충청북도 충주의료원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/02/24",
-      "latest_action": "제품설명·소개",
-      "latest_note": "서지소드 디테일하였으나 바쁘다고함.",
       "demo_info": null,
       "as_info": null,
       "fail_reasons": [],
@@ -85710,28 +85606,6 @@ window.SALES_DB = {
       "fail_reasons": [],
       "created_at": "2026-08-26T07:07:26.071243+00:00",
       "updated_at": "2026-08-26T07:07:26.071243+00:00"
-    },
-    {
-      "id": 838,
-      "hospital": "청주한국병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "201.023",
-      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
-      "status": "A/S접수·처리",
-      "last_date": "2026/08/27",
-      "latest_action": "A/S·클레임",
-      "latest_note": "청주한국병원 모슬레이터 핸들 수리 요청 받음",
-      "demo_info": null,
-      "as_info": {
-        "status": "접수완료",
-        "stage": "1. A/S 접수",
-        "loaner": true,
-        "note": "모슬레이터 락 부위 뻑뻑 증상으로 데모 제품으로 교체 및 출고 완료"
-      },
-      "fail_reasons": [],
-      "created_at": "2026-08-27T01:30:36.850616+00:00",
-      "updated_at": "2026-08-27T01:30:36.850616+00:00"
     },
     {
       "id": 525,
@@ -85988,48 +85862,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-26T07:00:53.373276+00:00"
     },
     {
-      "id": 402,
-      "hospital": "대전 한국병원",
-      "region": "대전논산",
-      "sales_rep": "최진웅",
-      "product_id": "ST-ANG-PR03",
-      "product_name": "Surgi FXA Angio Procedure Kit (Adv03)",
-      "status": "데모·샘플평가",
-      "last_date": "2026/08/10",
-      "latest_action": "샘플·데모",
-      "latest_note": "대전한국병원 심장혈관센터에 ANGIO 시술용 키트 PR03 샘플을 제공하였습니다.\n다음: 목요일 또는 금요일 중 재방문하여 실장 면담 예정",
-      "demo_info": {
-        "date": "2026/08/10",
-        "note": "대전 한국병원 ANGIO 시술용 키트 PR03 (Adv.) 샘플/데모 대전한국병원 심장혈관센터에 ANGIO 시술용 키트 PR03 샘플을 제공하였습니다.\n다음: 목요일 또는 금요일 ",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
-      "id": 404,
-      "hospital": "서산의료원",
-      "region": "서산당진",
-      "sales_rep": "이은필",
-      "product_id": "ST-ANG-PR03",
-      "product_name": "Surgi FXA Angio Procedure Kit (Adv03)",
-      "status": "데모·샘플평가",
-      "last_date": "2026/07/14",
-      "latest_action": "샘플·데모",
-      "latest_note": "서산의료원 심뇌혈관센터를 방문하여 미팅을 진행하고 ANGIO 시술용 키트 샘플 1개를 전달하였습니다.",
-      "demo_info": {
-        "date": "2026/07/14",
-        "note": "서산의료원 샘플 전달 서산의료원 심뇌혈관센터를 방문하여 미팅을 진행하고 ANGIO 시술용 키트 샘플 1개를 전달하였습니다.",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
       "id": 405,
       "hospital": "서산중앙병원",
       "region": "서산당진",
@@ -86092,70 +85924,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-26T07:00:53.373276+00:00"
     },
     {
-      "id": 408,
-      "hospital": "제천명지병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "ST-ANG-PR03",
-      "product_name": "Surgi FXA Angio Procedure Kit (Adv03)",
-      "status": "영업실패·보류",
-      "last_date": "2026/08/20",
-      "latest_action": "제품설명·소개",
-      "latest_note": "제천명지병원 심혈관센터에 ANGIO 시술용 키트 PR03 (Adv.) 브로셔를 전달하고 소개했습니다. 담당 매니저가 타사 제품 샘플과 세미나 준비 소식을 전하며, 필요 시 연락하겠다고 답했습니다.\n다음: 타사 세미나 진행 및 제품 사용 동향을 파악하며 추후 연락 대기 후 재접촉 추진.",
-      "demo_info": {
-        "date": "2026/08/20",
-        "note": "제천명지병원 ANGIO 시술용 키트 PR03 (Adv.) 제품설명 제천명지병원 심혈관센터에 ANGIO 시술용 키트 PR03 (Adv.) 브로셔를 전달하고 소개했습니다. 담당 매니저",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [
-        "기존 거래처/경쟁사 선호"
-      ],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
-      "id": 409,
-      "hospital": "청주 하나병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "ST-ANG-PR03",
-      "product_name": "ANGIO 시술용 키트 (PR03 / Adv.)",
-      "status": "소모품 샘플",
-      "last_date": "2026/08/20",
-      "latest_action": "샘플·데모",
-      "latest_note": "청주 하나병원 구매과에 ANGIO 시술용 키트 샘플을 전달하였으며, 구매과에서 이를 심혈관센터에 전달하기로 하였습니다.",
-      "demo_info": {
-        "date": "2026/08/20",
-        "note": "청주 하나병원 ANGIO 시술용 키트 PR03 (Adv.) 샘플/데모 청주 하나병원 구매과에 ANGIO 시술용 키트 샘플을 전달하였으며, 구매과에서 이를 심혈관센터에 전달하기로 하",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [
-        "의료진 거절/사용 불가 피드백"
-      ],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00",
-      "product_category": "일반의료기기"
-    },
-    {
-      "id": 410,
-      "hospital": "청주성모병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "ST-ANG-PR03",
-      "product_name": "Surgi FXA Angio Procedure Kit (Adv03)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/08/24",
-      "latest_action": "제품설명·소개",
-      "latest_note": "청주성모병원 구매과에 앤지오킷에 대해 문의하였으나 잘 모르는 반응이었습니다. 확인을 거쳐 9월 중 심혈관 센터를 방문할 계획입니다.\n다음: 9월 중 심혈관 센터 방문",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
       "id": 411,
       "hospital": "충청북도 청주의료원",
       "region": "세종충북",
@@ -86166,23 +85934,6 @@ window.SALES_DB = {
       "last_date": "2026/07/02",
       "latest_action": "제품설명·소개",
       "latest_note": "청주의료원에 전화하여 Angio kit 영업을 위해 심혈관센터의 운영 여부를 확인했습니다. 안내도상 4층에 혈관조영실이 있는 것으로 확인되어 추가 확인 중입니다.\n다음: 심혈관센터 및 혈관조영실 실제 운영 여부 최종 확인",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
-      "id": 412,
-      "hospital": "청주효성병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "ST-ANG-PR03",
-      "product_name": "Surgi FXA Angio Procedure Kit (Adv03)",
-      "status": "도입완료·납품",
-      "last_date": "2026/08/10",
-      "latest_action": "제품설명·소개",
-      "latest_note": "청주효성병원 구매과를 방문하여 앤지오키트 도입을 위한 면담을 진행했습니다. 충북대학교병원 납품 이력을 언급하며 홍보하였으나 큰 반응은 얻지 못했습니다.",
       "demo_info": null,
       "as_info": null,
       "fail_reasons": [],
@@ -86294,23 +86045,6 @@ window.SALES_DB = {
       "fail_reasons": [],
       "created_at": "2026-08-26T07:00:53.373276+00:00",
       "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
-      "id": 856,
-      "hospital": "홍성의료원",
-      "region": "서산당진",
-      "sales_rep": "이은필",
-      "product_id": "PROD_BIOPSY",
-      "product_name": "펀치바이옵시",
-      "status": "도입완료·납품",
-      "last_date": "2026/08/28",
-      "latest_action": "제품설명·소개",
-      "latest_note": "박수진 과장과의 미팅을 통해 펀치바이옵시 도입을 확정함.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-28T03:01:26.511486+00:00",
-      "updated_at": "2026-08-28T03:01:26.511486+00:00"
     },
     {
       "id": 419,
@@ -89330,27 +89064,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-26T07:00:53.540871+00:00"
     },
     {
-      "id": 605,
-      "hospital": "홍성의료원",
-      "region": "서산당진",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_BIOPSY",
-      "product_name": "일회용 펀치 생검기 (Punch Biopsy)",
-      "status": "데모·샘플평가",
-      "last_date": "2026/02/02",
-      "latest_action": "샘플·데모",
-      "latest_note": "박수진 과장 담당, 펀치바이옵시 관심 있어 바로 샘플 사용 희망.",
-      "demo_info": {
-        "date": "2026/02/02",
-        "note": "박수진 과장 담당, 펀치바이옵시 관심 있어 바로 샘플 사용 희망.",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.540871+00:00",
-      "updated_at": "2026-08-26T07:00:53.540871+00:00"
-    },
-    {
       "id": 606,
       "hospital": "홍성의료원",
       "region": "서산당진",
@@ -89478,27 +89191,6 @@ window.SALES_DB = {
       "demo_info": {
         "date": "2025/11/07",
         "note": "바이옵시 제품 설명 및 샘플 전달, 원장님 구매 지시 대기.",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.540871+00:00",
-      "updated_at": "2026-08-26T07:00:53.540871+00:00"
-    },
-    {
-      "id": 600,
-      "hospital": "홍성의료원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_TULIP",
-      "product_name": "듀얼 튤립 카테터 (Dual Tulip)",
-      "status": "데모·샘플평가",
-      "last_date": "2026/08/25",
-      "latest_action": "샘플·데모",
-      "latest_note": "듀얼튤립 때에 따라 사용하기 편함. 샘플 1개 추가 요청.",
-      "demo_info": {
-        "date": "2026/08/25",
-        "note": "듀얼튤립 때에 따라 사용하기 편함. 샘플 1개 추가 요청.",
         "status": "평가진행중"
       },
       "as_info": null,
@@ -90898,7 +90590,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "product_name": "ANGIO 시술용 키트 (PR03 / Adv.)"
     },
     {
       "id": 783,
@@ -90932,7 +90625,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "product_name": "ANGIO 시술용 키트 (PR03 / Adv.)"
     },
     {
       "id": 799,
@@ -90983,7 +90677,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "서산당진",
       "contact": "",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "product_name": "ANGIO 시술용 키트 (PR03 / Adv.)"
     },
     {
       "id": 831,
@@ -91000,7 +90695,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "구매과",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "product_name": "ANGIO 시술용 키트 (PR03 / Adv.)"
     },
     {
       "id": 837,
@@ -91017,7 +90713,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "대전논산",
       "contact": "실장",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "product_name": "ANGIO 시술용 키트 (PR03 / Adv.)"
     },
     {
       "id": 838,
