@@ -89534,13 +89534,13 @@ window.SALES_DB = {
       "status": "A/S접수·처리",
       "last_date": "2026/08/27",
       "latest_action": "A/S·클레임",
-      "latest_note": "모슬레이터 핸들 수리 요청 접수. 락 부위 뻑뻑 증상으로 데모 대체기 교체 및 출고 완료.",
+      "latest_note": "모슬레이터 핸들 수리 요청 접수. 락 부위 뻑뻑 증상으로 데모 대체기 출고 완료.",
       "demo_info": null,
       "as_info": {
         "status": "접수완료",
         "stage": "1. A/S 접수",
         "loaner": true,
-        "note": "모슬레이터 락 부위 뻑뻑 증상으로 데모 대체기 교체 및 출고 완료"
+        "note": "모슬레이터 락 부위 뻑뻑 증상으로 데모 대체기 교체 출고 완료"
       },
       "fail_reasons": []
     }
