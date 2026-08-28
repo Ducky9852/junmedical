@@ -21,14 +21,15 @@
       border: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
       display: grid;
-      grid-template-columns: 240px 1fr;
+      grid-template-columns: 220px 1fr 280px;
       overflow: hidden;
       transition: all .25s ease;
+      align-items: stretch;
     }
     .brand-card:hover {
       box-shadow: var(--shadow-hover);
       border-color: #cbd5e1;
-      transform: translateY(-2px);
+      transform: translateY(-3px);
     }
 
     .brand-logo-wrap {
@@ -70,7 +71,7 @@
     }
 
     .brand-info {
-      padding: 32px 36px;
+      padding: 32px 32px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -110,9 +111,9 @@
       margin: 8px 0 14px;
     }
     .brand-desc {
-      font-size: 14.5px;
+      font-size: 14px;
       color: var(--text);
-      line-height: 1.8;
+      line-height: 1.75;
       margin-bottom: 16px;
     }
     .brand-products {
@@ -144,6 +145,7 @@
       font-size: 13.5px;
       font-weight: 600;
       width: fit-content;
+      text-decoration: none;
       transition: all .2s ease;
     }
     .btn-brand:hover {
@@ -152,10 +154,104 @@
       transform: translateY(-1px);
     }
 
+    /* ── 제품 비주얼 쇼케이스 ── */
+    .brand-product-preview {
+      background: #f8fafc;
+      border-left: 1px solid var(--border);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s ease;
+    }
+    .brand-product-preview:hover {
+      background: #f1f5f9;
+      text-decoration: none;
+    }
+    .brand-product-badge {
+      font-size: 11.5px;
+      color: var(--sky);
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .brand-product-img-box {
+      width: 100%;
+      height: 170px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(15, 39, 74, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .brand-product-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .brand-card:hover .brand-product-img-box img {
+      transform: scale(1.05);
+    }
+    .brand-product-caption {
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .brand-product-caption svg {
+      width: 13px;
+      height: 13px;
+      color: var(--sky);
+      transition: transform 0.2s ease;
+    }
+    .brand-product-preview:hover .brand-product-caption svg {
+      transform: translateX(3px);
+    }
+
+    @media (max-width: 992px) {
+      .brand-card {
+        grid-template-columns: 200px 1fr;
+      }
+      .brand-product-preview {
+        grid-column: 1 / -1;
+        border-left: none;
+        border-top: 1px solid var(--border);
+        padding: 20px;
+      }
+      .brand-product-img-box {
+        max-width: 380px;
+        height: 180px;
+      }
+    }
+
     @media (max-width: 768px) {
-      .brand-card          { grid-template-columns: 1fr; }
-      .brand-logo-wrap     { border-right: none; border-bottom: 1px solid var(--border); padding: 24px; }
-      .brand-info          { padding: 24px 20px; }
+      .brand-card {
+        grid-template-columns: 1fr;
+      }
+      .brand-logo-wrap {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 24px;
+      }
+      .brand-info {
+        padding: 24px 20px;
+      }
     }
   </style>
 </head>
@@ -242,10 +338,6 @@
       <div class="brand-list">
 
         <!-- ── 브랜드 1: WISAP ── -->
-        <!-- ============================
-          ✏️ 수정 구역 2-1: WISAP 브랜드 정보
-          로고 이미지: images/brand-wisap.png 로 교체
-          ============================ -->
         <div class="brand-card">
           <div class="brand-logo-wrap">
             <img src="images/brand-wisap.png" alt="WISAP Laparoscopy 로고" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -269,15 +361,21 @@
               <li>겸자·가위·니들홀더 등 복강경 기구류</li>
               <li>초음파 절삭·지혈 장비</li>
             </ul>
-            <a href="products-laparoscopy.html" class="btn-brand">제품 보기 →</a>
+            <a href="products-laparoscopy.html" class="btn-brand">제품 상세 보기 →</a>
           </div>
+          <a href="products-laparoscopy.html" class="brand-product-preview" title="WISAP 복강경 수술기구 제품 보기">
+            <div class="brand-product-badge">대표 제품 라인업</div>
+            <div class="brand-product-img-box">
+              <img src="images/복강경수술기구_이미지.jpg" alt="WISAP 복강경 수술기구">
+            </div>
+            <div class="brand-product-caption">
+              정밀 복강경 기구 세트
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
         </div>
 
         <!-- ── 브랜드 2: CooperSurgical ── -->
-        <!-- ============================
-          ✏️ 수정 구역 2-2: CooperSurgical 브랜드 정보
-          로고 이미지: images/brand-coopersurgical.png 로 교체
-          ============================ -->
         <div class="brand-card">
           <div class="brand-logo-wrap">
             <img src="images/brand-coopersurgical.png" alt="CooperSurgical 로고" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -301,15 +399,21 @@
               <li>Koh-Efficient™ — TLH 전용 질원개 절개 보조 장치</li>
               <li>복강경 부인과 수술 관련 소모품</li>
             </ul>
-            <a href="product-rumi2.html" class="btn-brand">제품 보기 →</a>
+            <a href="product-rumi2.html" class="btn-brand">제품 상세 보기 →</a>
           </div>
+          <a href="product-rumi2.html" class="brand-product-preview" title="CooperSurgical RUMI II 제품 보기">
+            <div class="brand-product-badge">대표 제품 라인업</div>
+            <div class="brand-product-img-box">
+              <img src="images/기타의료소모품_이미지.jpg" alt="CooperSurgical RUMI II 시스템">
+            </div>
+            <div class="brand-product-caption">
+              RUMI® II 자궁 조작기
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
         </div>
 
         <!-- ── 브랜드 3: 세종헬스케어 ── -->
-        <!-- ============================
-          ✏️ 수정 구역 2-3: 세종헬스케어 브랜드 정보
-          로고 이미지: images/brand-sejong.png 로 교체
-          ============================ -->
         <div class="brand-card">
           <div class="brand-logo-wrap">
             <img src="images/brand-sejong.png" alt="세종헬스케어 로고" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -333,15 +437,21 @@
               <li>의료기기·기구 멸균 포장재</li>
               <li>일회용 수술가운·마스크·커버류</li>
             </ul>
-            <a href="products-drape.html" class="btn-brand">제품 보기 →</a>
+            <a href="products-drape.html" class="btn-brand">제품 상세 보기 →</a>
           </div>
+          <a href="products-drape.html" class="brand-product-preview" title="세종헬스케어 수술포 및 멸균포 제품 보기">
+            <div class="brand-product-badge">대표 제품 라인업</div>
+            <div class="brand-product-img-box">
+              <img src="images/수술포멸균포_이미지.png" alt="세종헬스케어 수술포 및 멸균포">
+            </div>
+            <div class="brand-product-caption">
+              맞춤 수술포·멸균 포장재
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
         </div>
 
         <!-- ── 브랜드 4: MB2020 ── -->
-        <!-- ============================
-          ✏️ 수정 구역 2-4: MB2020 브랜드 정보
-          로고 이미지: images/brand-mb2020.png 로 교체
-          ============================ -->
         <div class="brand-card">
           <div class="brand-logo-wrap">
             <img src="images/brand-mb2020.png" alt="MB2020 로고" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -366,8 +476,18 @@
               <li>DVT 예방용 압박 스타킹·슬리브</li>
               <li>장기 수술·중환자실 전용 모델</li>
             </ul>
-            <a href="products-dvt.html" class="btn-brand">제품 보기 →</a>
+            <a href="products-dvt.html" class="btn-brand">제품 상세 보기 →</a>
           </div>
+          <a href="products-dvt.html" class="brand-product-preview" title="MB2020 DVT 예방장비 제품 보기">
+            <div class="brand-product-badge">대표 제품 라인업</div>
+            <div class="brand-product-img-box">
+              <img src="images/DVT예방장비_이미지.png" alt="MB2020 DVT 예방장비">
+            </div>
+            <div class="brand-product-caption">
+              DVT 공기압박 치료 장치
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
         </div>
 
       </div><!-- /brand-list -->
