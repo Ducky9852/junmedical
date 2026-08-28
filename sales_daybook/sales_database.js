@@ -85210,7 +85210,7 @@ window.SALES_DB = {
       "edi": ""
     },
     {
-      "status": "도입완료·납품",
+      "status": "접촉·니즈파악",
       "last_date": "2025/11/28",
       "latest_action": "납품·설치",
       "sales_rep": "이재덕",
@@ -85220,9 +85220,9 @@ window.SALES_DB = {
       "history_count": 1,
       "latest_note": "바이옵시 아직 결정못함. 의료소모품은 원장님 지인이 납품하고 있다고함.",
       "hospital": "청주 미즈맘산부인과",
-      "product_id": "GROUP-SEJONG-SHEET",
-      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
-      "product_category": "문정메디칼상사",
+      "product_id": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "product_category": "일반의료기기",
       "region": "서산당진",
       "vendor": "문정메디칼상사",
       "erp_code": "MED2078",
@@ -86063,7 +86063,7 @@ window.SALES_DB = {
       "edi": ""
     },
     {
-      "status": "견적·의사결정",
+      "status": "접촉·니즈파악",
       "last_date": "2025/11/28",
       "latest_action": "견적제출",
       "sales_rep": "이재덕",
@@ -86073,9 +86073,9 @@ window.SALES_DB = {
       "history_count": 1,
       "latest_note": "바이옵시는 아직 말이없으심. 전납회사 없다함. 소모품 견적드린다고 함. 아직은 미온적임.",
       "hospital": "청주 해피맘산부인과",
-      "product_id": "GROUP-SEJONG-SHEET",
-      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
-      "product_category": "문정메디칼상사",
+      "product_id": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "product_category": "일반의료기기",
       "region": "세종충북",
       "vendor": "문정메디칼상사",
       "erp_code": "MED2078",
