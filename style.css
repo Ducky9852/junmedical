@@ -1439,21 +1439,6 @@ img {
   transform: translateX(3px);
 }
 
-.floating-quick-item.kakao-quick-item {
-  background: #FFF9D2;
-  color: #371D1E;
-}
-
-.floating-quick-item.kakao-quick-item svg {
-  color: #371D1E;
-  fill: #371D1E;
-}
-
-.floating-quick-item.kakao-quick-item:hover {
-  background: #FEE500;
-  color: #191919;
-  transform: translateX(3px);
-}
 
 .floating-quick-btn,
 .floating-kakao-btn {
