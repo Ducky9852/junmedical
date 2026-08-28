@@ -85162,16 +85162,17 @@
       "region": "세종충북",
       "sales_rep": "이재덕",
       "product_id": "201.023",
-      "product_name": "Drive Motor Handle(SET) (201.023)",
+      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
       "status": "A/S접수·처리",
       "last_date": "2026/08/27",
       "latest_action": "A/S·클레임",
       "latest_note": "청주한국병원 모슬레이터 핸들 수리 요청 받음",
       "demo_info": null,
       "as_info": {
-        "date": "2026/08/27",
-        "note": "모슬레이터 핸들 수리 요청 접수",
-        "status": "접수완료"
+        "status": "접수완료",
+        "stage": "1. A/S 접수",
+        "loaner": true,
+        "note": "모슬레이터 락 부위 뻑뻑 증상으로 데모 제품으로 교체 및 출고 완료"
       },
       "fail_reasons": [],
       "created_at": "2026-08-27T01:26:24.3352+00:00",
@@ -85654,16 +85655,17 @@
       "region": "세종충북",
       "sales_rep": "이재덕",
       "product_id": "201.023",
-      "product_name": "Drive Motor Handle(SET) (201.023)",
+      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
       "status": "A/S접수·처리",
       "last_date": "2026/08/27",
       "latest_action": "A/S·클레임",
       "latest_note": "청주한국병원 모슬레이터 핸들 수리 요청 받음",
       "demo_info": null,
       "as_info": {
-        "date": "2026/08/27",
-        "note": "모슬레이터 핸들 수리 요청 접수",
-        "status": "접수완료"
+        "status": "접수완료",
+        "stage": "1. A/S 접수",
+        "loaner": true,
+        "note": "모슬레이터 락 부위 뻑뻑 증상으로 데모 제품으로 교체 및 출고 완료"
       },
       "fail_reasons": [],
       "created_at": "2026-08-27T01:30:36.850616+00:00",
@@ -85978,17 +85980,18 @@
       "hospital": "청주 한국병원",
       "region": "세종충북",
       "sales_rep": "이재덕",
-      "product_id": "PROD_GENERAL",
-      "product_name": "일반 제안 품목",
+      "product_id": "201.023",
+      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
       "status": "A/S접수·처리",
       "last_date": "2026/08/27",
       "latest_action": "A/S·클레임",
       "latest_note": "모슬레이터의 락 부위가 뻑뻑한 증상으로 인해 데모 제품으로 교체 및 납품을 완료함.",
       "demo_info": null,
       "as_info": {
-        "date": "2026/08/27",
-        "note": "모슬레이터의 락 부위가 뻑뻑한 증상으로 인해 데모 제품으로 교체 및 납품을 완료함.",
-        "status": "접수/진행중"
+        "status": "접수완료",
+        "stage": "1. A/S 접수",
+        "loaner": true,
+        "note": "모슬레이터 락 부위 뻑뻑 증상으로 데모 제품으로 교체 및 출고 완료"
       },
       "fail_reasons": [
         "의료진 거절"
