@@ -1713,10 +1713,12 @@ function renderASControlCenter() {
   const query = (document.getElementById('as-search-input')?.value || '').trim().toLowerCase();
   const pipe = (window.SALES_DB && window.SALES_DB.pipeline) ? window.SALES_DB.pipeline : [];
   
-  // Find all A/S related deals
+  // Find only legitimate A/S related equipment deals
   const asDeals = pipe.filter(d => {
-    const isAS = (d.as_info && d.as_info.status) || (d.status === 'A/S접수·처리') || (d.latest_action === 'A/S·클레임');
-    if (!isAS) return false;
+    // Only genuine AS status or explicit active AS info
+    const hasActiveAS = (d.status === 'A/S접수·처리') || 
+                        (d.as_info && d.as_info.status && d.status !== '도입완료·납품' && d.status !== '영업실패·보류');
+    if (!hasActiveAS) return false;
 
     if (query) {
       const q = query.replace(/\s+/g, '');
@@ -1730,6 +1732,19 @@ function renderASControlCenter() {
     return true;
   });
 
+  // Deduplicate: Ensure only 1 active AS card per hospital + equipment
+  const seenASHospitalProduct = new Set();
+  const dedupedASDeals = [];
+  asDeals.forEach(d => {
+    const hospKey = (d.hospital || '').replace(/\s+/g, '').toLowerCase();
+    const prodKey = (d.product_id || d.product_name || '').toLowerCase();
+    const uniqueKey = `${hospKey}__${prodKey}`;
+    if (!seenASHospitalProduct.has(uniqueKey)) {
+      seenASHospitalProduct.add(uniqueKey);
+      dedupedASDeals.push(d);
+    }
+  });
+
   const columns = {
     '접수완료': { list: document.getElementById('as-list-receipt'), count: document.getElementById('as-count-receipt'), items: [] },
     '외부전달': { list: document.getElementById('as-list-vendor'), count: document.getElementById('as-count-vendor'), items: [] },
@@ -1739,7 +1754,7 @@ function renderASControlCenter() {
   };
 
   // Classify deals into 5 stages
-  asDeals.forEach(d => {
+  dedupedASDeals.forEach(d => {
     let stage = '접수완료';
     
     // 1. Strict priority to explicit as_info status
