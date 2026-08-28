@@ -80203,6 +80203,31 @@ window.SALES_DB = {
         "2026/08/25  오후 3:28:15"
       ],
       "aliases": []
+    },
+    {
+      "id": "PK-SUR02",
+      "code": "PK-SUR02",
+      "name": "[펜코] 서지패드 (PENKO SURGICAL PAD)",
+      "spec": "수술용 서지패드",
+      "vendor": "펜타스코리아",
+      "category": "일반의료기기",
+      "edi": "",
+      "unit": "EA",
+      "price_in": 0,
+      "price_out": 0,
+      "keywords": [
+        "PK-SUR02",
+        "서지패드",
+        "펜코 서지패드",
+        "Surgical Pad",
+        "펜타스코리아",
+        "PKSUR02"
+      ],
+      "aliases": [
+        "서지패드",
+        "펜코패드",
+        "PKSUR02"
+      ]
     }
   ],
   "hospitals": [
@@ -84499,7 +84524,7 @@ window.SALES_DB = {
       "edi": "K7420626"
     },
     {
-      "status": "영업실패·보류",
+      "status": "접촉·니즈파악",
       "last_date": "2026/08/20",
       "latest_action": "샘플·데모",
       "sales_rep": "이재덕",
@@ -84515,9 +84540,9 @@ window.SALES_DB = {
       "history_count": 2,
       "latest_note": "청주 마디사랑병원에서 암슬리브 샘플을 수거했습니다. 구매과 직원이 타 의료기기 회사로 이직할 예정임을 파악했습니다.",
       "hospital": "청주 마디사랑병원",
-      "product_id": "MBH02",
-      "product_name": "DVT SLEEVE (허벅지형)",
-      "product_category": "엠비헬스케어(주)",
+      "product_id": "PK-SUR02",
+      "product_name": "[펜코] 서지패드 (PENKO SURGICAL PAD)",
+      "product_category": "일반의료기기",
       "region": "세종충북",
       "vendor": "엠비헬스케어(주)",
       "erp_code": "MBH02",
@@ -87099,27 +87124,6 @@ window.SALES_DB = {
       "edi": "M2136087"
     },
     {
-      "status": "관계관리·접촉",
-      "last_date": "2026/08/11",
-      "latest_action": "제품설명·소개",
-      "sales_rep": "이재덕",
-      "fail_reasons": [
-        "기존 거래처/경쟁사 선호"
-      ],
-      "demo_info": null,
-      "as_info": null,
-      "history_count": 3,
-      "latest_note": "청주 마디사랑병원 구매과 면담 결과, 닥터암슬리브 사용 계획은 미정이며 서지패드도 타사 제품을 사용 중입니다. 향후 펜코 제품으로 지속적인 제품 디테일을 진행할 예정입니다.\n다음: 펜코 제품 중심의 지속적인 디테일 영업 진행",
-      "hospital": "청주 마디사랑병원",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "product_category": "펜타스헬스케어 디씨",
-      "region": "세종충북",
-      "vendor": "펜타스헬스케어 디씨",
-      "erp_code": "PK-CGP202S-TB",
-      "edi": "M2136087"
-    },
-    {
       "status": "제품소개·영업중",
       "last_date": "2026/01/12",
       "latest_action": "제품설명·소개",
@@ -88873,14 +88877,15 @@ window.SALES_DB = {
       "sales_rep": "이재덕",
       "contact": "구매과 직원",
       "action_type": "샘플·데모",
-      "deal_status": "데모·샘플평가",
+      "deal_status": "접촉·니즈파악",
       "products": [
-        "DVT SLEEVE (압박 슬리브 / 스타킹)"
+        "[펜코] 서지패드 (PENKO SURGICAL PAD)"
       ],
       "title": "청주 마디사랑병원 DVT SLEEVE 발타입 허벅지부분 샘플/데모",
       "note": "청주 마디사랑병원에서 암슬리브 샘플을 수거했습니다. 구매과 직원이 타 의료기기 회사로 이직할 예정임을 파악했습니다.",
       "fail_reasons": [],
-      "product_code": "DS1S22"
+      "product_code": "PK-SUR02",
+      "product_name": "[펜코] 서지패드 (PENKO SURGICAL PAD)"
     },
     {
       "id": "LOG_20",
@@ -89262,17 +89267,17 @@ window.SALES_DB = {
       "sales_rep": "이재덕",
       "contact": "구매과",
       "action_type": "제품설명·소개",
-      "deal_status": "영업실패·보류",
+      "deal_status": "접촉·니즈파악",
       "products": [
-        "PENKO 서지패드 / 서포트 플레이트 / 서지소드",
-        "DVT SLEEVE (압박 슬리브 / 스타킹)"
+        "[펜코] 서지패드 (PENKO SURGICAL PAD)"
       ],
       "title": "청주 마디사랑병원 DVT SLEEVE 발타입 허벅지부분 제품설명",
       "note": "청주 마디사랑병원 구매과 면담 결과, 닥터암슬리브 사용 계획은 미정이며 서지패드도 타사 제품을 사용 중입니다. 향후 펜코 제품으로 지속적인 제품 디테일을 진행할 예정입니다.\n다음: 펜코 제품 중심의 지속적인 디테일 영업 진행",
       "fail_reasons": [
         "기존 거래처/경쟁사 선호"
       ],
-      "product_code": "ch1010"
+      "product_code": "PK-SUR02",
+      "product_name": "[펜코] 서지패드 (PENKO SURGICAL PAD)"
     },
     {
       "id": "LOG_47",
