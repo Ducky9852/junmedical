@@ -80228,6 +80228,70 @@ window.SALES_DB = {
         "펜코패드",
         "PKSUR02"
       ]
+    },
+    {
+      "id": "121-51855",
+      "code": "121-51855",
+      "name": "Crown Trocar (121-51855)",
+      "spec": "복강경용 멸균 트로카",
+      "vendor": "(주)세종헬스케어",
+      "category": "일반의료기기",
+      "edi": "",
+      "unit": "EA",
+      "price_in": 0,
+      "price_out": 0,
+      "keywords": [
+        "121-51855",
+        "Crown Trocar",
+        "트로카",
+        "크라운 트로카"
+      ],
+      "aliases": [
+        "12151855",
+        "크라운트로카"
+      ]
+    },
+    {
+      "id": "PROD_YOUSHI_LAPARO",
+      "code": "PROD_YOUSHI_LAPARO",
+      "name": "Youshi 복강경 제품",
+      "spec": "복강경 수술기구/소모품",
+      "vendor": "Youshi",
+      "category": "일반의료기기",
+      "edi": "",
+      "unit": "EA",
+      "price_in": 0,
+      "price_out": 0,
+      "keywords": [
+        "Youshi",
+        "요시",
+        "Youshi 복강경",
+        "복강경"
+      ],
+      "aliases": [
+        "요시 복강경",
+        "Youshi"
+      ]
+    },
+    {
+      "id": "PROD_LAPARO_DISP",
+      "code": "PROD_LAPARO_DISP",
+      "name": "복강경 소모품",
+      "spec": "복강경 일회용 소모품",
+      "vendor": "준메디칼",
+      "category": "일반의료기기",
+      "edi": "",
+      "unit": "EA",
+      "price_in": 0,
+      "price_out": 0,
+      "keywords": [
+        "복강경소모품",
+        "복강경 소모품",
+        "laparoscopy consumables"
+      ],
+      "aliases": [
+        "복강경 소모품"
+      ]
     }
   ],
   "hospitals": [
@@ -84984,8 +85048,8 @@ window.SALES_DB = {
       "region": "세종충북",
       "sales_rep": "최진웅",
       "product_id": "201.023",
-      "product_name": "Drive Motor Handle(SET) (201.023)",
-      "status": "데모·샘플평가",
+      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
+      "status": "A/S접수·처리",
       "last_date": "2026/08/27",
       "latest_action": "샘플·데모",
       "latest_note": "광제산부인과 모슬레이터 핸들 데모 줬음",
@@ -84994,27 +85058,16 @@ window.SALES_DB = {
         "note": "광제산부인과 모슬레이터 핸들 데모 줬음",
         "status": "평가진행중"
       },
-      "as_info": null,
+      "as_info": {
+        "status": "외부전달",
+        "stage": "2. 외부전달",
+        "repair_vendor": "블루메디칼",
+        "loaner": true,
+        "note": "광제산부인과 모슬레이터 핸들 블루메디칼 외부 전달 및 데모 대체기 지급 완료"
+      },
       "fail_reasons": [],
       "created_at": "2026-08-27T00:48:06.69041+00:00",
       "updated_at": "2026-08-27T00:48:06.69041+00:00"
-    },
-    {
-      "id": 683,
-      "hospital": "세종항도외과",
-      "region": "대전논산",
-      "sales_rep": "이은필",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/04/29",
-      "latest_action": "제품설명·소개",
-      "latest_note": "처음방문, 원장님 친절하심, 소공포 및 펜코소드 설명드림\n[비고] 5월중쯤에 재방문 예정",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:07:25.969055+00:00",
-      "updated_at": "2026-08-26T07:07:25.969055+00:00"
     },
     {
       "id": 695,
@@ -85041,8 +85094,8 @@ window.SALES_DB = {
       "region": "세종충북",
       "sales_rep": "최진웅",
       "product_id": "201.023",
-      "product_name": "Drive Motor Handle(SET) (201.023)",
-      "status": "데모·샘플평가",
+      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
+      "status": "A/S접수·처리",
       "last_date": "2026/08/27",
       "latest_action": "샘플·데모",
       "latest_note": "광제산부인과 모슬레이터 핸들 데모 줬음",
@@ -85051,7 +85104,13 @@ window.SALES_DB = {
         "note": "광제산부인과 모슬레이터 핸들 데모 줬음",
         "status": "평가진행중"
       },
-      "as_info": null,
+      "as_info": {
+        "status": "외부전달",
+        "stage": "2. 외부전달",
+        "repair_vendor": "블루메디칼",
+        "loaner": true,
+        "note": "광제산부인과 모슬레이터 핸들 블루메디칼 외부 전달 및 데모 대체기 지급 완료"
+      },
       "fail_reasons": [],
       "created_at": "2026-08-27T00:48:39.274557+00:00",
       "updated_at": "2026-08-27T00:48:39.274557+00:00"
@@ -85062,16 +85121,18 @@ window.SALES_DB = {
       "region": "세종충북",
       "sales_rep": "최진웅",
       "product_id": "201.023",
-      "product_name": "Drive Motor Handle(SET) (201.023)",
+      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
       "status": "A/S접수·처리",
       "last_date": "2026/08/27",
       "latest_action": "A/S·클레임",
       "latest_note": "광제산부인과 모슬레이터 핸들 A/S 블루메디칼에서 받아 데모줌",
       "demo_info": null,
       "as_info": {
-        "date": "2026/08/27",
-        "note": "광제산부인과 모슬레이터 핸들 A/S 블루메디칼에서 받아 데모줌",
-        "status": "접수완료"
+        "status": "외부전달",
+        "stage": "2. 외부전달",
+        "repair_vendor": "블루메디칼",
+        "loaner": true,
+        "note": "광제산부인과 모슬레이터 핸들 블루메디칼 외부 전달 및 데모 대체기 지급 완료"
       },
       "fail_reasons": [],
       "created_at": "2026-08-27T00:49:06.120819+00:00",
@@ -86629,27 +86690,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-26T07:00:53.373276+00:00"
     },
     {
-      "id": 428,
-      "hospital": "청주 다나여성병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "GNC2505D",
-      "product_name": "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))",
-      "status": "데모·샘플평가",
-      "last_date": "2025/11/21",
-      "latest_action": "관계관리",
-      "latest_note": "바이옵시 자이네콜라(Gynecola) 원장님 별도지시없음. 여쭤봐 준다고 함.",
-      "demo_info": {
-        "date": "2025/11/14",
-        "note": "다나여성병원 샘플 제공 [비고] 지인과 동반방문함. 원무과장님 면담후 이오영대표원장님 면담함. 바이옵시, 자이네콜라(Gynecola) 사용 설득함. 타원장님과 상의 후 결정해보겠다",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
       "id": 430,
       "hospital": "서산한마음산부인과",
       "region": "서산당진",
@@ -87367,23 +87407,6 @@ window.SALES_DB = {
         "note": "세종엔케이병원 신규 아이템 소개 영업갔으나 원장님 업체미팅안한다고 하심 \n데스크에 봉합킷트 및 소공포 브류슈어 드림\n[다음 방문 예정일] 2026/03/31\n[제공 샘플] 봉합킷트",
         "status": "평가진행중"
       },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
-      "id": 468,
-      "hospital": "세종항도외과",
-      "region": "대전논산",
-      "sales_rep": "이은필",
-      "product_id": "PK-CGP202S-TB",
-      "product_name": "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL) (가로형)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/04/29",
-      "latest_action": "제품설명·소개",
-      "latest_note": "처음방문, 원장님 친절하심, 소공포 및 펜코소드 설명드림\n[비고] 5월중쯤에 재방문 예정",
-      "demo_info": null,
       "as_info": null,
       "fail_reasons": [],
       "created_at": "2026-08-26T07:00:53.373276+00:00",
@@ -88187,23 +88210,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-26T07:00:53.457687+00:00"
     },
     {
-      "id": 514,
-      "hospital": "국립소방병원",
-      "region": "기타",
-      "sales_rep": "이재덕",
-      "product_id": "101.011A",
-      "product_name": "Metal Trocar (Flip) (10.5mm*95mm)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/08/24",
-      "latest_action": "제품설명·소개",
-      "latest_note": "국립소방병원 외과 김기호 교수에게 하이겐트를 소개했으나 미온적인 반응을 보였습니다. 유착 방지율 관련 추가 자료와 요청받은 트로카, 원포트 카탈로그를 준비하여 재방문할 예정입니다.\n다음: 하이겐트 유착 방지율 추가 자료 및 트로카, 원포트 카탈로그 준비 후 전달",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.457687+00:00",
-      "updated_at": "2026-08-26T07:00:53.457687+00:00"
-    },
-    {
       "id": 515,
       "hospital": "청주 마디사랑병원",
       "region": "세종충북",
@@ -88276,23 +88282,6 @@ window.SALES_DB = {
         "note": "뿌리병원 신규 아이템 소개 구매과 면담. 하이겐트(Hygent), 수술포 디테일 함. 하이겐트(Hygent) 샘플 있으면 챙겨서 와줬으면 함. 수술포는 매우 긍정적으로 생각하는 듯",
         "status": "평가진행중"
       },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.457687+00:00",
-      "updated_at": "2026-08-26T07:00:53.457687+00:00"
-    },
-    {
-      "id": 519,
-      "hospital": "영동병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_HYGENT",
-      "product_name": "HYGENT (하이젠트 살균소독)",
-      "status": "도입완료·납품",
-      "last_date": "2025/12/05",
-      "latest_action": "제품설명·소개",
-      "latest_note": "하이겐트(Hygent) 사용중. 마인드레이, 요시 제품 소개. 지속방문.",
-      "demo_info": null,
       "as_info": null,
       "fail_reasons": [],
       "created_at": "2026-08-26T07:00:53.457687+00:00",
@@ -88654,23 +88643,6 @@ window.SALES_DB = {
       "last_date": "2025/11/04",
       "latest_action": "제품설명·소개",
       "latest_note": "원장님 사모가 의료기기회사를 운영중이며, 전납을 한다고 함. 바이폴라, 하이겐트(Hygent)제품 소개하여 병원내 구매과 후배한테 의사 타진후 연락주겠다고 함",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.457687+00:00",
-      "updated_at": "2026-08-26T07:00:53.457687+00:00"
-    },
-    {
-      "id": 544,
-      "hospital": "영동병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_MINDRAY",
-      "product_name": "마인드레이 장비 (Mindray 초음파/진단)",
-      "status": "도입완료·납품",
-      "last_date": "2025/12/05",
-      "latest_action": "제품설명·소개",
-      "latest_note": "하이겐트(Hygent) 사용중. 마인드레이, 요시 제품 소개. 지속방문.",
       "demo_info": null,
       "as_info": null,
       "fail_reasons": [],
@@ -89701,40 +89673,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-26T07:00:53.457687+00:00"
     },
     {
-      "id": 601,
-      "hospital": "국립소방병원",
-      "region": "기타",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_HYGENT",
-      "product_name": "[하이겐트] Hygent 수액세트/치료재료",
-      "status": "제품소개·영업중",
-      "last_date": "2026/08/24",
-      "latest_action": "제품설명·소개",
-      "latest_note": "외과 김기호 교수에게 하이겐트 소개했으나 미온적 반응. 유착 방지율 관련 추가 자료 준비 후 재방문 예정.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.540871+00:00",
-      "updated_at": "2026-08-26T07:00:53.540871+00:00"
-    },
-    {
-      "id": 602,
-      "hospital": "국립소방병원",
-      "region": "기타",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_TROCAR",
-      "product_name": "복강경용 멸균 트로카 (Trocar)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/08/24",
-      "latest_action": "제품설명·소개",
-      "latest_note": "김기호 교수 요청받은 트로카, 원포트 카탈로그 준비하여 재방문 예정.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.540871+00:00",
-      "updated_at": "2026-08-26T07:00:53.540871+00:00"
-    },
-    {
       "id": 603,
       "hospital": "서산엠산부인과",
       "region": "서산당진",
@@ -89944,6 +89882,122 @@ window.SALES_DB = {
       "fail_reasons": [],
       "created_at": "2026-08-26T07:00:53.540871+00:00",
       "updated_at": "2026-08-26T07:00:53.540871+00:00"
+    },
+    {
+      "hospital": "청주 다나여성병원",
+      "product_id": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "product_category": "일반의료기기",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "접촉·니즈파악",
+      "last_date": "2026/03/24",
+      "latest_action": "관계관리",
+      "latest_note": "펀치 바이옵시(EN-Shot Biopsy) 디테일 진행. 간호부에서 원장님께 여쭤봐 주기로 함.",
+      "fail_reasons": [],
+      "history_count": 1
+    },
+    {
+      "hospital": "청주 다나여성병원",
+      "product_id": "GNC2505D",
+      "product_name": "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))",
+      "product_category": "일반의료기기",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "접촉·니즈파악",
+      "last_date": "2026/03/24",
+      "latest_action": "관계관리",
+      "latest_note": "자이네콜라(Gynecola) 디테일 진행. 간호부에서 원장님께 여쭤봐 주기로 함.",
+      "fail_reasons": [],
+      "history_count": 1
+    },
+    {
+      "hospital": "국립소방병원",
+      "product_id": "121-51855",
+      "product_name": "Crown Trocar (121-51855)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2026/08/24",
+      "latest_action": "제품설명·소개",
+      "latest_note": "외과 김기호 교수 요청받은 크라운 트로카(121-51855), 원포트 카탈로그 준비하여 재방문 예정.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "국립소방병원",
+      "product_id": "MTHG0505T",
+      "product_name": "Hy gent 하이겐트 (5*5)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2026/08/24",
+      "latest_action": "제품설명·소개",
+      "latest_note": "외과 김기호 교수에게 하이겐트(MTHG0505T) 소개. 유착 방지율 관련 추가 자료 준비 후 재방문 예정.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "영동병원",
+      "product_id": "MTHG0505T",
+      "product_name": "Hy gent 하이겐트 (5*5)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "영업실패·보류",
+      "last_date": "2026/03/18",
+      "latest_action": "제품설명·소개",
+      "latest_note": "하이겐트(Hygent) 타업체 납품분 사용 중으로 진입 보류.",
+      "fail_reasons": [
+        "타업체 기납품 사용 중"
+      ]
+    },
+    {
+      "hospital": "영동병원",
+      "product_id": "PROD_LAPARO_DISP",
+      "product_name": "복강경 소모품",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2026/03/18",
+      "latest_action": "제품설명·소개",
+      "latest_note": "복강경 소모품 제품 소개 진행 및 지속 방문 추진.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "영동병원",
+      "product_id": "PROD_YOUSHI_LAPARO",
+      "product_name": "Youshi 복강경 제품",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2026/03/18",
+      "latest_action": "제품설명·소개",
+      "latest_note": "Youshi 복강경 제품 소개 진행 및 지속 방문 추진.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "세종항도외과",
+      "product_id": "GROUP-SEJONG-SHEET",
+      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
+      "product_category": "수술용드레이프/소공포",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2026/04/14",
+      "latest_action": "제품설명·소개",
+      "latest_note": "처음 방문, 원장님 친절하심. [세종] 멸균 소공포 제품 설명 드림. [비고] 5월 중쯤에 재방문 예정",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "세종항도외과",
+      "product_id": "GROUP-PENKO-SWORD",
+      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
+      "product_category": "수술용칼/안전메스",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2026/04/14",
+      "latest_action": "제품설명·소개",
+      "latest_note": "처음 방문, 원장님 친절하심. [펜코] 서지 소드(안전메스) 제품 설명 드림. [비고] 5월 중쯤에 재방문 예정",
+      "fail_reasons": []
     }
   ],
   "activity_logs": [
@@ -90067,38 +90121,80 @@ window.SALES_DB = {
       "created_at": "2026-08-26T07:00:52.685849+00:00"
     },
     {
-      "id": 1535,
+      "id": "1535_SHEET",
       "hospital": "세종항도외과",
       "date": "2026/04/29",
       "sales_rep": "이은필",
       "action_type": "제품설명·소개",
-      "title": "[펜코 서지소드] 세종항도외과 신규 아이템 소개",
-      "note": "처음방문, 원장님 친절하심, 소공포 및 펜코소드 설명드림\n[비고] 5월중쯤에 재방문 예정",
+      "title": "세종항도외과 멸균 소공포 디테일",
+      "note": "처음 방문, 원장님 친절하심. [세종] 멸균 소공포 제품 설명 드림. [비고] 5월 중쯤에 재방문 예정",
       "products": [
-        "PENKO 서지패드 / 서포트 플레이트 / 서지소드"
+        "[세종] 멸균 소공포 (MULTI USEFUL SHEET)"
+      ],
+      "product_code": "GROUP-SEJONG-SHEET",
+      "next_action": "",
+      "region": "대전논산",
+      "contact": "일반외과 박세염원장님",
+      "created_at": "2026-08-26T07:00:52.685849+00:00",
+      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
+      "deal_status": "제품소개·영업중"
+    },
+    {
+      "id": "1535_PENKO",
+      "hospital": "세종항도외과",
+      "date": "2026/04/29",
+      "sales_rep": "이은필",
+      "action_type": "제품설명·소개",
+      "title": "세종항도외과 펜코 서지소드 디테일",
+      "note": "처음 방문, 원장님 친절하심. [펜코] 서지 소드(안전메스) 제품 설명 드림. [비고] 5월 중쯤에 재방문 예정",
+      "products": [
+        "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)"
       ],
       "product_code": "GROUP-PENKO-SWORD",
       "next_action": "",
       "region": "대전논산",
       "contact": "일반외과 박세염원장님",
-      "created_at": "2026-08-26T07:00:52.685849+00:00"
+      "created_at": "2026-08-26T07:00:52.685849+00:00",
+      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
+      "deal_status": "제품소개·영업중"
     },
     {
-      "id": 1536,
+      "id": "1536_SHEET",
       "hospital": "세종항도외과",
       "date": "2026/04/29",
       "sales_rep": "이은필",
       "action_type": "제품설명·소개",
-      "title": "[멸균 소공포] 세종항도외과 신규 아이템 소개",
-      "note": "처음방문, 원장님 친절하심, 소공포 및 펜코소드 설명드림\n[비고] 5월중쯤에 재방문 예정",
+      "title": "세종항도외과 멸균 소공포 디테일",
+      "note": "처음 방문, 원장님 친절하심. [세종] 멸균 소공포 제품 설명 드림. [비고] 5월 중쯤에 재방문 예정",
       "products": [
-        "일반 원내 소모품 (소공포/내시경바지/드레싱키트)"
+        "[세종] 멸균 소공포 (MULTI USEFUL SHEET)"
       ],
-      "product_code": "SD-GSHD0912C",
+      "product_code": "GROUP-SEJONG-SHEET",
       "next_action": "",
       "region": "대전논산",
       "contact": "일반외과 박세염원장님",
-      "created_at": "2026-08-26T07:00:52.685849+00:00"
+      "created_at": "2026-08-26T07:00:52.685849+00:00",
+      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
+      "deal_status": "제품소개·영업중"
+    },
+    {
+      "id": "1536_PENKO",
+      "hospital": "세종항도외과",
+      "date": "2026/04/29",
+      "sales_rep": "이은필",
+      "action_type": "제품설명·소개",
+      "title": "세종항도외과 펜코 서지소드 디테일",
+      "note": "처음 방문, 원장님 친절하심. [펜코] 서지 소드(안전메스) 제품 설명 드림. [비고] 5월 중쯤에 재방문 예정",
+      "products": [
+        "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)"
+      ],
+      "product_code": "GROUP-PENKO-SWORD",
+      "next_action": "",
+      "region": "대전논산",
+      "contact": "일반외과 박세염원장님",
+      "created_at": "2026-08-26T07:00:52.685849+00:00",
+      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
+      "deal_status": "제품소개·영업중"
     },
     {
       "id": 1537,
@@ -90585,13 +90681,16 @@ window.SALES_DB = {
       "title": "[하이겐트] 영동병원 신규 아이템 소개",
       "note": "하이겐트(Hygent) 사용중. 마인드레이, 요시 제품 소개. 지속방문.",
       "products": [
-        "HYGENT (하이젠트 살균소독)"
+        "Youshi 복강경 제품",
+        "복강경 소모품"
       ],
-      "product_code": "PROD_HYGENT",
+      "product_code": "PROD_YOUSHI_LAPARO",
       "next_action": "",
       "region": "세종충북",
       "contact": "관리팀 관리과, 구매",
-      "created_at": "2026-08-26T07:00:53.038971+00:00"
+      "created_at": "2026-08-26T07:00:53.038971+00:00",
+      "product_name": "Youshi 복강경 제품",
+      "deal_status": "제품소개·영업중"
     },
     {
       "id": 1566,
@@ -90602,13 +90701,16 @@ window.SALES_DB = {
       "title": "[마인드레이] 영동병원 신규 아이템 소개",
       "note": "하이겐트(Hygent) 사용중. 마인드레이, 요시 제품 소개. 지속방문.",
       "products": [
-        "마인드레이 장비 (Mindray 초음파/진단)"
+        "Youshi 복강경 제품",
+        "복강경 소모품"
       ],
-      "product_code": "PROD_MINDRAY",
+      "product_code": "PROD_YOUSHI_LAPARO",
       "next_action": "",
       "region": "세종충북",
       "contact": "관리팀 관리과, 구매",
-      "created_at": "2026-08-26T07:00:53.038971+00:00"
+      "created_at": "2026-08-26T07:00:53.038971+00:00",
+      "product_name": "Youshi 복강경 제품",
+      "deal_status": "제품소개·영업중"
     },
     {
       "id": 1567,
@@ -90679,38 +90781,80 @@ window.SALES_DB = {
       "created_at": "2026-08-26T07:00:53.13099+00:00"
     },
     {
-      "id": 1571,
+      "id": "1571_BIOPSY",
       "hospital": "청주 다나여성병원",
       "date": "2025/11/14",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
-      "title": "[가인콜라] 다나여성병원 샘플 제공",
-      "note": "[비고] 지인과 동반방문함. 원무과장님 면담후 이오영대표원장님 면담함. 바이옵시, 자이네콜라(Gynecola) 사용 설득함. 타원장님과 상의 후 결정해보겠다고 함. \n[제공 샘플] 바이옵시, 지혈제",
+      "title": "청주 다나여성병원 펀치 바이옵시 디테일",
+      "note": "펀치 바이옵시(EN-Shot Biopsy) 디테일 진행. 원장님 별도 지시 없음. 간호부에서 원장님께 여쭤봐 주기로 함.",
       "products": [
-        "가인콜라 (GYNE COLLA)"
-      ],
-      "product_code": "GNC2505D",
-      "next_action": "",
-      "region": "세종충북",
-      "contact": "대표원장, 산부인과 원무부장",
-      "created_at": "2026-08-26T07:00:53.13099+00:00"
-    },
-    {
-      "id": 1572,
-      "hospital": "청주 다나여성병원",
-      "date": "2025/11/14",
-      "sales_rep": "이재덕",
-      "action_type": "샘플·데모",
-      "title": "[바이옵시] 다나여성병원 샘플 제공",
-      "note": "[비고] 지인과 동반방문함. 원무과장님 면담후 이오영대표원장님 면담함. 바이옵시, 자이네콜라(Gynecola) 사용 설득함. 타원장님과 상의 후 결정해보겠다고 함. \n[제공 샘플] 바이옵시, 지혈제",
-      "products": [
-        "EN-Shot Biopsy 생검기구"
+        "EN-Shot Biopsy 2.3cup"
       ],
       "product_code": "EN-SB100A",
       "next_action": "",
       "region": "세종충북",
       "contact": "대표원장, 산부인과 원무부장",
-      "created_at": "2026-08-26T07:00:53.13099+00:00"
+      "created_at": "2026-08-26T07:00:53.13099+00:00",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "deal_status": "접촉·니즈파악"
+    },
+    {
+      "id": "1571_GYNE",
+      "hospital": "청주 다나여성병원",
+      "date": "2025/11/14",
+      "sales_rep": "이재덕",
+      "action_type": "샘플·데모",
+      "title": "청주 다나여성병원 자이네콜라(Gyne Colla) 디테일",
+      "note": "자이네콜라(Gynecola) 콜라겐 지혈재 디테일 진행. 원장님 별도 지시 없음. 간호부에서 원장님께 여쭤봐 주기로 함.",
+      "products": [
+        "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))"
+      ],
+      "product_code": "GNC2505D",
+      "next_action": "",
+      "region": "세종충북",
+      "contact": "대표원장, 산부인과 원무부장",
+      "created_at": "2026-08-26T07:00:53.13099+00:00",
+      "product_name": "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))",
+      "deal_status": "접촉·니즈파악"
+    },
+    {
+      "id": "1572_BIOPSY",
+      "hospital": "청주 다나여성병원",
+      "date": "2025/11/14",
+      "sales_rep": "이재덕",
+      "action_type": "샘플·데모",
+      "title": "청주 다나여성병원 펀치 바이옵시 디테일",
+      "note": "펀치 바이옵시(EN-Shot Biopsy) 디테일 진행. 원장님 별도 지시 없음. 간호부에서 원장님께 여쭤봐 주기로 함.",
+      "products": [
+        "EN-Shot Biopsy 2.3cup"
+      ],
+      "product_code": "EN-SB100A",
+      "next_action": "",
+      "region": "세종충북",
+      "contact": "대표원장, 산부인과 원무부장",
+      "created_at": "2026-08-26T07:00:53.13099+00:00",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "deal_status": "접촉·니즈파악"
+    },
+    {
+      "id": "1572_GYNE",
+      "hospital": "청주 다나여성병원",
+      "date": "2025/11/14",
+      "sales_rep": "이재덕",
+      "action_type": "샘플·데모",
+      "title": "청주 다나여성병원 자이네콜라(Gyne Colla) 디테일",
+      "note": "자이네콜라(Gynecola) 콜라겐 지혈재 디테일 진행. 원장님 별도 지시 없음. 간호부에서 원장님께 여쭤봐 주기로 함.",
+      "products": [
+        "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))"
+      ],
+      "product_code": "GNC2505D",
+      "next_action": "",
+      "region": "세종충북",
+      "contact": "대표원장, 산부인과 원무부장",
+      "created_at": "2026-08-26T07:00:53.13099+00:00",
+      "product_name": "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))",
+      "deal_status": "접촉·니즈파악"
     },
     {
       "id": 1575,
@@ -91393,21 +91537,42 @@ window.SALES_DB = {
       "created_at": "2026-08-26T07:00:52.537154+00:00"
     },
     {
-      "id": 1402,
+      "id": "1402_BIOPSY",
       "hospital": "청주 다나여성병원",
       "date": "2025/11/21",
       "sales_rep": "이재덕",
       "action_type": "관계관리",
-      "title": "다나여성병원 정보 수집",
-      "note": "바이옵시 자이네콜라(Gynecola) 원장님 별도지시없음. 여쭤봐 준다고 함.",
+      "title": "청주 다나여성병원 펀치 바이옵시 디테일",
+      "note": "펀치 바이옵시(EN-Shot Biopsy) 디테일 진행. 원장님 별도 지시 없음. 간호부에서 원장님께 여쭤봐 주기로 함.",
       "products": [
-        "가인콜라 (GYNE COLLA)"
+        "EN-Shot Biopsy 2.3cup"
+      ],
+      "product_code": "EN-SB100A",
+      "next_action": "",
+      "region": "세종충북",
+      "contact": "관리팀 사무장, 구매",
+      "created_at": "2026-08-26T07:00:53.13099+00:00",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "deal_status": "접촉·니즈파악"
+    },
+    {
+      "id": "1402_GYNE",
+      "hospital": "청주 다나여성병원",
+      "date": "2025/11/21",
+      "sales_rep": "이재덕",
+      "action_type": "관계관리",
+      "title": "청주 다나여성병원 자이네콜라(Gyne Colla) 디테일",
+      "note": "자이네콜라(Gynecola) 콜라겐 지혈재 디테일 진행. 원장님 별도 지시 없음. 간호부에서 원장님께 여쭤봐 주기로 함.",
+      "products": [
+        "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))"
       ],
       "product_code": "GNC2505D",
       "next_action": "",
       "region": "세종충북",
       "contact": "관리팀 사무장, 구매",
-      "created_at": "2026-08-26T07:00:53.13099+00:00"
+      "created_at": "2026-08-26T07:00:53.13099+00:00",
+      "product_name": "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))",
+      "deal_status": "접촉·니즈파악"
     },
     {
       "id": 1410,
@@ -92990,13 +93155,15 @@ window.SALES_DB = {
       "title": "[제품설명·소개] 하이겐트 (Hygent)",
       "note": "외과 김기호 교수에게 하이겐트 소개했으나 미온적 반응. 유착 방지율 관련 추가 자료 준비 후 재방문 예정.",
       "products": [
-        "[하이겐트] Hygent 수액세트/치료재료"
+        "Crown Trocar (121-51855)",
+        "Hy gent 하이겐트 (5*5)"
       ],
-      "product_code": "PROD_HYGENT",
+      "product_code": "121-51855",
       "next_action": "",
       "region": "기타",
       "contact": "김기호",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "product_name": "Crown Trocar (121-51855)"
     },
     {
       "id": 778,
@@ -93007,13 +93174,15 @@ window.SALES_DB = {
       "title": "[제품설명·소개] 트로카 & 원포트",
       "note": "김기호 교수 요청받은 트로카, 원포트 카탈로그 준비하여 재방문 예정.",
       "products": [
-        "복강경용 멸균 트로카 (Trocar)"
+        "Crown Trocar (121-51855)",
+        "Hy gent 하이겐트 (5*5)"
       ],
-      "product_code": "PROD_TROCAR",
+      "product_code": "121-51855",
       "next_action": "",
       "region": "기타",
       "contact": "김기호",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "product_name": "Crown Trocar (121-51855)"
     },
     {
       "id": 779,
@@ -93133,13 +93302,15 @@ window.SALES_DB = {
       "title": "국립소방병원 HYGENT (하이젠트) 제품설명",
       "note": "음성 국립소방병원의 문덕주 원장과 면담을 진행했으나 하이젠트는 아직 사용 전인 상태입니다. 다음 주 김기호 원장을 면담하며 다시 제품 디테일을 진행할 예정입니다.\n다음: 다음 주 김기호 원장 면담 및 하이젠트 제품 디테일 진행",
       "products": [
-        "HYGENT (하이젠트 살균소독)"
+        "Crown Trocar (121-51855)",
+        "Hy gent 하이겐트 (5*5)"
       ],
-      "product_code": "PROD_HYGENT",
+      "product_code": "121-51855",
       "next_action": "",
       "region": "기타",
       "contact": "문덕주",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "product_name": "Crown Trocar (121-51855)"
     },
     {
       "id": 786,
