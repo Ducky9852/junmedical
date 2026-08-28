@@ -80292,6 +80292,28 @@
       "aliases": [
         "복강경 소모품"
       ]
+    },
+    {
+      "id": "PROD_DISP_BIPOLAR",
+      "code": "PROD_DISP_BIPOLAR",
+      "name": "일회용 바이폴라",
+      "spec": "Disposable Bipolar Forceps",
+      "vendor": "준메디칼",
+      "category": "일반의료기기",
+      "edi": "",
+      "unit": "EA",
+      "price_in": 0,
+      "price_out": 0,
+      "keywords": [
+        "일회용 바이폴라",
+        "바이폴라",
+        "bipolar",
+        "일회용바이폴라"
+      ],
+      "aliases": [
+        "일회용바이폴라",
+        "바이폴라포셉"
+      ]
     }
   ],
   "hospitals": [
@@ -88360,23 +88382,6 @@
       "updated_at": "2026-08-26T07:00:53.457687+00:00"
     },
     {
-      "id": 524,
-      "hospital": "청주 하나병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_HYGENT",
-      "product_name": "HYGENT (하이젠트 살균소독)",
-      "status": "제품소개·영업중",
-      "last_date": "2025/11/04",
-      "latest_action": "제품설명·소개",
-      "latest_note": "원장님 사모가 의료기기회사를 운영중이며, 전납을 한다고 함. 바이폴라, 하이겐트(Hygent)제품 소개하여 병원내 구매과 후배한테 의사 타진후 연락주겠다고 함",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.457687+00:00",
-      "updated_at": "2026-08-26T07:00:53.457687+00:00"
-    },
-    {
       "id": 526,
       "hospital": "청주 21세기병원",
       "region": "세종충북",
@@ -88629,23 +88634,6 @@
       "fail_reasons": [
         "의료진 부재/면담 불가"
       ],
-      "created_at": "2026-08-26T07:00:53.457687+00:00",
-      "updated_at": "2026-08-26T07:00:53.457687+00:00"
-    },
-    {
-      "id": 541,
-      "hospital": "청주 하나병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "101.011A",
-      "product_name": "Metal Trocar (Flip) (10.5mm*95mm)",
-      "status": "제품소개·영업중",
-      "last_date": "2025/11/04",
-      "latest_action": "제품설명·소개",
-      "latest_note": "원장님 사모가 의료기기회사를 운영중이며, 전납을 한다고 함. 바이폴라, 하이겐트(Hygent)제품 소개하여 병원내 구매과 후배한테 의사 타진후 연락주겠다고 함",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
       "created_at": "2026-08-26T07:00:53.457687+00:00",
       "updated_at": "2026-08-26T07:00:53.457687+00:00"
     },
@@ -89998,6 +89986,30 @@
       "latest_action": "제품설명·소개",
       "latest_note": "처음 방문, 원장님 친절하심. [펜코] 서지 소드(안전메스) 제품 설명 드림. [비고] 5월 중쯤에 재방문 예정",
       "fail_reasons": []
+    },
+    {
+      "hospital": "청주 하나병원",
+      "product_id": "PROD_DISP_BIPOLAR",
+      "product_name": "일회용 바이폴라",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2025/11/04",
+      "latest_action": "제품설명·소개",
+      "latest_note": "원장님 사모 의료기기 전납회사 운영. 일회용 바이폴라 제품 소개하여 병원 내 구매과 후배한테 의사 타진 후 연락 주기로 함.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "청주 하나병원",
+      "product_id": "MTHG0505T",
+      "product_name": "Hy gent 하이겐트 (5*5)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2025/11/04",
+      "latest_action": "제품설명·소개",
+      "latest_note": "원장님 사모 의료기기 전납회사 운영. 하이겐트(MTHG0505T) 제품 소개하여 병원 내 구매과 후배한테 의사 타진 후 연락 주기로 함.",
+      "fail_reasons": []
     }
   ],
   "activity_logs": [
@@ -90899,13 +90911,15 @@
       "title": "[복강경 트로카] 하나병원 정보 수집",
       "note": "원장님 사모가 의료기기회사를 운영중이며, 전납을 한다고 함. 바이폴라, 하이겐트(Hygent)제품 소개하여 병원내 구매과 후배한테 의사 타진후 연락주겠다고 함",
       "products": [
-        "복강경 & 자궁경 기구 / 아티센셜 트로카"
+        "일회용 바이폴라",
+        "Hy gent 하이겐트 (5*5)"
       ],
-      "product_code": "PROD_TROCAR",
+      "product_code": "PROD_DISP_BIPOLAR",
       "next_action": "",
       "region": "세종충북",
       "contact": "관리팀 검진센터 차장, 구매",
-      "created_at": "2026-08-26T07:00:53.215174+00:00"
+      "created_at": "2026-08-26T07:00:53.215174+00:00",
+      "product_name": "일회용 바이폴라"
     },
     {
       "id": 1578,
@@ -90916,13 +90930,15 @@
       "title": "[하이겐트] 하나병원 정보 수집",
       "note": "원장님 사모가 의료기기회사를 운영중이며, 전납을 한다고 함. 바이폴라, 하이겐트(Hygent)제품 소개하여 병원내 구매과 후배한테 의사 타진후 연락주겠다고 함",
       "products": [
-        "HYGENT (하이젠트 살균소독)"
+        "일회용 바이폴라",
+        "Hy gent 하이겐트 (5*5)"
       ],
-      "product_code": "PROD_HYGENT",
+      "product_code": "PROD_DISP_BIPOLAR",
       "next_action": "",
       "region": "세종충북",
       "contact": "관리팀 검진센터 차장, 구매",
-      "created_at": "2026-08-26T07:00:53.215174+00:00"
+      "created_at": "2026-08-26T07:00:53.215174+00:00",
+      "product_name": "일회용 바이폴라"
     },
     {
       "id": 1579,
