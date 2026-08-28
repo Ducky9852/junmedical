@@ -67293,10 +67293,15 @@ window.SALES_DB = {
         "펜타스헬스케어 디씨",
         "M2136087",
         "가로형",
-        "M2136087"
+        "M2136087",
+        "보비패드",
+        "보비플레이트",
+        "BV플레이트",
+        "PK-CGP2025-TB"
       ],
       "aliases": [
-        "M2136087"
+        "M2136087",
+        "PK-CGP2025-TB"
       ]
     },
     {
@@ -87434,7 +87439,7 @@ window.SALES_DB = {
       "edi": "M2136087"
     },
     {
-      "status": "데모·샘플평가",
+      "status": "접촉·니즈파악",
       "last_date": "2026/08/21",
       "latest_action": "관계관리",
       "sales_rep": "이재덕",
@@ -87448,9 +87453,9 @@ window.SALES_DB = {
       "history_count": 3,
       "latest_note": "청주 한국병원 구미희 선생을 면담하여 보비패드 도입 진행사항을 체크했으나 아직은 힘들다는 답변을 받았습니다. 향후 지속적으로 노력할 예정입니다.\n다음: 지속적인 방문 및 도입 추진",
       "hospital": "청주 한국병원",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "product_category": "펜타스헬스케어 디씨",
+      "product_id": "PK-CGP202S-TB",
+      "product_name": "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL)",
+      "product_category": "일반의료기기",
       "region": "세종충북",
       "vendor": "펜타스헬스케어 디씨",
       "erp_code": "PK-CGP202S-TB",
@@ -88613,14 +88618,15 @@ window.SALES_DB = {
       "sales_rep": "이재덕",
       "contact": "구미희",
       "action_type": "관계관리",
-      "deal_status": "관계관리·접촉",
+      "deal_status": "접촉·니즈파악",
       "products": [
-        "PENKO 서지패드 / 서포트 플레이트 / 서지소드"
+        "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL)"
       ],
       "title": "청주 한국병원 보비패드 미팅진행",
       "note": "청주 한국병원 구미희 선생을 면담하여 보비패드 도입 진행사항을 체크했으나 아직은 힘들다는 답변을 받았습니다. 향후 지속적으로 노력할 예정입니다.\n다음: 지속적인 방문 및 도입 추진",
       "fail_reasons": [],
-      "product_code": "ch1010"
+      "product_code": "PK-CGP202S-TB",
+      "product_name": "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL)"
     },
     {
       "id": "LOG_6",
@@ -89897,14 +89903,15 @@ window.SALES_DB = {
       "sales_rep": "이재덕",
       "contact": "수술방 구미희 간호사",
       "action_type": "샘플·데모",
-      "deal_status": "데모·샘플평가",
+      "deal_status": "접촉·니즈파악",
       "products": [
-        "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL) (가로형)"
+        "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL)"
       ],
       "title": "청주 한국병원 샘플 제공",
       "note": "일회용보비 전달, 어시스트 들어가서 다른간호사에게 전달함. \n[제공 샘플] 보비",
       "fail_reasons": [],
-      "product_code": "PK-CGP202S-TB"
+      "product_code": "PK-CGP202S-TB",
+      "product_name": "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL)"
     },
     {
       "id": "LOG_711",
