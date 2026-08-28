@@ -86814,7 +86814,7 @@
       "edi": ""
     },
     {
-      "status": "데모·샘플평가",
+      "status": "소모품 샘플",
       "last_date": "2025/11/06",
       "latest_action": "샘플·데모",
       "sales_rep": "이재덕",
@@ -86828,9 +86828,9 @@
       "history_count": 1,
       "latest_note": "바이옵시 샘플 제공, 구매예정, 자궁경장비 카탈로그 요청함\n[다음 방문 예정일] 2025/11/12\n[제공 샘플] 바이옵시",
       "hospital": "미래산부인과",
-      "product_id": "101.011A",
-      "product_name": "Metal Trocar (Flip) (10.5mm*95mm)",
-      "product_category": "수빈메디칼",
+      "product_id": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "product_category": "일반의료기기",
       "region": "세종충북",
       "vendor": "수빈메디칼",
       "erp_code": "101.011A",
@@ -86860,7 +86860,7 @@
       "edi": ""
     },
     {
-      "status": "데모·샘플평가",
+      "status": "소모품 샘플",
       "last_date": "2026/02/26",
       "latest_action": "샘플·데모",
       "sales_rep": "이은필",
@@ -86874,9 +86874,9 @@
       "history_count": 1,
       "latest_note": "원장님미팅 첫방문\n[비고] 스트라이커 위샵으로 복강경 하심\n산모가 많지 않음 펀치바이옵시샘플\n[다음 방문 예정일] 2026/03/05\n[제공 샘플] 바이옵시",
       "hospital": "서산한마음산부인과",
-      "product_id": "101.011A",
-      "product_name": "Metal Trocar (Flip) (10.5mm*95mm)",
-      "product_category": "수빈메디칼",
+      "product_id": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "product_category": "일반의료기기",
       "region": "서산당진",
       "vendor": "수빈메디칼",
       "erp_code": "101.011A",
@@ -86990,7 +86990,7 @@
       "edi": ""
     },
     {
-      "status": "데모·샘플평가",
+      "status": "소모품 샘플",
       "last_date": "2025/11/06",
       "latest_action": "샘플·데모",
       "sales_rep": "이재덕",
@@ -87004,9 +87004,9 @@
       "history_count": 1,
       "latest_note": "정근환 행정부장 면담, 바이폴라 설명함, 라파핸들 내구성 좋은거 샘플요청, 바이폴라 330-5 샘플 챙겨야함. \n[제공 샘플] 바이옵시",
       "hospital": "충주 별산부인과",
-      "product_id": "101.011A",
-      "product_name": "Metal Trocar (Flip) (10.5mm*95mm)",
-      "product_category": "수빈메디칼",
+      "product_id": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "product_category": "일반의료기기",
       "region": "세종충북",
       "vendor": "수빈메디칼",
       "erp_code": "101.011A",
@@ -91480,16 +91480,16 @@
       "region": "서산당진",
       "sales_rep": "이은필",
       "contact": "산부인과 최기욱원장님",
-      "action_type": "샘플·데모",
+      "action_type": "소모품 샘플",
       "deal_status": "데모·샘플평가",
       "products": [
-        "복강경 & 자궁경 기구 / 아티센셜 트로카",
-        "EN-Shot Biopsy 생검기구"
+        "EN-Shot Biopsy 2.3cup"
       ],
       "title": "서산한마음산부인과 신규 아이템 소개",
       "note": "원장님미팅 첫방문\n[비고] 스트라이커 위샵으로 복강경 하심\n산모가 많지 않음 펀치바이옵시샘플\n[다음 방문 예정일] 2026/03/05\n[제공 샘플] 바이옵시",
       "fail_reasons": [],
-      "product_code": "EN-SB100A"
+      "product_code": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup"
     },
     {
       "id": "LOG_615",
@@ -100022,18 +100022,18 @@
       "region": "세종충북",
       "sales_rep": "이재덕",
       "contact": "산부인과 서지택, 원장",
-      "action_type": "샘플·데모",
+      "action_type": "소모품 샘플",
       "deal_status": "영업실패·보류",
       "products": [
-        "일회용 펀치 생검기 (Punch Biopsy)"
+        "EN-Shot Biopsy 2.3cup"
       ],
       "title": "[샘플·데모] 펀치바이옵시",
       "note": "바이옵시 제품 설명 및 샘플 전달, 원장님 구매 지시 대기.",
       "fail_reasons": [
         "기존 거래처/경쟁사 선호"
       ],
-      "product_code": "PROD_BIOPSY",
-      "product_name": "일회용 펀치 생검기 (Punch Biopsy)"
+      "product_code": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup"
     },
     {
       "id": "LOG_300",
@@ -100101,16 +100101,16 @@
       "region": "세종충북",
       "sales_rep": "이재덕",
       "contact": "산부인과 원장",
-      "action_type": "샘플·데모",
+      "action_type": "소모품 샘플",
       "deal_status": "데모·샘플평가",
       "products": [
-        "복강경 & 자궁경 기구 / 아티센셜 트로카",
-        "EN-Shot Biopsy 생검기구"
+        "EN-Shot Biopsy 2.3cup"
       ],
       "title": "미래산부인과 정보 수집",
       "note": "바이옵시 샘플 제공, 구매예정, 자궁경장비 카탈로그 요청함\n[다음 방문 예정일] 2025/11/12\n[제공 샘플] 바이옵시",
       "fail_reasons": [],
-      "product_code": "EN-SB100A"
+      "product_code": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup"
     },
     {
       "id": "LOG_305",
@@ -100185,15 +100185,16 @@
       "region": "세종충북",
       "sales_rep": "이재덕",
       "contact": "산부인과 정근환, 행정부장",
-      "action_type": "샘플·데모",
+      "action_type": "소모품 샘플",
       "deal_status": "데모·샘플평가",
       "products": [
-        "복강경 & 자궁경 기구 / 아티센셜 트로카"
+        "EN-Shot Biopsy 2.3cup"
       ],
       "title": "충주별산부인과 신규 아이템 소개",
       "note": "정근환 행정부장 면담, 바이폴라 설명함, 라파핸들 내구성 좋은거 샘플요청, 바이폴라 330-5 샘플 챙겨야함. \n[제공 샘플] 바이옵시",
       "fail_reasons": [],
-      "product_code": "EN-SB100A"
+      "product_code": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup"
     },
     {
       "id": "LOG_310",
@@ -100248,15 +100249,16 @@
       "region": "세종충북",
       "sales_rep": "이재덕",
       "contact": "산부인과 서지택, 원장",
-      "action_type": "샘플·데모",
+      "action_type": "소모품 샘플",
       "deal_status": "데모·샘플평가",
       "products": [
-        "EN-Shot Biopsy 생검기구"
+        "EN-Shot Biopsy 2.3cup"
       ],
       "title": "미래여성산부인과 정보 수집",
       "note": "서지택원장 면담. 바이옵시 제품 디테일, 샘플 제공. 오후에 원무과장 없어 금요일 오전에 방문 예정, 제품 상담 후 랜딩 할 수 있을듯 함\n[다음 방문 예정일] 2025/11/07\n[제공 샘플] 바이옵시",
       "fail_reasons": [],
-      "product_code": "EN-SB100A"
+      "product_code": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup"
     },
     {
       "id": "LOG_314",
