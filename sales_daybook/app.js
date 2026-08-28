@@ -1732,13 +1732,34 @@ function renderASControlCenter() {
     return true;
   });
 
-  // Deduplicate: Ensure only 1 active AS card per hospital + equipment
+  // Deduplicate: Ensure only 1 active AS card per hospital + equipment category
   const seenASHospitalProduct = new Set();
   const dedupedASDeals = [];
-  asDeals.forEach(d => {
+
+  // Sort so that specific product IDs (like 201.023) take priority over PROD_GENERAL
+  const sortedASDeals = [...asDeals].sort((a, b) => {
+    if (a.product_id !== 'PROD_GENERAL' && b.product_id === 'PROD_GENERAL') return -1;
+    if (a.product_id === 'PROD_GENERAL' && b.product_id !== 'PROD_GENERAL') return 1;
+    return 0;
+  });
+
+  sortedASDeals.forEach(d => {
     const hospKey = (d.hospital || '').replace(/\s+/g, '').toLowerCase();
-    const prodKey = (d.product_id || d.product_name || '').toLowerCase();
-    const uniqueKey = `${hospKey}__${prodKey}`;
+    
+    // Normalize equipment category keyword
+    const pStr = `${d.product_id || ''} ${d.product_name || ''} ${d.latest_note || ''}`.toLowerCase();
+    let equipGroup = 'general';
+    if (pStr.includes('모슬레이터') || pStr.includes('핸들') || pStr.includes('201.023')) {
+      equipGroup = 'morcellator_handle';
+    } else if (pStr.includes('보비') || pStr.includes('bovie') || pStr.includes('zeus') || pStr.includes('아프로')) {
+      equipGroup = 'bovie_unit';
+    } else if (pStr.includes('oxy9') || pStr.includes('bt350')) {
+      equipGroup = 'monitoring_unit';
+    } else {
+      equipGroup = (d.product_id || 'general').toLowerCase();
+    }
+
+    const uniqueKey = `${hospKey}__${equipGroup}`;
     if (!seenASHospitalProduct.has(uniqueKey)) {
       seenASHospitalProduct.add(uniqueKey);
       dedupedASDeals.push(d);
