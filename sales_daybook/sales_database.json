@@ -80314,6 +80314,49 @@
         "일회용바이폴라",
         "바이폴라포셉"
       ]
+    },
+    {
+      "id": "PROD_ZEUS_PRIME",
+      "code": "PROD_ZEUS_PRIME",
+      "name": "Zeus Prime 전기수술기 (보비 장비)",
+      "spec": "Electrosurgical Unit (Bovie)",
+      "vendor": "아프로코리아",
+      "category": "의료장비/전기수술기",
+      "edi": "",
+      "unit": "SET",
+      "price_in": 0,
+      "price_out": 0,
+      "keywords": [
+        "Zeus Prime",
+        "제우스프라임",
+        "제우스",
+        "보비장비",
+        "전기수술기"
+      ],
+      "aliases": [
+        "제우스보비",
+        "ZeusPrime"
+      ]
+    },
+    {
+      "id": "PROD_APRO_BOVIE",
+      "code": "PROD_APRO_BOVIE",
+      "name": "아프로코리아 보비장비",
+      "spec": "Bovie 장비",
+      "vendor": "아프로코리아",
+      "category": "의료장비/전기수술기",
+      "edi": "",
+      "unit": "SET",
+      "price_in": 0,
+      "price_out": 0,
+      "keywords": [
+        "아프로코리아",
+        "보비장비",
+        "아프로보비"
+      ],
+      "aliases": [
+        "아프로보비"
+      ]
     }
   ],
   "hospitals": [
@@ -85746,23 +85789,6 @@
       "updated_at": "2026-08-26T07:07:26.071243+00:00"
     },
     {
-      "id": 841,
-      "hospital": "베스티안병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_GENERAL",
-      "product_name": "신규 접촉 및 인사 (품목 미정)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/08/26",
-      "latest_action": "신규접촉",
-      "latest_note": "외과 윤천재 원장과의 면담이 불발되었으며, 산부인과는 형식적으로 운영 중이고 정형외과(OS) 전문의는 부재한 상황입니다.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-27T04:53:41.564388+00:00",
-      "updated_at": "2026-08-27T04:53:41.564388+00:00"
-    },
-    {
       "id": 842,
       "hospital": "이화병원",
       "region": "세종충북",
@@ -85782,23 +85808,6 @@
       "fail_reasons": [],
       "created_at": "2026-08-27T07:47:46.970876+00:00",
       "updated_at": "2026-08-27T07:47:46.970876+00:00"
-    },
-    {
-      "id": 843,
-      "hospital": "봄날의외과",
-      "region": "세종충북",
-      "sales_rep": "이은필",
-      "product_id": "PROD_GENERAL",
-      "product_name": "품목 미정",
-      "status": "도입완료·납품",
-      "last_date": "2026/08/27",
-      "latest_action": "수금·결제",
-      "latest_note": "봄날의외과에서 500만 원 결제를 완료함.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-27T08:07:50.754052+00:00",
-      "updated_at": "2026-08-27T08:07:50.754052+00:00"
     },
     {
       "id": 844,
@@ -85873,65 +85882,6 @@
       "updated_at": "2026-08-27T08:11:30.07237+00:00"
     },
     {
-      "id": 848,
-      "hospital": "정화케어",
-      "region": "세종충북",
-      "sales_rep": "이은필",
-      "product_id": "PROD_GENERAL",
-      "product_name": "신규 접촉 및 인사 (품목 미정)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/08/27",
-      "latest_action": "관계관리",
-      "latest_note": "정화케어 방문 및 관계 관리 진행",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-27T08:12:25.504981+00:00",
-      "updated_at": "2026-08-27T08:12:25.504981+00:00"
-    },
-    {
-      "id": 849,
-      "hospital": "이화병원",
-      "region": "세종충북",
-      "sales_rep": "이은필",
-      "product_id": "PROD_GENERAL",
-      "product_name": "데모장비",
-      "status": "데모·샘플평가",
-      "last_date": "2026/08/27",
-      "latest_action": "샘플·데모",
-      "latest_note": "이화병원에서 데모장비를 전달받음 (또는 데모장비 인도 완료)",
-      "demo_info": {
-        "date": "2026/08/27",
-        "note": "이화병원에서 데모장비를 전달받음 (또는 데모장비 인도 완료)",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-27T08:12:26.145083+00:00",
-      "updated_at": "2026-08-27T08:12:26.145083+00:00"
-    },
-    {
-      "id": 850,
-      "hospital": "연세하임",
-      "region": "세종충북",
-      "sales_rep": "이은필",
-      "product_id": "PROD_GENERAL",
-      "product_name": "보비장비 (아프로코리아)",
-      "status": "A/S접수·처리",
-      "last_date": "2026/08/27",
-      "latest_action": "A/S·클레임",
-      "latest_note": "연세하임의 아프로코리아 보비장비 수리를 금일 완료하였습니다.",
-      "demo_info": null,
-      "as_info": {
-        "date": "2026/08/27",
-        "note": "연세하임의 아프로코리아 보비장비 수리를 금일 완료하였습니다.",
-        "status": "접수/진행중"
-      },
-      "fail_reasons": [],
-      "created_at": "2026-08-27T08:13:16.534205+00:00",
-      "updated_at": "2026-08-27T08:13:16.534205+00:00"
-    },
-    {
       "id": 851,
       "hospital": "음성 국립소방병원",
       "region": "세종충북",
@@ -85975,61 +85925,6 @@
       ],
       "created_at": "2026-08-27T09:46:11.378552+00:00",
       "updated_at": "2026-08-27T09:46:11.378552+00:00"
-    },
-    {
-      "id": 853,
-      "hospital": "청주 ms여성병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_GENERAL",
-      "product_name": "의료기기 (품목 미상)",
-      "status": "도입완료·납품",
-      "last_date": "2026/08/27",
-      "latest_action": "납품·설치",
-      "latest_note": "청주 ms여성병원에 납품을 완료하였습니다.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-27T09:46:26.160194+00:00",
-      "updated_at": "2026-08-27T09:46:26.160194+00:00"
-    },
-    {
-      "id": 854,
-      "hospital": "청주 모태안여성병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_GENERAL",
-      "product_name": "납품 품목 (미지정)",
-      "status": "도입완료·납품",
-      "last_date": "2026/08/27",
-      "latest_action": "납품·설치",
-      "latest_note": "청주 모태안여성병원에 제품 납품을 완료하였습니다.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-27T09:46:36.956754+00:00",
-      "updated_at": "2026-08-27T09:46:36.956754+00:00"
-    },
-    {
-      "id": 855,
-      "hospital": "충북대학교 심혈관센터",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_GENERAL",
-      "product_name": "앤지오킷",
-      "status": "데모·샘플평가",
-      "last_date": "2026/08/27",
-      "latest_action": "샘플·데모",
-      "latest_note": "충북대학교 심혈관센터 김상민 교수에게 앤지오킷 샘플을 제공하고 사용을 권장함.",
-      "demo_info": {
-        "date": "2026/08/27",
-        "note": "충북대학교 심혈관센터 김상민 교수에게 앤지오킷 샘플을 제공하고 사용을 권장함.",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-27T09:47:31.297515+00:00",
-      "updated_at": "2026-08-27T09:47:31.297515+00:00"
     },
     {
       "id": 399,
@@ -86545,23 +86440,6 @@
       "fail_reasons": [],
       "created_at": "2026-08-26T07:00:53.373276+00:00",
       "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
-      "id": 857,
-      "hospital": "홍성의료원",
-      "region": "서산당진",
-      "sales_rep": "이은필",
-      "product_id": "PROD_GENERAL",
-      "product_name": "신규 접촉 및 인사 (품목 미정)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/08/28",
-      "latest_action": "관계관리",
-      "latest_note": "홍성의료원 공급실 이재용 담당자를 만나 면담을 진행하고 추가 서류를 메일로 송부하기로 협의함.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-28T03:01:50.076751+00:00",
-      "updated_at": "2026-08-28T03:01:50.076751+00:00"
     },
     {
       "id": 426,
@@ -89915,6 +89793,98 @@
       "fail_reasons": [
         "단가/가격 부담"
       ]
+    },
+    {
+      "hospital": "충북대학교 심혈관센터",
+      "product_id": "ST-ANG-PR03",
+      "product_name": "ANGIO 시술용 키트 (PR03 / Adv.)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "소모품 샘플",
+      "last_date": "2026/08/27",
+      "latest_action": "샘플·데모",
+      "latest_note": "김상민 교수에게 앤지오킷 샘플을 제공하고 사용을 권장함.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "연세하임",
+      "product_id": "PROD_APRO_BOVIE",
+      "product_name": "아프로코리아 보비장비",
+      "region": "대전충남",
+      "sales_rep": "이재덕",
+      "status": "A/S접수·처리",
+      "last_date": "2026/08/27",
+      "latest_action": "A/S접수",
+      "latest_note": "아프로코리아 보비장비 수리 건 외부 수리 진행 중. 월요일 수령 후 병원 전달 예정.",
+      "as_info": {
+        "status": "외부전달",
+        "stage": "2. 외부전달",
+        "repair_vendor": "아프로코리아",
+        "note": "월요일 수리품 수령 예정"
+      },
+      "fail_reasons": []
+    },
+    {
+      "hospital": "이화병원",
+      "product_id": "PROD_ZEUS_PRIME",
+      "product_name": "Zeus Prime 전기수술기 (보비 장비)",
+      "region": "대전충남",
+      "sales_rep": "이재덕",
+      "status": "데모·샘플평가",
+      "last_date": "2026/08/27",
+      "latest_action": "샘플·데모",
+      "latest_note": "Zeus Prime 보비 데모장비 전달 및 평가 진행.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "베스티안병원",
+      "product_id": "PROD_GENERAL",
+      "product_name": "신규 제안 품목 (품목 미정)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "영업실패·보류",
+      "last_date": "2026/08/28",
+      "latest_action": "제품설명·소개",
+      "latest_note": "외과 윤천재 원장 면담 불발, 산부인과 형식적 운영, 정형외과(OS) 부재로 영업 보류.",
+      "fail_reasons": [
+        "의료진 부재/면담 불가"
+      ]
+    },
+    {
+      "hospital": "정화케어",
+      "product_id": "PROD_GENERAL",
+      "product_name": "거래처 관계 관리",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "관계관리·접촉",
+      "last_date": "2026/08/27",
+      "latest_action": "관계관리",
+      "latest_note": "정화케어 방문 및 관계 관리 진행.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "홍성의료원",
+      "product_id": "PROD_GENERAL",
+      "product_name": "공급실 업무협의",
+      "region": "대전충남",
+      "sales_rep": "이재덕",
+      "status": "관계관리·접촉",
+      "last_date": "2026/08/28",
+      "latest_action": "관계관리",
+      "latest_note": "공급실 이재용 담당자 미팅, 추가 서류 메일 송부 협의.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "서산중앙병원",
+      "product_id": "GROUP-SEJONG-SHEET",
+      "product_name": "[세종] 멸균 유틸리티 드레이프",
+      "region": "대전충남",
+      "sales_rep": "이재덕",
+      "status": "견적서제출·협의",
+      "last_date": "2026/08/20",
+      "latest_action": "견적제출",
+      "latest_note": "복강경 패키지 차이점 설명 준비, UTILITY DRAPE 단가 확인 및 신규 제품 구성 변경 대응.",
+      "fail_reasons": []
     }
   ],
   "activity_logs": [
@@ -92242,7 +92212,7 @@
     },
     {
       "id": 1608,
-      "hospital": "청주 ms여성병원",
+      "hospital": "청주 엠에스여성병원",
       "date": "2026/08/27",
       "sales_rep": "이재덕",
       "action_type": "납품·설치",
@@ -92255,7 +92225,8 @@
       "next_action": null,
       "region": "세종충북",
       "contact": "실무진",
-      "created_at": "2026-08-27T09:46:25.986117+00:00"
+      "created_at": "2026-08-27T09:46:25.986117+00:00",
+      "hospital_name": "청주 엠에스여성병원"
     },
     {
       "id": 1609,
