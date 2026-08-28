@@ -1306,6 +1306,10 @@ img {
   transition: all 0.2s ease;
 }
 
+.btn-map-action svg {
+  flex-shrink: 0;
+}
+
 .btn-naver-map {
   background: #03c75a;
   color: #ffffff !important;
