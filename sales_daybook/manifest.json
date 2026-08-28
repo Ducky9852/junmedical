@@ -1,0 +1,24 @@
+{
+  "name": "준메디칼 MEDI-SALES 360°",
+  "short_name": "MEDI-SALES",
+  "description": "준메디칼 의료기기 스마트 영업관리 & 파이프라인 플랫폼",
+  "start_url": "sales.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b0f19",
+  "theme_color": "#1e293b",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
