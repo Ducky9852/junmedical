@@ -83897,7 +83897,7 @@
       ],
       "status": "활동병원",
       "last_activity_date": "2026/08/06",
-      "total_logs": 3,
+      "total_logs": 6,
       "demo_count": 1,
       "won_count": 0,
       "as_count": 0,
@@ -83905,26 +83905,6 @@
       "products_active": [
         "Surgi FXA Angio Procedure Kit (Adv03)",
         "Uterine Biopsy Punch Forceps (25cm)"
-      ]
-    },
-    {
-      "name": "효성의료원",
-      "region": "세종충북",
-      "sales_reps": [
-        "이은필"
-      ],
-      "contacts": [
-        "실무진"
-      ],
-      "status": "활동병원",
-      "last_activity_date": "2026/08/25",
-      "total_logs": 1,
-      "demo_count": 0,
-      "won_count": 0,
-      "as_count": 1,
-      "fail_count": 0,
-      "products_active": [
-        "젠타큐(GENTA Q) (5*5cm (연두색))"
       ]
     }
   ],
@@ -84748,7 +84728,7 @@
       "edi": ""
     },
     {
-      "status": "데모·샘플평가",
+      "status": "견적서제출·협의",
       "last_date": "2026/02/02",
       "latest_action": "샘플·데모",
       "sales_rep": "이은필",
@@ -84762,9 +84742,9 @@
       "history_count": 1,
       "latest_note": "[비고] 박수진과장이담당이고 펀치바이옵시는 관심있어서 바로샘플사용해보고싶다고함, 지혈제는 듀얼튤립관심 있어서 다음 방문때 갔다주기로 함\n[다음 방문 예정일] 2026/02/04\n[제공 샘플] 바이옵시",
       "hospital": "홍성의료원",
-      "product_id": "045-7301",
-      "product_name": "Uterine Biopsy Punch Forceps (25cm)",
-      "product_category": "알파에이아이",
+      "product_id": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "product_category": "일반의료기기",
       "region": "서산당진",
       "vendor": "알파에이아이",
       "erp_code": "045-7301",
@@ -87073,25 +87053,6 @@
     },
     {
       "status": "제품소개·영업중",
-      "last_date": "2026/02/24",
-      "latest_action": "제품설명·소개",
-      "sales_rep": "이재덕",
-      "fail_reasons": [],
-      "demo_info": null,
-      "as_info": null,
-      "history_count": 1,
-      "latest_note": "서지소드 디테일",
-      "hospital": "건국대학교 충주병원",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "product_category": "펜타스헬스케어 디씨",
-      "region": "세종충북",
-      "vendor": "펜타스헬스케어 디씨",
-      "erp_code": "PK-CGP202S-TB",
-      "edi": "M2136087"
-    },
-    {
-      "status": "제품소개·영업중",
       "last_date": "2026/08/20",
       "latest_action": "제품설명·소개",
       "sales_rep": "이재덕",
@@ -87496,50 +87457,6 @@
       "edi": "M2136087"
     },
     {
-      "status": "데모·샘플평가",
-      "last_date": "2026/04/08",
-      "latest_action": "관계관리",
-      "sales_rep": "이재덕",
-      "fail_reasons": [],
-      "demo_info": {
-        "date": "2026/02/20",
-        "note": "청주성모병원 샘플 제공 서지소드 샘플제공. 피드백 주겠다함.",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "history_count": 4,
-      "latest_note": "서지소드 er에서 피드백은 별로라고함. Er을 직접 공략해 봐야겠음.",
-      "hospital": "청주성모병원",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "product_category": "펜타스헬스케어 디씨",
-      "region": "세종충북",
-      "vendor": "펜타스헬스케어 디씨",
-      "erp_code": "PK-CGP202S-TB",
-      "edi": "M2136087"
-    },
-    {
-      "status": "영업실패·보류",
-      "last_date": "2026/08/18",
-      "latest_action": "제품설명·소개",
-      "sales_rep": "이재덕",
-      "fail_reasons": [
-        "기존 거래처/경쟁사 선호"
-      ],
-      "demo_info": null,
-      "as_info": null,
-      "history_count": 2,
-      "latest_note": "청주의료원 정형외과 김윤호 과장에게 써지패드를 소개했으나 기존 사용 제품이 있다고 하였습니다. 향후 써지패드 x-ray 제품으로 계속 방문할 예정입니다.\n다음: 써지패드 x-ray 제품으로 지속 방문 및 영업 진행",
-      "hospital": "충청북도 청주의료원",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "product_category": "펜타스헬스케어 디씨",
-      "region": "세종충북",
-      "vendor": "펜타스헬스케어 디씨",
-      "erp_code": "PK-CGP202S-TB",
-      "edi": "M2136087"
-    },
-    {
       "status": "제품소개·영업중",
       "last_date": "2026/08/20",
       "latest_action": "제품설명·소개",
@@ -87550,25 +87467,6 @@
       "history_count": 2,
       "latest_note": "충주 별산부인과 사무장에게 써지패드 제품에 대해 상세히 설명하였으나 특별한 반응을 보이지 않았습니다.",
       "hospital": "충주 별산부인과",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "product_category": "펜타스헬스케어 디씨",
-      "region": "세종충북",
-      "vendor": "펜타스헬스케어 디씨",
-      "erp_code": "PK-CGP202S-TB",
-      "edi": "M2136087"
-    },
-    {
-      "status": "제품소개·영업중",
-      "last_date": "2026/02/24",
-      "latest_action": "제품설명·소개",
-      "sales_rep": "이재덕",
-      "fail_reasons": [],
-      "demo_info": null,
-      "as_info": null,
-      "history_count": 1,
-      "latest_note": "서지소드 디테일하였으나 바쁘다고함.",
-      "hospital": "충청북도 충주의료원",
       "product_id": "GROUP-PENKO-SWORD",
       "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
       "product_category": "펜타스헬스케어 디씨",
@@ -87988,26 +87886,6 @@
       "fail_reasons": []
     },
     {
-      "hospital": "효성의료원",
-      "region": "세종충북",
-      "sales_rep": "이은필",
-      "product_id": "5",
-      "product_name": "젠타큐(GENTA Q) (5*5cm (연두색))",
-      "status": "A/S접수·처리",
-      "last_date": "2026/08/25",
-      "latest_action": "A/S·클레임",
-      "latest_note": "효성의료원\n산부인과 박수진과장미팅\n펀치바이옵시 샘플 사용후 만족도 높음\n듀얼튤립는 때에 따라 사용하기 편함\n최정훈 1과장께 보고, 최정훈과장 사용후 코드 생성한다고 함. 튤립은 샘플하나 더 요청\n\n효성의료원\n신경외과",
-      "demo_info": null,
-      "as_info": {
-        "date": "2026/08/25",
-        "note": "효성의료원\n산부인과 박수진과장미팅\n펀치바이옵시 샘플 사용후 만족도 높음\n듀얼튤립는 때에 따라 사용하기 편함\n최정훈 1과장께 보고, 최정훈과장 사용후 코드 생성한다고 함. 튤립은 샘플하나 더 요청\n\n효성의료원\n신경외과",
-        "status": "접수/진행중"
-      },
-      "fail_reasons": [
-        "필요성 부재"
-      ]
-    },
-    {
       "hospital": "보은 우리들정형외과",
       "region": "세종충북",
       "sales_rep": "이재덕",
@@ -88128,26 +88006,8 @@
       "fail_reasons": []
     },
     {
-      "hospital": "효성의료원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_BIOPSY",
-      "product_name": "일회용 펀치 생검기 (Punch Biopsy)",
-      "status": "데모·샘플평가",
-      "last_date": "2026/08/25",
-      "latest_action": "샘플·데모",
-      "latest_note": "산부인과 박수진과장 미팅. 펀치바이옵시 샘플 사용후 만족도 높음. 최정훈 1과장 사용 후 코드 생성 예정.",
-      "demo_info": {
-        "date": "2026/08/25",
-        "note": "산부인과 박수진과장 미팅. 펀치바이옵시 샘플 사용후 만족도 높음. 최정훈 1과장 사용 후 코드 생성 예정.",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": []
-    },
-    {
-      "hospital": "효성의료원",
-      "region": "세종충북",
+      "hospital": "홍성의료원",
+      "region": "서산당진",
       "sales_rep": "이재덕",
       "product_id": "PROD_TULIP",
       "product_name": "듀얼 튤립 카테터 (Dual Tulip)",
@@ -88216,42 +88076,6 @@
       "latest_action": "제품설명·소개",
       "latest_note": "조리원 운영 중, 좌욕기 설명하고 관심 보임. 비급여 샘플 전달 예정.",
       "demo_info": null,
-      "as_info": null,
-      "fail_reasons": []
-    },
-    {
-      "hospital": "홍성의료원",
-      "region": "서산당진",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_BIOPSY",
-      "product_name": "일회용 펀치 생검기 (Punch Biopsy)",
-      "status": "데모·샘플평가",
-      "last_date": "2026/02/02",
-      "latest_action": "샘플·데모",
-      "latest_note": "박수진 과장 담당, 펀치바이옵시 관심 있어 바로 샘플 사용 희망.",
-      "demo_info": {
-        "date": "2026/02/02",
-        "note": "박수진 과장 담당, 펀치바이옵시 관심 있어 바로 샘플 사용 희망.",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": []
-    },
-    {
-      "hospital": "홍성의료원",
-      "region": "서산당진",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_TULIP",
-      "product_name": "듀얼 튤립 카테터 (Dual Tulip)",
-      "status": "데모·샘플평가",
-      "last_date": "2026/02/02",
-      "latest_action": "샘플·데모",
-      "latest_note": "듀얼튤립 관심 있어 다음 방문 시 샘플 전달 예정.",
-      "demo_info": {
-        "date": "2026/02/02",
-        "note": "듀얼튤립 관심 있어 다음 방문 시 샘플 전달 예정.",
-        "status": "평가진행중"
-      },
       "as_info": null,
       "fail_reasons": []
     },
@@ -88534,8 +88358,8 @@
       "product_code": "HA-02C"
     },
     {
-      "hospital": "효성의료원",
-      "region": "세종충북",
+      "hospital": "홍성의료원",
+      "region": "서산당진",
       "date": "2026/08/25",
       "sales_rep": "이은필",
       "contact": "실무진",
@@ -88549,8 +88373,8 @@
       "product_name": "일회용 펀치 생검기 (Punch Biopsy)"
     },
     {
-      "hospital": "효성의료원",
-      "region": "세종충북",
+      "hospital": "홍성의료원",
+      "region": "서산당진",
       "date": "2026/08/25",
       "sales_rep": "이은필",
       "contact": "실무진",
