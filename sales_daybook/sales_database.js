@@ -80228,6 +80228,28 @@ window.SALES_DB = {
         "펜코패드",
         "PKSUR02"
       ]
+    },
+    {
+      "id": "121-51855",
+      "code": "121-51855",
+      "name": "Crown Trocar (121-51855)",
+      "spec": "복강경용 멸균 트로카",
+      "vendor": "(주)세종헬스케어",
+      "category": "일반의료기기",
+      "edi": "",
+      "unit": "EA",
+      "price_in": 0,
+      "price_out": 0,
+      "keywords": [
+        "121-51855",
+        "Crown Trocar",
+        "트로카",
+        "크라운 트로카"
+      ],
+      "aliases": [
+        "12151855",
+        "크라운트로카"
+      ]
     }
   ],
   "hospitals": [
@@ -88166,23 +88188,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-26T07:00:53.457687+00:00"
     },
     {
-      "id": 514,
-      "hospital": "국립소방병원",
-      "region": "기타",
-      "sales_rep": "이재덕",
-      "product_id": "101.011A",
-      "product_name": "Metal Trocar (Flip) (10.5mm*95mm)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/08/24",
-      "latest_action": "제품설명·소개",
-      "latest_note": "국립소방병원 외과 김기호 교수에게 하이겐트를 소개했으나 미온적인 반응을 보였습니다. 유착 방지율 관련 추가 자료와 요청받은 트로카, 원포트 카탈로그를 준비하여 재방문할 예정입니다.\n다음: 하이겐트 유착 방지율 추가 자료 및 트로카, 원포트 카탈로그 준비 후 전달",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.457687+00:00",
-      "updated_at": "2026-08-26T07:00:53.457687+00:00"
-    },
-    {
       "id": 515,
       "hospital": "청주 마디사랑병원",
       "region": "세종충북",
@@ -89680,40 +89685,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-26T07:00:53.457687+00:00"
     },
     {
-      "id": 601,
-      "hospital": "국립소방병원",
-      "region": "기타",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_HYGENT",
-      "product_name": "[하이겐트] Hygent 수액세트/치료재료",
-      "status": "제품소개·영업중",
-      "last_date": "2026/08/24",
-      "latest_action": "제품설명·소개",
-      "latest_note": "외과 김기호 교수에게 하이겐트 소개했으나 미온적 반응. 유착 방지율 관련 추가 자료 준비 후 재방문 예정.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.540871+00:00",
-      "updated_at": "2026-08-26T07:00:53.540871+00:00"
-    },
-    {
-      "id": 602,
-      "hospital": "국립소방병원",
-      "region": "기타",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_TROCAR",
-      "product_name": "복강경용 멸균 트로카 (Trocar)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/08/24",
-      "latest_action": "제품설명·소개",
-      "latest_note": "김기호 교수 요청받은 트로카, 원포트 카탈로그 준비하여 재방문 예정.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.540871+00:00",
-      "updated_at": "2026-08-26T07:00:53.540871+00:00"
-    },
-    {
       "id": 603,
       "hospital": "서산엠산부인과",
       "region": "서산당진",
@@ -89951,6 +89922,30 @@ window.SALES_DB = {
       "latest_note": "자이네콜라(Gynecola) 디테일 진행. 간호부에서 원장님께 여쭤봐 주기로 함.",
       "fail_reasons": [],
       "history_count": 1
+    },
+    {
+      "hospital": "국립소방병원",
+      "product_id": "121-51855",
+      "product_name": "Crown Trocar (121-51855)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2026/08/24",
+      "latest_action": "제품설명·소개",
+      "latest_note": "외과 김기호 교수 요청받은 크라운 트로카(121-51855), 원포트 카탈로그 준비하여 재방문 예정.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "국립소방병원",
+      "product_id": "MTHG0505T",
+      "product_name": "Hy gent 하이겐트 (5*5)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2026/08/24",
+      "latest_action": "제품설명·소개",
+      "latest_note": "외과 김기호 교수에게 하이겐트(MTHG0505T) 소개. 유착 방지율 관련 추가 자료 준비 후 재방문 예정.",
+      "fail_reasons": []
     }
   ],
   "activity_logs": [
@@ -93060,13 +93055,15 @@ window.SALES_DB = {
       "title": "[제품설명·소개] 하이겐트 (Hygent)",
       "note": "외과 김기호 교수에게 하이겐트 소개했으나 미온적 반응. 유착 방지율 관련 추가 자료 준비 후 재방문 예정.",
       "products": [
-        "[하이겐트] Hygent 수액세트/치료재료"
+        "Crown Trocar (121-51855)",
+        "Hy gent 하이겐트 (5*5)"
       ],
-      "product_code": "PROD_HYGENT",
+      "product_code": "121-51855",
       "next_action": "",
       "region": "기타",
       "contact": "김기호",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "product_name": "Crown Trocar (121-51855)"
     },
     {
       "id": 778,
@@ -93077,13 +93074,15 @@ window.SALES_DB = {
       "title": "[제품설명·소개] 트로카 & 원포트",
       "note": "김기호 교수 요청받은 트로카, 원포트 카탈로그 준비하여 재방문 예정.",
       "products": [
-        "복강경용 멸균 트로카 (Trocar)"
+        "Crown Trocar (121-51855)",
+        "Hy gent 하이겐트 (5*5)"
       ],
-      "product_code": "PROD_TROCAR",
+      "product_code": "121-51855",
       "next_action": "",
       "region": "기타",
       "contact": "김기호",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "product_name": "Crown Trocar (121-51855)"
     },
     {
       "id": 779,
@@ -93203,13 +93202,15 @@ window.SALES_DB = {
       "title": "국립소방병원 HYGENT (하이젠트) 제품설명",
       "note": "음성 국립소방병원의 문덕주 원장과 면담을 진행했으나 하이젠트는 아직 사용 전인 상태입니다. 다음 주 김기호 원장을 면담하며 다시 제품 디테일을 진행할 예정입니다.\n다음: 다음 주 김기호 원장 면담 및 하이젠트 제품 디테일 진행",
       "products": [
-        "HYGENT (하이젠트 살균소독)"
+        "Crown Trocar (121-51855)",
+        "Hy gent 하이겐트 (5*5)"
       ],
-      "product_code": "PROD_HYGENT",
+      "product_code": "121-51855",
       "next_action": "",
       "region": "기타",
       "contact": "문덕주",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "product_name": "Crown Trocar (121-51855)"
     },
     {
       "id": 786,
