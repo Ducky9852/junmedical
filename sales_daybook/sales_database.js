@@ -85006,8 +85006,8 @@ window.SALES_DB = {
       "region": "세종충북",
       "sales_rep": "최진웅",
       "product_id": "201.023",
-      "product_name": "Drive Motor Handle(SET) (201.023)",
-      "status": "데모·샘플평가",
+      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
+      "status": "A/S접수·처리",
       "last_date": "2026/08/27",
       "latest_action": "샘플·데모",
       "latest_note": "광제산부인과 모슬레이터 핸들 데모 줬음",
@@ -85016,7 +85016,13 @@ window.SALES_DB = {
         "note": "광제산부인과 모슬레이터 핸들 데모 줬음",
         "status": "평가진행중"
       },
-      "as_info": null,
+      "as_info": {
+        "status": "외부전달",
+        "stage": "2. 외부전달",
+        "repair_vendor": "블루메디칼",
+        "loaner": true,
+        "note": "광제산부인과 모슬레이터 핸들 블루메디칼 외부 전달 및 데모 대체기 지급 완료"
+      },
       "fail_reasons": [],
       "created_at": "2026-08-27T00:48:06.69041+00:00",
       "updated_at": "2026-08-27T00:48:06.69041+00:00"
@@ -85063,8 +85069,8 @@ window.SALES_DB = {
       "region": "세종충북",
       "sales_rep": "최진웅",
       "product_id": "201.023",
-      "product_name": "Drive Motor Handle(SET) (201.023)",
-      "status": "데모·샘플평가",
+      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
+      "status": "A/S접수·처리",
       "last_date": "2026/08/27",
       "latest_action": "샘플·데모",
       "latest_note": "광제산부인과 모슬레이터 핸들 데모 줬음",
@@ -85073,7 +85079,13 @@ window.SALES_DB = {
         "note": "광제산부인과 모슬레이터 핸들 데모 줬음",
         "status": "평가진행중"
       },
-      "as_info": null,
+      "as_info": {
+        "status": "외부전달",
+        "stage": "2. 외부전달",
+        "repair_vendor": "블루메디칼",
+        "loaner": true,
+        "note": "광제산부인과 모슬레이터 핸들 블루메디칼 외부 전달 및 데모 대체기 지급 완료"
+      },
       "fail_reasons": [],
       "created_at": "2026-08-27T00:48:39.274557+00:00",
       "updated_at": "2026-08-27T00:48:39.274557+00:00"
@@ -85084,16 +85096,18 @@ window.SALES_DB = {
       "region": "세종충북",
       "sales_rep": "최진웅",
       "product_id": "201.023",
-      "product_name": "Drive Motor Handle(SET) (201.023)",
+      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
       "status": "A/S접수·처리",
       "last_date": "2026/08/27",
       "latest_action": "A/S·클레임",
       "latest_note": "광제산부인과 모슬레이터 핸들 A/S 블루메디칼에서 받아 데모줌",
       "demo_info": null,
       "as_info": {
-        "date": "2026/08/27",
-        "note": "광제산부인과 모슬레이터 핸들 A/S 블루메디칼에서 받아 데모줌",
-        "status": "접수완료"
+        "status": "외부전달",
+        "stage": "2. 외부전달",
+        "repair_vendor": "블루메디칼",
+        "loaner": true,
+        "note": "광제산부인과 모슬레이터 핸들 블루메디칼 외부 전달 및 데모 대체기 지급 완료"
       },
       "fail_reasons": [],
       "created_at": "2026-08-27T00:49:06.120819+00:00",
