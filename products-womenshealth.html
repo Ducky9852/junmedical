@@ -3,72 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>인재채용 | 준메디칼 주식회사</title>
+  <title>여성 건강 기기 | 준메디칼 주식회사</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* ── careers.html 전용 스타일 ── */
-    .careers-intro {
-      font-size: 16px;
-      color: var(--text);
-      line-height: 1.8;
-      margin-bottom: 40px;
+    .brand-section { margin-bottom: 56px; }
+    .brand-header {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 24px; padding-bottom: 16px;
+      border-bottom: 2px solid var(--sky);
     }
-    .careers-intro strong {
-      color: var(--sky);
-      font-weight: 700;
-    }
-
-    .job-table-wrap {
-      overflow-x: auto;
-      border-radius: var(--radius);
+    .brand-header-logo {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 8px 16px;
+      font-size: 16px; font-weight: 700; color: var(--navy);
       box-shadow: var(--shadow-sm);
     }
-    .job-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: var(--white);
-      min-width: 640px;
-    }
-    .job-table th {
-      background: var(--navy);
-      color: var(--white);
-      font-size: 14.5px;
-      font-weight: 700;
-      padding: 16px 20px;
-      text-align: center;
-      border: 1px solid var(--navy);
-    }
-    .job-table td {
-      padding: 18px 20px;
-      font-size: 14.5px;
-      color: var(--text);
-      border: 1px solid var(--border);
-      text-align: center;
-      vertical-align: middle;
-    }
-    .job-table td.job-division {
-      background: var(--bg);
-      font-weight: 700;
-      color: var(--navy);
-    }
-    .job-table td.job-team {
-      font-weight: 600;
-      color: var(--navy);
-      white-space: nowrap;
-    }
-    .job-table td.job-tasks {
-      color: var(--sub);
-      text-align: left;
-    }
-    .job-table tbody tr:hover {
-      background: var(--sky-subtle);
-    }
+    .brand-header-info h3 { font-size: 20px; font-weight: 700; color: var(--navy); }
+    .brand-header-info p  { font-size: 13.5px; color: var(--sub); margin-top: 2px; }
 
-    @media (max-width: 640px) {
-      .job-table th, .job-table td { padding: 12px 14px; font-size: 13.5px; }
+    .product-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
     }
+    .product-card {
+      background: var(--white); border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm); overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: all .25s ease;
+    }
+    .product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: #cbd5e1; }
+    .product-card-img {
+      background: var(--bg);
+      height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border);
+      color: var(--sub);
+      font-size: 13px;
+      overflow: hidden;
+    }
+    .product-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .product-card:hover .product-card-img img {
+      transform: scale(1.05);
+    }
+    .product-card-body { padding: 22px; display: flex; flex-direction: column; flex: 1; }
+    .product-card-body h4 { font-size: 16.5px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .product-card-body p  { font-size: 13.5px; color: var(--sub); line-height: 1.7; margin-bottom: 18px; flex: 1; }
+    .btn-sm {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--navy); color: var(--white);
+      padding: 9px 18px; border-radius: var(--radius-full);
+      font-size: 13px; font-weight: 600; width: fit-content;
+      transition: all .2s ease;
+    }
+    .btn-sm:hover { background: var(--sky); color: var(--white); transform: translateY(-1px); }
   </style>
 </head>
 <body>
@@ -117,78 +115,78 @@
 
 <main>
 
-  <!-- ★ 히어로 ★ -->
   <section class="hero">
-    <!-- ============================
-      ✏️ 수정 구역 1: 히어로 제목·설명
-      ============================ -->
-    <h1>인재채용</h1>
-    <p>준메디칼 주식회사와 함께 의료 현장의 미래를 만들어갈 인재를 찾습니다.</p>
+    <h1>여성 건강 기기</h1>
+    <p>CooperSurgical의 검증된 산부인과 복강경 수술 시스템을 공급합니다.</p>
   </section>
 
   <!-- 서브 네비게이션 바 -->
   <div class="sub-nav-bar">
     <div class="sub-nav-inner">
       <ul class="sub-depth-tabs">
-        <li class="active"><a href="careers.html">인재채용</a></li>
+        <li><a href="products.html">전체 카테고리</a></li>
+        <li><a href="products-laparoscopy.html">복강경 수술기구</a></li>
+        <li><a href="products-drape.html">수술포·멸균포</a></li>
+        <li><a href="products-dvt.html">DVT 예방장비</a></li>
+        <li><a href="products-etc.html">기타 의료소모품</a></li>
+        <li class="active"><a href="products-womenshealth.html">여성 건강 기기</a></li>
       </ul>
       <div class="breadcrumbs">
         <a href="index.html">홈</a>
-        <span>인재채용</span>
+        <a href="products.html">취급제품</a>
+        <span>여성 건강 기기</span>
       </div>
     </div>
   </div>
 
-  <!-- ★ 주요직무 ★ -->
-  <section class="section bg-gray">
+  <section class="section">
     <div class="section-inner">
 
-      <div class="section-label">Careers</div>
-      <h2 class="section-title">주요직무</h2>
-      <div class="divider"></div>
+      <!-- CooperSurgical 브랜드 -->
+      <div class="brand-section">
+        <div class="brand-header">
+          <div class="brand-header-logo">CooperSurgical</div>
+          <div class="brand-header-info">
+            <h3>CooperSurgical</h3>
+            <p>🇺🇸 CooperSurgical, Inc. · 미국</p>
+          </div>
+        </div>
+        <div class="product-card-grid">
 
-      <!-- ============================
-        ✏️ 수정 구역 2: 채용 소개 문구
-        ============================ -->
-      <p class="careers-intro">
-        준메디칼 주식회사는 의료기기 유통을 전문으로 하는 기업으로,
-        보다 <strong>혁신적인 인력과 조직</strong>을 운영하고자 합니다.
-      </p>
+          <div class="product-card">
+            <div class="product-card-img">
+              <img src="images/rumi-ii.jpg" alt="RUMI II System">
+            </div>
+            <div class="product-card-body">
+              <h4>RUMI® II System</h4>
+              <p>모든 골반 복강경 시술을 위한 자궁 조작 시스템. 140도 관절 운동으로 최적의 수술 시야 확보.</p>
+              <a href="product-rumi2.html" class="btn-sm">자세히 보기 →</a>
+            </div>
+          </div>
 
-      <!-- ============================
-        ✏️ 수정 구역 3: 주요직무 표
-        부문 셀은 rowspan으로 병합되어 있습니다 (팀 개수만큼)
-        ============================ -->
-      <div class="job-table-wrap">
-        <table class="job-table">
-          <thead>
-            <tr>
-              <th style="width: 18%;">부문</th>
-              <th style="width: 18%;">팀</th>
-              <th>주요업무</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="job-division" rowspan="3">영업부문</td>
-              <td class="job-team">영업팀</td>
-              <td class="job-tasks">대리점 관리 / 병원 관리</td>
-            </tr>
-            <tr>
-              <td class="job-team">영업기획팀</td>
-              <td class="job-tasks">정책기획 / 마케팅 / 홍보</td>
-            </tr>
-            <tr>
-              <td class="job-team">물류팀</td>
-              <td class="job-tasks">완제품 관리 / 물류배송</td>
-            </tr>
-            <tr>
-              <td class="job-division" rowspan="1">경영지원부문</td>
-              <td class="job-team">지원팀</td>
-              <td class="job-tasks">구매 / 인력 / 총무 / 회계 / 산업안전관리</td>
-            </tr>
-          </tbody>
-        </table>
+          <div class="product-card">
+            <div class="product-card-img">
+              <span style="color:var(--muted)">[이미지 준비 중]</span>
+            </div>
+            <div class="product-card-body">
+              <h4>Koh-Efficient™</h4>
+              <p>TLH(전복강경 자궁절제술) 전용 질원개 절개 보조 장치. RUMI II와 함께 사용.</p>
+              <a href="product-rumi2.html#koh" class="btn-sm">자세히 보기 →</a>
+            </div>
+          </div>
+
+          <div class="product-card">
+            <div class="product-card-img">
+              <span style="color:var(--muted)">[이미지 준비 중]</span>
+            </div>
+            <div class="product-card-body">
+              <h4>부인과 수술 소모품</h4>
+              <p>복강경 부인과 수술 관련 일회용 소모품 및 부속품 일체. 문의 시 전체 품목 안내 가능.</p>
+              <a href="contact.html" class="btn-sm">견적·문의하기</a>
+            </div>
+          </div>
+
+        </div>
       </div>
 
     </div>
@@ -196,14 +194,14 @@
 
 </main>
 
-<!-- ★ CTA 배너 (모든 페이지 동일 — 수정 금지) ★ -->
+<!-- ★ CTA 배너 (수정 금지) ★ -->
 <section class="cta-banner">
-  <h2>제품 문의 및 견적이 필요하신가요?</h2>
-  <p>병원·의료기관 담당자분께 빠르게 안내해 드립니다.</p>
+  <h2>여성 건강 기기 견적이 필요하신가요?</h2>
+  <p>취급 전 품목 목록 및 견적을 빠르게 안내해 드립니다.</p>
   <a href="contact.html" class="btn-primary">견적·문의하기</a>
 </section>
 
-<!-- ★ 푸터 (모든 페이지 동일 — 수정 금지) ★ -->
+<!-- ★ 푸터 (수정 금지) ★ -->
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-name">준메디칼 주식회사 JUN MEDICAL Co., Ltd.</div>
@@ -216,9 +214,7 @@
       <span>Fax 041-522-9918</span>
       <span>E-mail junmed14@naver.com</span>
     </div>
-    <div class="footer-bottom">
-      &copy; 2026 준메디칼 주식회사. All rights reserved.
-    </div>
+    <div class="footer-bottom">&copy; 2026 준메디칼 주식회사. All rights reserved.</div>
   </div>
 </footer>
 
@@ -231,7 +227,7 @@
     </div>
     <div class="floating-quick-list">
       <a href="tel:041-522-9917" class="floating-quick-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         전화 상담 (041-522-9917)
       </a>
       <a href="contact.html" class="floating-quick-item">
@@ -260,15 +256,12 @@
 </div>
 
 <script>
-function toggleNav() {
-  document.getElementById('siteNav').classList.toggle('open');
-}
+function toggleNav(){document.getElementById('siteNav').classList.toggle('open');}
 function toggleFloatingPopup(){
   const popup = document.getElementById('floatingPopup');
   popup.classList.toggle('open');
 }
 
-// 빠른 견적·문의 아이콘 마우스 호버 시 팝업 열기/닫기
 document.addEventListener('DOMContentLoaded', () => {
   const popup = document.getElementById('floatingPopup');
   const quickBtn = document.querySelector('.floating-quick-btn');
@@ -290,6 +283,17 @@ document.addEventListener('DOMContentLoaded', () => {
     popup.addEventListener('mouseenter', show);
     popup.addEventListener('mouseleave', hide);
   }
+
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  reveals.forEach(el => observer.observe(el));
 });
 </script>
 </body>
