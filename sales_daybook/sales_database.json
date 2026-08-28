@@ -84066,7 +84066,7 @@
       "edi": "BM5107SJ"
     },
     {
-      "status": "데모·샘플평가",
+      "status": "도입완료·납품",
       "last_date": "2026/08/14",
       "latest_action": "제품설명·소개",
       "sales_rep": "이은필",
@@ -84080,9 +84080,9 @@
       "history_count": 4,
       "latest_note": "서산중앙병원에 ANGIO 시술용 키트 납품이 확정되었습니다. 추가적으로 복강경 패키지 차이점 설명, 유틸리티 드레이프 단가 확인 및 신규 제품 구성 변경 문의에 대한 대응이 필요합니다.\n다음: 복강경 패키지 차이점 설명 준비, UTILITY DRAPE 단가 확인, BSH1720 제품의 구성 변경 가능 여부 확인 후 피드백",
       "hospital": "서산중앙병원",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "product_category": "(주)세종헬스케어",
+      "product_id": "ST-ANG-PR04",
+      "product_name": "Surgi FXA Angio Procedure Kit - Adv04",
+      "product_category": "일반의료기기",
       "region": "서산당진",
       "vendor": "(주)세종헬스케어",
       "erp_code": "ST-ANG-PR03",
@@ -89285,15 +89285,15 @@
       "sales_rep": "이은필",
       "contact": "",
       "action_type": "제품설명·소개",
-      "deal_status": "데모·샘플평가",
+      "deal_status": "도입완료·납품",
       "products": [
-        "ANGIO 시술용 키트 (PR03 / Adv.)",
-        "복강경 & 자궁경 기구 / 아티센셜 트로카"
+        "Surgi FXA Angio Procedure Kit - Adv04"
       ],
       "title": "서산중앙병원 ANGIO 시술용 키트 PR03 (Adv.) 제품설명",
       "note": "서산중앙병원에 ANGIO 시술용 키트 납품이 확정되었습니다. 추가적으로 복강경 패키지 차이점 설명, 유틸리티 드레이프 단가 확인 및 신규 제품 구성 변경 문의에 대한 대응이 필요합니다.\n다음: 복강경 패키지 차이점 설명 준비, UTILITY DRAPE 단가 확인, BSH1720 제품의 구성 변경 가능 여부 확인 후 피드백",
       "fail_reasons": [],
-      "product_code": "382412"
+      "product_code": "ST-ANG-PR04",
+      "product_name": "Surgi FXA Angio Procedure Kit - Adv04"
     },
     {
       "id": "LOG_38",
@@ -89707,14 +89707,15 @@
       "sales_rep": "이은필",
       "contact": "심뇌혈관팀장",
       "action_type": "샘플·데모",
-      "deal_status": "데모·샘플평가",
+      "deal_status": "도입완료·납품",
       "products": [
-        "ANGIO 시술용 키트 (PR03 / Adv.)"
+        "Surgi FXA Angio Procedure Kit - Adv04"
       ],
       "title": "서산중앙 엔지오키트 샘플 전달",
       "note": "서산중앙병원 심뇌혈관팀장에게 가장 원하는 타입인 엔지오키트 시술용04제품 샘플을 전달했습니다. 추후 사용에 대한 피드백을 받기로 하였습니다.\n다음: 엔지오키트 시술용04제품 샘플 사용 피드백 확인",
       "fail_reasons": [],
-      "product_code": "382412"
+      "product_code": "ST-ANG-PR04",
+      "product_name": "Surgi FXA Angio Procedure Kit - Adv04"
     },
     {
       "id": "LOG_3",
@@ -89970,14 +89971,15 @@
       "sales_rep": "이은필",
       "contact": "구매팀 김종현 차장",
       "action_type": "샘플·데모",
-      "deal_status": "데모·샘플평가",
+      "deal_status": "도입완료·납품",
       "products": [
-        "ANGIO 시술용 키트 (PR03 / Adv.)"
+        "Surgi FXA Angio Procedure Kit - Adv04"
       ],
       "title": "서산중앙병원 샘플 전달",
       "note": "서산중앙병원 구매팀 김종현 차장에게 ANGIO 시술용 키트 샘플 1개를 전달하였습니다.\n다음: 샘플 사용 여부 및 피드백 확인 예정",
       "fail_reasons": [],
-      "product_code": "382412"
+      "product_code": "ST-ANG-PR04",
+      "product_name": "Surgi FXA Angio Procedure Kit - Adv04"
     },
     {
       "id": "LOG_721",
