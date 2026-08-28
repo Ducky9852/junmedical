@@ -85203,28 +85203,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-26T07:00:53.540871+00:00"
     },
     {
-      "id": 837,
-      "hospital": "청주한국병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "201.023",
-      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
-      "status": "A/S접수·처리",
-      "last_date": "2026/08/27",
-      "latest_action": "A/S·클레임",
-      "latest_note": "청주한국병원 모슬레이터 핸들 수리 요청 받음",
-      "demo_info": null,
-      "as_info": {
-        "status": "접수완료",
-        "stage": "1. A/S 접수",
-        "loaner": true,
-        "note": "모슬레이터 락 부위 뻑뻑 증상으로 데모 제품으로 교체 및 출고 완료"
-      },
-      "fail_reasons": [],
-      "created_at": "2026-08-27T01:26:24.3352+00:00",
-      "updated_at": "2026-08-27T01:26:24.3352+00:00"
-    },
-    {
       "id": 761,
       "hospital": "청주 가경유항외과",
       "region": "세종충북",
@@ -85770,30 +85748,6 @@ window.SALES_DB = {
       "fail_reasons": [],
       "created_at": "2026-08-27T09:45:47.381106+00:00",
       "updated_at": "2026-08-27T09:45:47.381106+00:00"
-    },
-    {
-      "id": 852,
-      "hospital": "청주 한국병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "201.023",
-      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
-      "status": "A/S접수·처리",
-      "last_date": "2026/08/27",
-      "latest_action": "A/S·클레임",
-      "latest_note": "모슬레이터의 락 부위가 뻑뻑한 증상으로 인해 데모 제품으로 교체 및 납품을 완료함.",
-      "demo_info": null,
-      "as_info": {
-        "status": "접수완료",
-        "stage": "1. A/S 접수",
-        "loaner": true,
-        "note": "모슬레이터 락 부위 뻑뻑 증상으로 데모 제품으로 교체 및 출고 완료"
-      },
-      "fail_reasons": [
-        "의료진 거절"
-      ],
-      "created_at": "2026-08-27T09:46:11.378552+00:00",
-      "updated_at": "2026-08-27T09:46:11.378552+00:00"
     },
     {
       "id": 399,
@@ -89569,6 +89523,26 @@ window.SALES_DB = {
       "latest_action": "견적제출",
       "latest_note": "복강경 패키지 차이점 설명 준비, UTILITY DRAPE 단가 확인 및 신규 제품 구성 변경 대응.",
       "fail_reasons": []
+    },
+    {
+      "id": 837,
+      "hospital": "청주한국병원",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "product_id": "201.023",
+      "product_name": "Drive Motor Handle(SET) (모슬레이터 핸들)",
+      "status": "A/S접수·처리",
+      "last_date": "2026/08/27",
+      "latest_action": "A/S·클레임",
+      "latest_note": "모슬레이터 핸들 수리 요청 접수. 락 부위 뻑뻑 증상으로 데모 대체기 교체 및 출고 완료.",
+      "demo_info": null,
+      "as_info": {
+        "status": "접수완료",
+        "stage": "1. A/S 접수",
+        "loaner": true,
+        "note": "모슬레이터 락 부위 뻑뻑 증상으로 데모 대체기 교체 및 출고 완료"
+      },
+      "fail_reasons": []
     }
   ],
   "activity_logs": [
@@ -90999,7 +90973,7 @@ window.SALES_DB = {
     },
     {
       "id": 785,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/08/21",
       "sales_rep": "이재덕",
       "action_type": "관계관리",
@@ -91012,7 +90986,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "구미희",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 787,
@@ -91884,7 +91859,7 @@ window.SALES_DB = {
     },
     {
       "id": 1607,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/08/27",
       "sales_rep": "이재덕",
       "action_type": "A/S·클레임",
@@ -91897,7 +91872,8 @@ window.SALES_DB = {
       "next_action": null,
       "region": "세종충북",
       "contact": "수술방 실무진",
-      "created_at": "2026-08-27T09:46:11.21682+00:00"
+      "created_at": "2026-08-27T09:46:11.21682+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1608,
@@ -92327,7 +92303,7 @@ window.SALES_DB = {
     },
     {
       "id": 1293,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2025/12/12",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -92340,7 +92316,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장",
-      "created_at": "2026-08-26T07:00:53.038971+00:00"
+      "created_at": "2026-08-26T07:00:53.038971+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1157,
@@ -92412,7 +92389,7 @@ window.SALES_DB = {
     },
     {
       "id": 764,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/08/25",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -92425,11 +92402,12 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "GS 과장",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 762,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/08/25",
       "sales_rep": "이재덕",
       "action_type": "제품설명·소개",
@@ -92442,11 +92420,12 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "신과장",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 763,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/08/25",
       "sales_rep": "이재덕",
       "action_type": "납품·설치",
@@ -92459,11 +92438,12 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "수술방 실무진",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 760,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/08/25",
       "sales_rep": "이재덕",
       "action_type": "신규접촉",
@@ -92476,11 +92456,12 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "정형외과(OS) 조영일 과장",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 761,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/08/25",
       "sales_rep": "이재덕",
       "action_type": "신규접촉",
@@ -92493,7 +92474,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "정형외과(OS) 유만식 과장",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 766,
@@ -92859,7 +92841,7 @@ window.SALES_DB = {
     },
     {
       "id": 784,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/08/22",
       "sales_rep": "이재덕",
       "action_type": "제품설명·소개",
@@ -92872,7 +92854,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "신희용 과장, 윤창균 부원장",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 788,
@@ -92895,7 +92878,7 @@ window.SALES_DB = {
     },
     {
       "id": 786,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/08/21",
       "sales_rep": "이재덕",
       "action_type": "제품설명·소개",
@@ -92908,7 +92891,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "박정현 과장",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 792,
@@ -93294,7 +93278,7 @@ window.SALES_DB = {
     },
     {
       "id": 832,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/08/10",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -93307,11 +93291,12 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "신영미 팀장",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 834,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/08/10",
       "sales_rep": "이재덕",
       "action_type": "제품설명·소개",
@@ -93324,11 +93309,12 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "박정현 과장",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 835,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/08/10",
       "sales_rep": "이재덕",
       "action_type": "납품·설치",
@@ -93339,7 +93325,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 870,
@@ -93377,7 +93364,7 @@ window.SALES_DB = {
     },
     {
       "id": 833,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/08/10",
       "sales_rep": "이재덕",
       "action_type": "A/S·클레임",
@@ -93390,7 +93377,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "신희용 과장",
-      "created_at": "2026-08-26T07:00:52.537154+00:00"
+      "created_at": "2026-08-26T07:00:52.537154+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 861,
@@ -93428,7 +93416,7 @@ window.SALES_DB = {
     },
     {
       "id": 863,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/05/27",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -93441,7 +93429,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "수술방 구미희 간호사",
-      "created_at": "2026-08-26T07:00:52.685849+00:00"
+      "created_at": "2026-08-26T07:00:52.685849+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 922,
@@ -93694,7 +93683,7 @@ window.SALES_DB = {
     },
     {
       "id": 879,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/03/31",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -93705,7 +93694,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장",
-      "created_at": "2026-08-26T07:00:52.685849+00:00"
+      "created_at": "2026-08-26T07:00:52.685849+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 880,
@@ -93959,7 +93949,7 @@ window.SALES_DB = {
     },
     {
       "id": 897,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/03/17",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -93970,7 +93960,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장",
-      "created_at": "2026-08-26T07:00:52.685849+00:00"
+      "created_at": "2026-08-26T07:00:52.685849+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 898,
@@ -94068,7 +94059,7 @@ window.SALES_DB = {
     },
     {
       "id": 904,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/03/16",
       "sales_rep": "이재덕",
       "action_type": "관계관리",
@@ -94079,7 +94070,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장",
-      "created_at": "2026-08-26T07:00:52.685849+00:00"
+      "created_at": "2026-08-26T07:00:52.685849+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 905,
@@ -95006,7 +94998,7 @@ window.SALES_DB = {
     },
     {
       "id": 978,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/02/23",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -95019,7 +95011,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "관리팀 구매과, 구매",
-      "created_at": "2026-08-26T07:00:52.786515+00:00"
+      "created_at": "2026-08-26T07:00:52.786515+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 979,
@@ -95181,7 +95174,7 @@ window.SALES_DB = {
     },
     {
       "id": 988,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/02/20",
       "sales_rep": "이재덕",
       "action_type": "관계관리",
@@ -95192,7 +95185,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장",
-      "created_at": "2026-08-26T07:00:52.786515+00:00"
+      "created_at": "2026-08-26T07:00:52.786515+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 989,
@@ -95979,7 +95973,7 @@ window.SALES_DB = {
     },
     {
       "id": 1045,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/02/04",
       "sales_rep": "이재덕",
       "action_type": "제품설명·소개",
@@ -95990,7 +95984,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장",
-      "created_at": "2026-08-26T07:00:52.786515+00:00"
+      "created_at": "2026-08-26T07:00:52.786515+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1046,
@@ -96024,7 +96019,7 @@ window.SALES_DB = {
     },
     {
       "id": 1048,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/02/04",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -96035,7 +96030,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "관리팀 수술실, 구매",
-      "created_at": "2026-08-26T07:00:52.786515+00:00"
+      "created_at": "2026-08-26T07:00:52.786515+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1050,
@@ -96327,7 +96323,7 @@ window.SALES_DB = {
     },
     {
       "id": 1068,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/02/02",
       "sales_rep": "이재덕",
       "action_type": "관계관리",
@@ -96338,7 +96334,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장",
-      "created_at": "2026-08-26T07:00:52.875621+00:00"
+      "created_at": "2026-08-26T07:00:52.875621+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1069,
@@ -96637,7 +96634,7 @@ window.SALES_DB = {
     },
     {
       "id": 1087,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/01/28",
       "sales_rep": "이재덕",
       "action_type": "관계관리",
@@ -96648,7 +96645,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장",
-      "created_at": "2026-08-26T07:00:52.875621+00:00"
+      "created_at": "2026-08-26T07:00:52.875621+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1088,
@@ -97495,7 +97493,7 @@ window.SALES_DB = {
     },
     {
       "id": 1146,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/01/20",
       "sales_rep": "이재덕",
       "action_type": "제품설명·소개",
@@ -97506,11 +97504,12 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "관리팀 구매과, 구매",
-      "created_at": "2026-08-26T07:00:52.875621+00:00"
+      "created_at": "2026-08-26T07:00:52.875621+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1147,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/01/20",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -97521,7 +97520,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장",
-      "created_at": "2026-08-26T07:00:52.875621+00:00"
+      "created_at": "2026-08-26T07:00:52.875621+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1148,
@@ -97931,7 +97931,7 @@ window.SALES_DB = {
     },
     {
       "id": 1176,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/01/13",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -97944,7 +97944,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장",
-      "created_at": "2026-08-26T07:00:52.962559+00:00"
+      "created_at": "2026-08-26T07:00:52.962559+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1178,
@@ -98125,7 +98126,7 @@ window.SALES_DB = {
     },
     {
       "id": 1189,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/01/09",
       "sales_rep": "이재덕",
       "action_type": "제품설명·소개",
@@ -98138,7 +98139,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 진료원장님",
-      "created_at": "2026-08-26T07:00:52.962559+00:00"
+      "created_at": "2026-08-26T07:00:52.962559+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1190,
@@ -98627,7 +98629,7 @@ window.SALES_DB = {
     },
     {
       "id": 1223,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2026/01/05",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -98638,7 +98640,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "신희용과장, 일반외과 윤창균부원장",
-      "created_at": "2026-08-26T07:00:52.962559+00:00"
+      "created_at": "2026-08-26T07:00:52.962559+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1224,
@@ -98785,7 +98788,7 @@ window.SALES_DB = {
     },
     {
       "id": 1234,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2025/12/29",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -98796,7 +98799,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장",
-      "created_at": "2026-08-26T07:00:52.962559+00:00"
+      "created_at": "2026-08-26T07:00:52.962559+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1235,
@@ -99009,7 +99013,7 @@ window.SALES_DB = {
     },
     {
       "id": 1254,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2025/12/22",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -99022,7 +99026,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장",
-      "created_at": "2026-08-26T07:00:52.962559+00:00"
+      "created_at": "2026-08-26T07:00:52.962559+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1256,
@@ -99363,7 +99368,7 @@ window.SALES_DB = {
     },
     {
       "id": 1282,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2025/12/16",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -99374,7 +99379,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장",
-      "created_at": "2026-08-26T07:00:53.038971+00:00"
+      "created_at": "2026-08-26T07:00:53.038971+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1284,
@@ -99476,7 +99482,7 @@ window.SALES_DB = {
     },
     {
       "id": 1289,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2025/12/15",
       "sales_rep": "이재덕",
       "action_type": "샘플·데모",
@@ -99487,7 +99493,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 과장님",
-      "created_at": "2026-08-26T07:00:53.038971+00:00"
+      "created_at": "2026-08-26T07:00:53.038971+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1291,
@@ -100751,7 +100758,7 @@ window.SALES_DB = {
     },
     {
       "id": 1375,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2025/11/26",
       "sales_rep": "이재덕",
       "action_type": "제품설명·소개",
@@ -100764,7 +100771,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "일반외과 신희용 과장",
-      "created_at": "2026-08-26T07:00:53.13099+00:00"
+      "created_at": "2026-08-26T07:00:53.13099+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1387,
@@ -101538,7 +101546,7 @@ window.SALES_DB = {
     },
     {
       "id": 1440,
-      "hospital": "청주 한국병원",
+      "hospital": "청주한국병원",
       "date": "2025/11/17",
       "sales_rep": "이재덕",
       "action_type": "제품설명·소개",
@@ -101551,7 +101559,8 @@ window.SALES_DB = {
       "next_action": "",
       "region": "세종충북",
       "contact": "관리팀 신문식 팀장님, 구매",
-      "created_at": "2026-08-26T07:00:53.13099+00:00"
+      "created_at": "2026-08-26T07:00:53.13099+00:00",
+      "hospital_name": "청주한국병원"
     },
     {
       "id": 1441,

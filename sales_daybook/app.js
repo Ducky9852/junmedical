@@ -1732,6 +1732,19 @@ function renderASControlCenter() {
     return true;
   });
 
+  // Deduplicate: Ensure only 1 active AS card per hospital + equipment
+  const seenASHospitalProduct = new Set();
+  const dedupedASDeals = [];
+  asDeals.forEach(d => {
+    const hospKey = (d.hospital || '').replace(/\s+/g, '').toLowerCase();
+    const prodKey = (d.product_id || d.product_name || '').toLowerCase();
+    const uniqueKey = `${hospKey}__${prodKey}`;
+    if (!seenASHospitalProduct.has(uniqueKey)) {
+      seenASHospitalProduct.add(uniqueKey);
+      dedupedASDeals.push(d);
+    }
+  });
+
   const columns = {
     '접수완료': { list: document.getElementById('as-list-receipt'), count: document.getElementById('as-count-receipt'), items: [] },
     '외부전달': { list: document.getElementById('as-list-vendor'), count: document.getElementById('as-count-vendor'), items: [] },
@@ -1741,7 +1754,7 @@ function renderASControlCenter() {
   };
 
   // Classify deals into 5 stages
-  asDeals.forEach(d => {
+  dedupedASDeals.forEach(d => {
     let stage = '접수완료';
     
     // 1. Strict priority to explicit as_info status
