@@ -85348,7 +85348,7 @@ window.SALES_DB = {
       "edi": ""
     },
     {
-      "status": "데모·샘플평가",
+      "status": "소모품 샘플",
       "last_date": "2026/02/05",
       "latest_action": "샘플·데모",
       "sales_rep": "이은필",
@@ -85362,9 +85362,9 @@ window.SALES_DB = {
       "history_count": 1,
       "latest_note": "상품권전달, 소공포 및 응급킷트 샘플나가고, 소공포\n작은사이즈는 관심있음. 펜코소드는 이미들어옴",
       "hospital": "봄날의외과의원",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "product_category": "펜타스헬스케어 디씨",
+      "product_id": "GROUP-SEJONG-SHEET",
+      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
+      "product_category": "수술용드레이프/소공포",
       "region": "서울경기",
       "vendor": "펜타스헬스케어 디씨",
       "erp_code": "PK-CGP202S-TB",
@@ -92472,16 +92472,16 @@ window.SALES_DB = {
       "region": "서울경기",
       "sales_rep": "이은필",
       "contact": "일반외과 유치열실장",
-      "action_type": "샘플·데모",
+      "action_type": "소모품 샘플",
       "deal_status": "데모·샘플평가",
       "products": [
-        "PENKO 서지패드 / 서포트 플레이트 / 서지소드",
-        "일반 원내 소모품 (소공포/내시경바지/드레싱키트)"
+        "[세종] 멸균 소공포 (MULTI USEFUL SHEET)"
       ],
       "title": "봄날의외과 신규 아이템 소개",
       "note": "상품권전달, 소공포 및 응급킷트 샘플나가고, 소공포\n작은사이즈는 관심있음. 펜코소드는 이미들어옴",
       "fail_reasons": [],
-      "product_code": "SD-GSHD0912C"
+      "product_code": "GROUP-SEJONG-SHEET",
+      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)"
     },
     {
       "id": "LOG_537",
