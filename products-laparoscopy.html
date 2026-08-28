@@ -35,14 +35,26 @@
       display: flex; flex-direction: column;
       transition: all .25s ease;
     }
-    .product-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: #cbd5e1; }
     .product-card-img {
-      background: var(--bg); height: 180px;
-      display: flex; align-items: center; justify-content: center;
+      background: var(--bg);
+      height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border-bottom: 1px solid var(--border);
-      color: var(--sub); font-size: 13px;
+      color: var(--sub);
+      font-size: 13px;
+      overflow: hidden;
     }
-    .product-card-img img { max-height: 150px; object-fit: contain; }
+    .product-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .product-card:hover .product-card-img img {
+      transform: scale(1.05);
+    }
     .product-card-body { padding: 22px; display: flex; flex-direction: column; flex: 1; }
     .product-card-body h4 { font-size: 16.5px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
     .product-card-body p  { font-size: 13.5px; color: var(--sub); line-height: 1.7; margin-bottom: 18px; flex: 1; }
@@ -148,12 +160,7 @@
 
           <div class="product-card">
             <div class="product-card-img">
-              <!-- ============================
-                ✏️ 수정 구역 2-1: WISAP 트로카 이미지
-                이미지 준비 시 아래 주석 해제
-                ============================ -->
-              <!-- <img src="images/wisap-trocar.png" alt="WISAP 트로카"> -->
-              <span style="color:var(--muted)">[이미지 준비 중]</span>
+              <img src="images/wisap-trocar.png" alt="WISAP 트로카 & 캐뉼라">
             </div>
             <div class="product-card-body">
               <h4>트로카 &amp; 캐뉼라</h4>
@@ -164,8 +171,7 @@
 
           <div class="product-card">
             <div class="product-card-img">
-              <!-- <img src="images/wisap-forceps.png" alt="WISAP 겸자"> -->
-              <span style="color:var(--muted)">[이미지 준비 중]</span>
+              <img src="images/wisap-forceps.png" alt="WISAP 복강경 겸자 · 가위">
             </div>
             <div class="product-card-body">
               <h4>복강경 겸자 · 가위</h4>
@@ -176,8 +182,7 @@
 
           <div class="product-card">
             <div class="product-card-img">
-              <!-- <img src="images/wisap-needle.png" alt="WISAP 니들홀더"> -->
-              <span style="color:var(--muted)">[이미지 준비 중]</span>
+              <img src="images/wisap-needle.png" alt="WISAP 니들홀더 · 봉합 기구">
             </div>
             <div class="product-card-body">
               <h4>니들홀더 · 봉합 기구</h4>
@@ -206,8 +211,7 @@
 
           <div class="product-card">
             <div class="product-card-img">
-              <img src="images/rumi2-main.png" alt="RUMI II System" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-              <span style="display:none; color:var(--muted)">[이미지: RUMI II System]</span>
+              <img src="images/rumi2-main.png" alt="RUMI II System">
             </div>
             <div class="product-card-body">
               <h4>RUMI® II System</h4>
@@ -218,8 +222,7 @@
 
           <div class="product-card">
             <div class="product-card-img">
-              <!-- <img src="images/koh-main.png" alt="Koh-Efficient"> -->
-              <span style="color:var(--muted)">[이미지 준비 중]</span>
+              <img src="images/koh-main.png" alt="Koh-Efficient 질원개 절개 보조기">
             </div>
             <div class="product-card-body">
               <h4>Koh-Efficient™</h4>
@@ -230,8 +233,7 @@
 
           <div class="product-card">
             <div class="product-card-img">
-              <!-- <img src="images/cooper-etc.png" alt="CooperSurgical 기타 제품"> -->
-              <span style="color:var(--muted)">[이미지 준비 중]</span>
+              <img src="images/cooper-etc.png" alt="CooperSurgical 부인과 수술 소모품">
             </div>
             <div class="product-card-body">
               <h4>부인과 수술 소모품</h4>
