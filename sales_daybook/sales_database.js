@@ -85070,23 +85070,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-27T00:48:06.69041+00:00"
     },
     {
-      "id": 683,
-      "hospital": "세종항도외과",
-      "region": "대전논산",
-      "sales_rep": "이은필",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/04/29",
-      "latest_action": "제품설명·소개",
-      "latest_note": "처음방문, 원장님 친절하심, 소공포 및 펜코소드 설명드림\n[비고] 5월중쯤에 재방문 예정",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:07:25.969055+00:00",
-      "updated_at": "2026-08-26T07:07:25.969055+00:00"
-    },
-    {
       "id": 695,
       "hospital": "음성무척편한정형외과",
       "region": "세종충북",
@@ -87424,23 +87407,6 @@ window.SALES_DB = {
         "note": "세종엔케이병원 신규 아이템 소개 영업갔으나 원장님 업체미팅안한다고 하심 \n데스크에 봉합킷트 및 소공포 브류슈어 드림\n[다음 방문 예정일] 2026/03/31\n[제공 샘플] 봉합킷트",
         "status": "평가진행중"
       },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
-      "id": 468,
-      "hospital": "세종항도외과",
-      "region": "대전논산",
-      "sales_rep": "이은필",
-      "product_id": "PK-CGP202S-TB",
-      "product_name": "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL) (가로형)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/04/29",
-      "latest_action": "제품설명·소개",
-      "latest_note": "처음방문, 원장님 친절하심, 소공포 및 펜코소드 설명드림\n[비고] 5월중쯤에 재방문 예정",
-      "demo_info": null,
       "as_info": null,
       "fail_reasons": [],
       "created_at": "2026-08-26T07:00:53.373276+00:00",
@@ -90006,6 +89972,32 @@ window.SALES_DB = {
       "latest_action": "제품설명·소개",
       "latest_note": "Youshi 복강경 제품 소개 진행 및 지속 방문 추진.",
       "fail_reasons": []
+    },
+    {
+      "hospital": "세종항도외과",
+      "product_id": "GROUP-SEJONG-SHEET",
+      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
+      "product_category": "수술용드레이프/소공포",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2026/04/14",
+      "latest_action": "제품설명·소개",
+      "latest_note": "처음 방문, 원장님 친절하심. [세종] 멸균 소공포 제품 설명 드림. [비고] 5월 중쯤에 재방문 예정",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "세종항도외과",
+      "product_id": "GROUP-PENKO-SWORD",
+      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
+      "product_category": "수술용칼/안전메스",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2026/04/14",
+      "latest_action": "제품설명·소개",
+      "latest_note": "처음 방문, 원장님 친절하심. [펜코] 서지 소드(안전메스) 제품 설명 드림. [비고] 5월 중쯤에 재방문 예정",
+      "fail_reasons": []
     }
   ],
   "activity_logs": [
@@ -90129,38 +90121,80 @@ window.SALES_DB = {
       "created_at": "2026-08-26T07:00:52.685849+00:00"
     },
     {
-      "id": 1535,
+      "id": "1535_SHEET",
       "hospital": "세종항도외과",
       "date": "2026/04/29",
       "sales_rep": "이은필",
       "action_type": "제품설명·소개",
-      "title": "[펜코 서지소드] 세종항도외과 신규 아이템 소개",
-      "note": "처음방문, 원장님 친절하심, 소공포 및 펜코소드 설명드림\n[비고] 5월중쯤에 재방문 예정",
+      "title": "세종항도외과 멸균 소공포 디테일",
+      "note": "처음 방문, 원장님 친절하심. [세종] 멸균 소공포 제품 설명 드림. [비고] 5월 중쯤에 재방문 예정",
       "products": [
-        "PENKO 서지패드 / 서포트 플레이트 / 서지소드"
+        "[세종] 멸균 소공포 (MULTI USEFUL SHEET)"
+      ],
+      "product_code": "GROUP-SEJONG-SHEET",
+      "next_action": "",
+      "region": "대전논산",
+      "contact": "일반외과 박세염원장님",
+      "created_at": "2026-08-26T07:00:52.685849+00:00",
+      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
+      "deal_status": "제품소개·영업중"
+    },
+    {
+      "id": "1535_PENKO",
+      "hospital": "세종항도외과",
+      "date": "2026/04/29",
+      "sales_rep": "이은필",
+      "action_type": "제품설명·소개",
+      "title": "세종항도외과 펜코 서지소드 디테일",
+      "note": "처음 방문, 원장님 친절하심. [펜코] 서지 소드(안전메스) 제품 설명 드림. [비고] 5월 중쯤에 재방문 예정",
+      "products": [
+        "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)"
       ],
       "product_code": "GROUP-PENKO-SWORD",
       "next_action": "",
       "region": "대전논산",
       "contact": "일반외과 박세염원장님",
-      "created_at": "2026-08-26T07:00:52.685849+00:00"
+      "created_at": "2026-08-26T07:00:52.685849+00:00",
+      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
+      "deal_status": "제품소개·영업중"
     },
     {
-      "id": 1536,
+      "id": "1536_SHEET",
       "hospital": "세종항도외과",
       "date": "2026/04/29",
       "sales_rep": "이은필",
       "action_type": "제품설명·소개",
-      "title": "[멸균 소공포] 세종항도외과 신규 아이템 소개",
-      "note": "처음방문, 원장님 친절하심, 소공포 및 펜코소드 설명드림\n[비고] 5월중쯤에 재방문 예정",
+      "title": "세종항도외과 멸균 소공포 디테일",
+      "note": "처음 방문, 원장님 친절하심. [세종] 멸균 소공포 제품 설명 드림. [비고] 5월 중쯤에 재방문 예정",
       "products": [
-        "일반 원내 소모품 (소공포/내시경바지/드레싱키트)"
+        "[세종] 멸균 소공포 (MULTI USEFUL SHEET)"
       ],
-      "product_code": "SD-GSHD0912C",
+      "product_code": "GROUP-SEJONG-SHEET",
       "next_action": "",
       "region": "대전논산",
       "contact": "일반외과 박세염원장님",
-      "created_at": "2026-08-26T07:00:52.685849+00:00"
+      "created_at": "2026-08-26T07:00:52.685849+00:00",
+      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
+      "deal_status": "제품소개·영업중"
+    },
+    {
+      "id": "1536_PENKO",
+      "hospital": "세종항도외과",
+      "date": "2026/04/29",
+      "sales_rep": "이은필",
+      "action_type": "제품설명·소개",
+      "title": "세종항도외과 펜코 서지소드 디테일",
+      "note": "처음 방문, 원장님 친절하심. [펜코] 서지 소드(안전메스) 제품 설명 드림. [비고] 5월 중쯤에 재방문 예정",
+      "products": [
+        "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)"
+      ],
+      "product_code": "GROUP-PENKO-SWORD",
+      "next_action": "",
+      "region": "대전논산",
+      "contact": "일반외과 박세염원장님",
+      "created_at": "2026-08-26T07:00:52.685849+00:00",
+      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
+      "deal_status": "제품소개·영업중"
     },
     {
       "id": 1537,
