@@ -85195,30 +85195,6 @@
       "updated_at": "2026-08-26T07:00:53.540871+00:00"
     },
     {
-      "id": 590,
-      "hospital": "홍성의료원",
-      "region": "세종충북",
-      "sales_rep": "이은필",
-      "product_id": "5",
-      "product_name": "젠타큐(GENTA Q) (5*5cm (연두색))",
-      "status": "도입완료·납품",
-      "last_date": "2026/08/25",
-      "latest_action": "A/S·클레임",
-      "latest_note": "효성의료원\n산부인과 박수진과장미팅\n펀치바이옵시 샘플 사용후 만족도 높음\n듀얼튤립는 때에 따라 사용하기 편함\n최정훈 1과장께 보고, 최정훈과장 사용후 코드 생성한다고 함. 튤립은 샘플하나 더 요청\n\n효성의료원\n신경외과",
-      "demo_info": null,
-      "as_info": {
-        "date": "2026/08/25",
-        "note": "효성의료원\n산부인과 박수진과장미팅\n펀치바이옵시 샘플 사용후 만족도 높음\n듀얼튤립는 때에 따라 사용하기 편함\n최정훈 1과장께 보고, 최정훈과장 사용후 코드 생성한다고 함. 튤립은 샘플하나 더 요청\n\n효성의료원\n신경외과",
-        "status": "A/S 조치완료",
-        "resolved_date": "2026/08/27"
-      },
-      "fail_reasons": [
-        "필요성 부재"
-      ],
-      "created_at": "2026-08-26T07:00:53.457687+00:00",
-      "updated_at": "2026-08-26T07:00:53.457687+00:00"
-    },
-    {
       "id": 837,
       "hospital": "청주한국병원",
       "region": "세종충북",
@@ -85309,25 +85285,6 @@
       },
       "as_info": null,
       "fail_reasons": [],
-      "created_at": "2026-08-26T07:07:26.071243+00:00",
-      "updated_at": "2026-08-26T07:07:26.071243+00:00"
-    },
-    {
-      "id": 765,
-      "hospital": "청주 마디사랑병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "status": "관계관리·접촉",
-      "last_date": "2026/08/11",
-      "latest_action": "제품설명·소개",
-      "latest_note": "청주 마디사랑병원 구매과 면담 결과, 닥터암슬리브 사용 계획은 미정이며 서지패드도 타사 제품을 사용 중입니다. 향후 펜코 제품으로 지속적인 제품 디테일을 진행할 예정입니다.\n다음: 펜코 제품 중심의 지속적인 디테일 영업 진행",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [
-        "기존 거래처/경쟁사 선호"
-      ],
       "created_at": "2026-08-26T07:07:26.071243+00:00",
       "updated_at": "2026-08-26T07:07:26.071243+00:00"
     },
@@ -85732,27 +85689,6 @@
       "fail_reasons": [],
       "created_at": "2026-08-27T01:30:36.850616+00:00",
       "updated_at": "2026-08-27T01:30:36.850616+00:00"
-    },
-    {
-      "id": 781,
-      "hospital": "청주한국병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "status": "데모·샘플평가",
-      "last_date": "2026/08/21",
-      "latest_action": "관계관리",
-      "latest_note": "청주 한국병원 구미희 선생을 면담하여 보비패드 도입 진행사항을 체크했으나 아직은 힘들다는 답변을 받았습니다. 향후 지속적으로 노력할 예정입니다.\n다음: 지속적인 방문 및 도입 추진",
-      "demo_info": {
-        "date": "2026/02/23",
-        "note": "청주 한국병원 정보 수집 서지소드 디테일, 과장님 사용여부확인, 신과장 오후 재방문 하였으나 바쁘셔서 카탈로그만 전달함.",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:07:26.071243+00:00",
-      "updated_at": "2026-08-26T07:07:26.071243+00:00"
     },
     {
       "id": 525,
@@ -87134,23 +87070,6 @@
       "updated_at": "2026-08-26T07:00:53.373276+00:00"
     },
     {
-      "id": 456,
-      "hospital": "청주 미즈맘산부인과",
-      "region": "서산당진",
-      "sales_rep": "이재덕",
-      "product_id": "GROUP-SEJONG-SHEET",
-      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
-      "status": "도입완료·납품",
-      "last_date": "2025/11/28",
-      "latest_action": "납품·설치",
-      "latest_note": "바이옵시 아직 결정못함. 의료소모품은 원장님 지인이 납품하고 있다고함.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
       "id": 457,
       "hospital": "청주 방서미즈닥터산부인과",
       "region": "세종충북",
@@ -87242,27 +87161,6 @@
       "demo_info": {
         "date": "2026/03/25",
         "note": "보은한양병원 샘플 제공 대장내시경바지 샘플, 사용할듯.",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
-      "id": 462,
-      "hospital": "봄날의외과의원",
-      "region": "서울경기",
-      "sales_rep": "이은필",
-      "product_id": "PK-CGP202S-TB",
-      "product_name": "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL) (가로형)",
-      "status": "데모·샘플평가",
-      "last_date": "2026/02/05",
-      "latest_action": "샘플·데모",
-      "latest_note": "상품권전달, 소공포 및 응급킷트 샘플나가고, 소공포\n작은사이즈는 관심있음. 펜코소드는 이미들어옴",
-      "demo_info": {
-        "date": "2026/02/05",
-        "note": "봄날의외과 신규 아이템 소개 상품권전달, 소공포 및 응급킷트 샘플나가고, 소공포\n작은사이즈는 관심있음. 펜코소드는 이미들어옴",
         "status": "평가진행중"
       },
       "as_info": null,
@@ -87598,25 +87496,6 @@
       "updated_at": "2026-08-26T07:00:53.373276+00:00"
     },
     {
-      "id": 480,
-      "hospital": "음성무척편한정형외과",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PK-CGP202S-TB",
-      "product_name": "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL) (가로형)",
-      "status": "영업실패·보류",
-      "last_date": "2026/02/05",
-      "latest_action": "제품설명·소개",
-      "latest_note": "하이겐트(Hygent), 펜코 나이프 디테일 설명. 원장면담안 됨.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [
-        "의료진 부재/면담 불가"
-      ],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
       "id": 481,
       "hospital": "청주 정성내과",
       "region": "세종충북",
@@ -87882,23 +87761,6 @@
         "note": "하임브릿지os 샘플 제공 면담 됨. 소공포 디테일 설명. 긍정적인 반응.",
         "status": "평가진행중"
       },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
-      "id": 497,
-      "hospital": "청주 해피맘산부인과",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "GROUP-SEJONG-SHEET",
-      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
-      "status": "견적·의사결정",
-      "last_date": "2025/11/28",
-      "latest_action": "견적제출",
-      "latest_note": "바이옵시는 아직 말이없으심. 전납회사 없다함. 소모품 견적드린다고 함. 아직은 미온적임.",
-      "demo_info": null,
       "as_info": null,
       "fail_reasons": [],
       "created_at": "2026-08-26T07:00:53.373276+00:00",
@@ -88495,27 +88357,6 @@
       "updated_at": "2026-08-26T07:00:53.457687+00:00"
     },
     {
-      "id": 537,
-      "hospital": "서산한마음산부인과",
-      "region": "서산당진",
-      "sales_rep": "이은필",
-      "product_id": "101.011A",
-      "product_name": "Metal Trocar (Flip) (10.5mm*95mm)",
-      "status": "데모·샘플평가",
-      "last_date": "2026/02/26",
-      "latest_action": "샘플·데모",
-      "latest_note": "원장님미팅 첫방문\n[비고] 스트라이커 위샵으로 복강경 하심\n산모가 많지 않음 펀치바이옵시샘플\n[다음 방문 예정일] 2026/03/05\n[제공 샘플] 바이옵시",
-      "demo_info": {
-        "date": "2026/02/26",
-        "note": "서산한마음산부인과 신규 아이템 소개 원장님미팅 첫방문\n[비고] 스트라이커 위샵으로 복강경 하심\n산모가 많지 않음 펀치바이옵시샘플\n[다음 방문 예정일] 2026/03/05\n[제공 샘",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.457687+00:00",
-      "updated_at": "2026-08-26T07:00:53.457687+00:00"
-    },
-    {
       "id": 538,
       "hospital": "영동병원",
       "region": "세종충북",
@@ -88706,25 +88547,6 @@
       },
       "as_info": null,
       "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.457687+00:00",
-      "updated_at": "2026-08-26T07:00:53.457687+00:00"
-    },
-    {
-      "id": 550,
-      "hospital": "청주 마디사랑병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PK-CGP202S-TB",
-      "product_name": "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL) (가로형)",
-      "status": "관계관리·접촉",
-      "last_date": "2026/08/11",
-      "latest_action": "제품설명·소개",
-      "latest_note": "청주 마디사랑병원 구매과 면담 결과, 닥터암슬리브 사용 계획은 미정이며 서지패드도 타사 제품을 사용 중입니다. 향후 펜코 제품으로 지속적인 제품 디테일을 진행할 예정입니다.\n다음: 펜코 제품 중심의 지속적인 디테일 영업 진행",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [
-        "기존 거래처/경쟁사 선호"
-      ],
       "created_at": "2026-08-26T07:00:53.457687+00:00",
       "updated_at": "2026-08-26T07:00:53.457687+00:00"
     },
