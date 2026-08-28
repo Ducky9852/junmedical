@@ -81948,7 +81948,7 @@ window.SALES_DB = {
       ],
       "status": "활동병원",
       "last_activity_date": "2026/03/24",
-      "total_logs": 7,
+      "total_logs": 8,
       "demo_count": 0,
       "won_count": 0,
       "as_count": 0,
@@ -85732,27 +85732,6 @@ window.SALES_DB = {
       "edi": ""
     },
     {
-      "status": "영업실패·보류",
-      "last_date": "2026/02/05",
-      "latest_action": "제품설명·소개",
-      "sales_rep": "이재덕",
-      "fail_reasons": [
-        "의료진 부재/면담 불가"
-      ],
-      "demo_info": null,
-      "as_info": null,
-      "history_count": 1,
-      "latest_note": "하이겐트(Hygent), 펜코 나이프 디테일 설명. 원장면담안 됨.",
-      "hospital": "음성무척편한정형외과",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "product_category": "펜타스헬스케어 디씨",
-      "region": "세종충북",
-      "vendor": "펜타스헬스케어 디씨",
-      "erp_code": "PK-CGP202S-TB",
-      "edi": "M2136087"
-    },
-    {
       "status": "데모·샘플평가",
       "last_date": "2025/11/07",
       "latest_action": "샘플·데모",
@@ -88210,6 +88189,38 @@ window.SALES_DB = {
       "last_date": "2026/08/26",
       "latest_action": "신규접촉",
       "latest_note": "외과 윤천재 원장과의 면담이 불발되었으며, 산부인과는 형식적으로 운영 중이고 정형외과(OS) 전문의는 부재한 상황입니다."
+    },
+    {
+      "hospital": "음성무척편한정형외과",
+      "product_id": "PROD_HYGENT",
+      "product_name": "HYGENT (하이젠트 살균소독)",
+      "product_category": "소독제/멸균기",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "접촉·니즈파악",
+      "last_date": "2026/02/05",
+      "latest_action": "제품설명·소개",
+      "latest_note": "하이겐트(Hygent) 살균소독제 디테일 설명 진행. 원장 면담 안 됨.",
+      "fail_reasons": [
+        "의료진 부재/면담 불가"
+      ],
+      "history_count": 1
+    },
+    {
+      "hospital": "음성무척편한정형외과",
+      "product_id": "GROUP-PENKO-SWORD",
+      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
+      "product_category": "수술용칼/안전메스",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "접촉·니즈파악",
+      "last_date": "2026/02/05",
+      "latest_action": "제품설명·소개",
+      "latest_note": "펜코 나이프/서지 소드 안전메스 디테일 설명 진행. 원장 면담 안 됨.",
+      "fail_reasons": [
+        "의료진 부재/면담 불가"
+      ],
+      "history_count": 2
     }
   ],
   "activity_logs": [
@@ -92530,24 +92541,44 @@ window.SALES_DB = {
       "fail_reasons": []
     },
     {
-      "id": "LOG_540",
+      "id": "LOG_540_HYGENT",
       "date": "2026/02/05",
       "hospital": "음성무척편한정형외과",
       "region": "세종충북",
       "sales_rep": "이재덕",
       "contact": "정형외과 사무장",
       "action_type": "제품설명·소개",
-      "deal_status": "영업실패·보류",
+      "deal_status": "접촉·니즈파악",
       "products": [
-        "PENKO 서지패드 / 서포트 플레이트 / 서지소드",
         "HYGENT (하이젠트 살균소독)"
       ],
-      "title": "음성 무척편한os 정보 수집",
-      "note": "하이겐트(Hygent), 펜코 나이프 디테일 설명. 원장면담안 됨.",
+      "title": "음성 무척편한os 하이젠트 살균소독 디테일",
+      "note": "하이겐트(Hygent) 살균소독제 디테일 설명 진행. 원장 면담 안 됨.",
       "fail_reasons": [
         "의료진 부재/면담 불가"
       ],
-      "product_code": "PK-CGP202S-TB"
+      "product_code": "PROD_HYGENT",
+      "product_name": "HYGENT (하이젠트 살균소독)"
+    },
+    {
+      "id": "LOG_540_PENKO",
+      "date": "2026/02/05",
+      "hospital": "음성무척편한정형외과",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "contact": "정형외과 사무장",
+      "action_type": "제품설명·소개",
+      "deal_status": "접촉·니즈파악",
+      "products": [
+        "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)"
+      ],
+      "title": "음성 무척편한os 펜코 서지소드 나이프 디테일",
+      "note": "펜코 나이프/서지 소드 안전메스 디테일 설명 진행. 원장 면담 안 됨.",
+      "fail_reasons": [
+        "의료진 부재/면담 불가"
+      ],
+      "product_code": "GROUP-PENKO-SWORD",
+      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)"
     },
     {
       "id": "LOG_541",
