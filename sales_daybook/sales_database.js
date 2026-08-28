@@ -85096,12 +85096,7 @@ window.SALES_DB = {
       "latest_action": "A/S·클레임",
       "latest_note": "청주 한국병원 외과 신희용 과장과 면담을 진행했습니다. 신 과장은 큐어폼의 사용 편의성이 떨어진다는 피드백을 전달했습니다.",
       "demo_info": null,
-      "as_info": {
-        "date": "2026/08/10",
-        "note": "청주 한국병원 큐어폼 Cureform 4x5cm A/S 청주 한국병원 외과 신희용 과장과 면담을 진행했습니다. 신 과장은 큐어폼의 사용 편의성이 떨어진다는 피드백을 전달했습니다.",
-        "status": "A/S 조치완료",
-        "resolved_date": "2026/08/26"
-      },
+      "as_info": null,
       "fail_reasons": [],
       "created_at": "2026-08-26T07:00:53.373276+00:00",
       "updated_at": "2026-08-26T07:00:53.373276+00:00"
@@ -86160,17 +86155,12 @@ window.SALES_DB = {
       "sales_rep": "이재덕",
       "product_id": "MBH02",
       "product_name": "DVT SLEEVE (허벅지형)",
-      "status": "도입완료·납품",
+      "status": "견적서제출·협의",
       "last_date": "2025/12/04",
       "latest_action": "A/S·클레임",
       "latest_note": "스타킹 견적의뢰받음. 스프린터와 같이 견적.",
       "demo_info": null,
-      "as_info": {
-        "date": "2025/12/04",
-        "note": "진천 미래통증 견적 상담 스타킹 견적의뢰받음. 스프린터와 같이 견적.",
-        "status": "A/S 조치완료",
-        "resolved_date": "2026/08/26"
-      },
+      "as_info": null,
       "fail_reasons": [],
       "created_at": "2026-08-26T07:00:53.373276+00:00",
       "updated_at": "2026-08-26T07:00:53.373276+00:00"
@@ -89384,7 +89374,8 @@ window.SALES_DB = {
       "last_date": "2026/08/25",
       "latest_action": "견적제출",
       "latest_note": "산부인과 박수진 과장 미팅. 펀치 바이옵시 샘플 사용 후 만족도 높음. 최정훈 1과장 보고 후 코드 생성 예정.",
-      "fail_reasons": []
+      "fail_reasons": [],
+      "as_info": null
     },
     {
       "hospital": "청주 마디사랑병원",
@@ -89564,7 +89555,8 @@ window.SALES_DB = {
       "last_date": "2026/08/28",
       "latest_action": "관계관리",
       "latest_note": "공급실 이재용 담당자 미팅, 추가 서류 메일 송부 협의.",
-      "fail_reasons": []
+      "fail_reasons": [],
+      "as_info": null
     },
     {
       "hospital": "서산중앙병원",

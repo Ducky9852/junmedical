@@ -1713,10 +1713,12 @@ function renderASControlCenter() {
   const query = (document.getElementById('as-search-input')?.value || '').trim().toLowerCase();
   const pipe = (window.SALES_DB && window.SALES_DB.pipeline) ? window.SALES_DB.pipeline : [];
   
-  // Find all A/S related deals
+  // Find only legitimate A/S related equipment deals
   const asDeals = pipe.filter(d => {
-    const isAS = (d.as_info && d.as_info.status) || (d.status === 'A/S접수·처리') || (d.latest_action === 'A/S·클레임');
-    if (!isAS) return false;
+    // Only genuine AS status or explicit active AS info
+    const hasActiveAS = (d.status === 'A/S접수·처리') || 
+                        (d.as_info && d.as_info.status && d.status !== '도입완료·납품' && d.status !== '영업실패·보류');
+    if (!hasActiveAS) return false;
 
     if (query) {
       const q = query.replace(/\s+/g, '');
