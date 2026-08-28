@@ -85044,27 +85044,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-26T07:00:53.373276+00:00"
     },
     {
-      "id": 677,
-      "hospital": "봄날의외과의원",
-      "region": "서울경기",
-      "sales_rep": "이은필",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "status": "데모·샘플평가",
-      "last_date": "2026/02/05",
-      "latest_action": "샘플·데모",
-      "latest_note": "상품권전달, 소공포 및 응급킷트 샘플나가고, 소공포\n작은사이즈는 관심있음. 펜코소드는 이미들어옴",
-      "demo_info": {
-        "date": "2026/02/05",
-        "note": "봄날의외과 신규 아이템 소개 상품권전달, 소공포 및 응급킷트 샘플나가고, 소공포\n작은사이즈는 관심있음. 펜코소드는 이미들어옴",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:07:25.969055+00:00",
-      "updated_at": "2026-08-26T07:07:25.969055+00:00"
-    },
-    {
       "id": 832,
       "hospital": "광제산부인과",
       "region": "세종충북",
@@ -85791,27 +85770,6 @@ window.SALES_DB = {
       "fail_reasons": [
         "기존 거래처/경쟁사 선호"
       ],
-      "created_at": "2026-08-26T07:00:53.457687+00:00",
-      "updated_at": "2026-08-26T07:00:53.457687+00:00"
-    },
-    {
-      "id": 566,
-      "hospital": "청주한국병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PK-CGP202S-TB",
-      "product_name": "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL) (가로형)",
-      "status": "도입완료·납품",
-      "last_date": "2026/08/21",
-      "latest_action": "관계관리",
-      "latest_note": "[회수완료] 2026-08-27 장비 회수 입고 처리 완료",
-      "demo_info": {
-        "date": "2026/02/23",
-        "note": "청주 한국병원 정보 수집 서지소드 디테일, 과장님 사용여부확인, 신과장 오후 재방문 하였으나 바쁘셔서 카탈로그만 전달함.",
-        "status": "회수완료"
-      },
-      "as_info": null,
-      "fail_reasons": [],
       "created_at": "2026-08-26T07:00:53.457687+00:00",
       "updated_at": "2026-08-26T07:00:53.457687+00:00"
     },
@@ -86928,29 +86886,6 @@ window.SALES_DB = {
       "demo_info": null,
       "as_info": null,
       "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.373276+00:00",
-      "updated_at": "2026-08-26T07:00:53.373276+00:00"
-    },
-    {
-      "id": 442,
-      "hospital": "청주 마디사랑병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "WB-EGQ-A--02",
-      "product_name": "EG-Q BOND N (0.7g /1BOX=5EA)",
-      "status": "영업실패·보류",
-      "last_date": "2025/12/18",
-      "latest_action": "샘플·데모",
-      "latest_note": "하이겐트(Hygent) 가격으로인해 사용 어렵다 함. 이지큐본드(EzQbond) 디테일 \n[제공 샘플] 이지큐본드(EzQbond) 외",
-      "demo_info": {
-        "date": "2025/12/18",
-        "note": "청주 마디사랑 정보 수집 하이겐트(Hygent) 가격으로인해 사용 어렵다 함. 이지큐본드(EzQbond) 디테일 \n[제공 샘플] 이지큐본드(EzQbond) 외",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [
-        "단가/가격 부담"
-      ],
       "created_at": "2026-08-26T07:00:53.373276+00:00",
       "updated_at": "2026-08-26T07:00:53.373276+00:00"
     },
@@ -90010,6 +89945,154 @@ window.SALES_DB = {
       "latest_action": "제품설명·소개",
       "latest_note": "원장님 사모 의료기기 전납회사 운영. 하이겐트(MTHG0505T) 제품 소개하여 병원 내 구매과 후배한테 의사 타진 후 연락 주기로 함.",
       "fail_reasons": []
+    },
+    {
+      "hospital": "청주 미즈맘산부인과",
+      "product_id": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "접촉·니즈파악",
+      "last_date": "2026/03/06",
+      "latest_action": "관계관리",
+      "latest_note": "바이옵시 아직 결정 못함. 일반 의료소모품은 원장님 지인이 납품하고 있음.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "청주 해피맘산부인과",
+      "product_id": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "접촉·니즈파악",
+      "last_date": "2026/03/06",
+      "latest_action": "관계관리",
+      "latest_note": "바이옵시는 아직 결정 못하심. 전납회사 없음. 소모품 견적 전달.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "서산한마음산부인과",
+      "product_id": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "region": "대전충남",
+      "sales_rep": "이재덕",
+      "status": "소모품 샘플",
+      "last_date": "2026/03/05",
+      "latest_action": "샘플·데모",
+      "latest_note": "원장님 첫 방문 미팅. 스트라이커 복강경 사용 중. 펀치 바이옵시 샘플 전달.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "홍성의료원",
+      "product_id": "EN-SB100A",
+      "product_name": "EN-Shot Biopsy 2.3cup",
+      "region": "대전충남",
+      "sales_rep": "이재덕",
+      "status": "견적서제출·협의",
+      "last_date": "2026/08/25",
+      "latest_action": "견적제출",
+      "latest_note": "산부인과 박수진 과장 미팅. 펀치 바이옵시 샘플 사용 후 만족도 높음. 최정훈 1과장 보고 후 코드 생성 예정.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "청주 마디사랑병원",
+      "product_id": "PK-SUR02",
+      "product_name": "[펜코] 서지패드 (PENKO SURGICAL PAD)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "관계관리·접촉",
+      "last_date": "2026/08/21",
+      "latest_action": "관계관리",
+      "latest_note": "구매과 면담 결과 닥터암슬리브 계획 미정, 서지패드 타사 제품 사용 중. 펜코 제품 중심 지속 디테일 진행.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "유엔비 외과의원",
+      "product_id": "PK-SUR02",
+      "product_name": "[펜코] 서지패드 (PENKO SURGICAL PAD)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "소모품 샘플",
+      "last_date": "2026/08/18",
+      "latest_action": "샘플·데모",
+      "latest_note": "유엔비 외과의원 제품 납품 및 서지패드 샘플 제공. 급여 제품 반응 미온적, 아프로코리아 데모 진행.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "천안우리병원",
+      "product_id": "PK-SUR02",
+      "product_name": "[펜코] 서지패드 (PENKO SURGICAL PAD)",
+      "region": "대전충남",
+      "sales_rep": "이재덕",
+      "status": "영업실패·보류",
+      "last_date": "2026/08/14",
+      "latest_action": "제품설명·소개",
+      "latest_note": "기획관리부 박종환 부장 미팅. 서지패드, 서지소드 브로셔 전달. 펜코 제품 현재 타사에서 납품 중임을 확인.",
+      "fail_reasons": [
+        "타사 제품 납품 사용 중"
+      ]
+    },
+    {
+      "hospital": "청주한국병원",
+      "product_id": "PK-CGP202S-TB",
+      "product_name": "펜코 BV 플레이트 듀얼 (가로형)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "접촉·니즈파악",
+      "last_date": "2026/08/11",
+      "latest_action": "관계관리",
+      "latest_note": "구미희 선생 미팅하여 보비패드 도입 진행상황 체크했으나 아직은 힘들다는 답변. 향후 지속 추진.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "봄날의외과의원",
+      "product_id": "GROUP-SEJONG-SHEET",
+      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "소모품 샘플",
+      "last_date": "2026/04/23",
+      "latest_action": "샘플·데모",
+      "latest_note": "상품권 전달, 소공포 및 응급키트 샘플 출고. 소공포 작은 사이즈 관심 있음.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "봄날의외과의원",
+      "product_id": "GROUP-PENKO-SWORD",
+      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "도입완료·납품",
+      "last_date": "2026/04/23",
+      "latest_action": "도입완료",
+      "latest_note": "펜코소드(안전메스)는 이미 원내 도입되어 사용 중임.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "청주 마디사랑병원",
+      "product_id": "WB-EGQ-A--02",
+      "product_name": "EG-Q BOND N (0.7g /1BOX=5EA)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "소모품 샘플",
+      "last_date": "2026/03/24",
+      "latest_action": "샘플·데모",
+      "latest_note": "이지큐본드(EzQbond) 제품 디테일 및 샘플 제공 완료.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "청주 마디사랑병원",
+      "product_id": "MTHG0505T",
+      "product_name": "Hy gent 하이겐트 (5*5)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "영업실패·보류",
+      "last_date": "2026/03/24",
+      "latest_action": "제품설명·소개",
+      "latest_note": "하이겐트(Hygent) 가격 부담으로 인해 사용 어렵다는 피드백 수령.",
+      "fail_reasons": [
+        "단가/가격 부담"
+      ]
     }
   ],
   "activity_logs": [
