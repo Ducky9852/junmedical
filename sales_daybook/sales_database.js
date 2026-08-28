@@ -80250,6 +80250,48 @@ window.SALES_DB = {
         "12151855",
         "크라운트로카"
       ]
+    },
+    {
+      "id": "PROD_YOUSHI_LAPARO",
+      "code": "PROD_YOUSHI_LAPARO",
+      "name": "Youshi 복강경 제품",
+      "spec": "복강경 수술기구/소모품",
+      "vendor": "Youshi",
+      "category": "일반의료기기",
+      "edi": "",
+      "unit": "EA",
+      "price_in": 0,
+      "price_out": 0,
+      "keywords": [
+        "Youshi",
+        "요시",
+        "Youshi 복강경",
+        "복강경"
+      ],
+      "aliases": [
+        "요시 복강경",
+        "Youshi"
+      ]
+    },
+    {
+      "id": "PROD_LAPARO_DISP",
+      "code": "PROD_LAPARO_DISP",
+      "name": "복강경 소모품",
+      "spec": "복강경 일회용 소모품",
+      "vendor": "준메디칼",
+      "category": "일반의료기기",
+      "edi": "",
+      "unit": "EA",
+      "price_in": 0,
+      "price_out": 0,
+      "keywords": [
+        "복강경소모품",
+        "복강경 소모품",
+        "laparoscopy consumables"
+      ],
+      "aliases": [
+        "복강경 소모품"
+      ]
     }
   ],
   "hospitals": [
@@ -88280,23 +88322,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-26T07:00:53.457687+00:00"
     },
     {
-      "id": 519,
-      "hospital": "영동병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_HYGENT",
-      "product_name": "HYGENT (하이젠트 살균소독)",
-      "status": "도입완료·납품",
-      "last_date": "2025/12/05",
-      "latest_action": "제품설명·소개",
-      "latest_note": "하이겐트(Hygent) 사용중. 마인드레이, 요시 제품 소개. 지속방문.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.457687+00:00",
-      "updated_at": "2026-08-26T07:00:53.457687+00:00"
-    },
-    {
       "id": 520,
       "hospital": "오창 호수병원",
       "region": "세종충북",
@@ -88652,23 +88677,6 @@ window.SALES_DB = {
       "last_date": "2025/11/04",
       "latest_action": "제품설명·소개",
       "latest_note": "원장님 사모가 의료기기회사를 운영중이며, 전납을 한다고 함. 바이폴라, 하이겐트(Hygent)제품 소개하여 병원내 구매과 후배한테 의사 타진후 연락주겠다고 함",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-26T07:00:53.457687+00:00",
-      "updated_at": "2026-08-26T07:00:53.457687+00:00"
-    },
-    {
-      "id": 544,
-      "hospital": "영동병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_MINDRAY",
-      "product_name": "마인드레이 장비 (Mindray 초음파/진단)",
-      "status": "도입완료·납품",
-      "last_date": "2025/12/05",
-      "latest_action": "제품설명·소개",
-      "latest_note": "하이겐트(Hygent) 사용중. 마인드레이, 요시 제품 소개. 지속방문.",
       "demo_info": null,
       "as_info": null,
       "fail_reasons": [],
@@ -89960,6 +89968,44 @@ window.SALES_DB = {
       "latest_action": "제품설명·소개",
       "latest_note": "외과 김기호 교수에게 하이겐트(MTHG0505T) 소개. 유착 방지율 관련 추가 자료 준비 후 재방문 예정.",
       "fail_reasons": []
+    },
+    {
+      "hospital": "영동병원",
+      "product_id": "MTHG0505T",
+      "product_name": "Hy gent 하이겐트 (5*5)",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "영업실패·보류",
+      "last_date": "2026/03/18",
+      "latest_action": "제품설명·소개",
+      "latest_note": "하이겐트(Hygent) 타업체 납품분 사용 중으로 진입 보류.",
+      "fail_reasons": [
+        "타업체 기납품 사용 중"
+      ]
+    },
+    {
+      "hospital": "영동병원",
+      "product_id": "PROD_LAPARO_DISP",
+      "product_name": "복강경 소모품",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2026/03/18",
+      "latest_action": "제품설명·소개",
+      "latest_note": "복강경 소모품 제품 소개 진행 및 지속 방문 추진.",
+      "fail_reasons": []
+    },
+    {
+      "hospital": "영동병원",
+      "product_id": "PROD_YOUSHI_LAPARO",
+      "product_name": "Youshi 복강경 제품",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "status": "제품소개·영업중",
+      "last_date": "2026/03/18",
+      "latest_action": "제품설명·소개",
+      "latest_note": "Youshi 복강경 제품 소개 진행 및 지속 방문 추진.",
+      "fail_reasons": []
     }
   ],
   "activity_logs": [
@@ -90601,13 +90647,16 @@ window.SALES_DB = {
       "title": "[하이겐트] 영동병원 신규 아이템 소개",
       "note": "하이겐트(Hygent) 사용중. 마인드레이, 요시 제품 소개. 지속방문.",
       "products": [
-        "HYGENT (하이젠트 살균소독)"
+        "Youshi 복강경 제품",
+        "복강경 소모품"
       ],
-      "product_code": "PROD_HYGENT",
+      "product_code": "PROD_YOUSHI_LAPARO",
       "next_action": "",
       "region": "세종충북",
       "contact": "관리팀 관리과, 구매",
-      "created_at": "2026-08-26T07:00:53.038971+00:00"
+      "created_at": "2026-08-26T07:00:53.038971+00:00",
+      "product_name": "Youshi 복강경 제품",
+      "deal_status": "제품소개·영업중"
     },
     {
       "id": 1566,
@@ -90618,13 +90667,16 @@ window.SALES_DB = {
       "title": "[마인드레이] 영동병원 신규 아이템 소개",
       "note": "하이겐트(Hygent) 사용중. 마인드레이, 요시 제품 소개. 지속방문.",
       "products": [
-        "마인드레이 장비 (Mindray 초음파/진단)"
+        "Youshi 복강경 제품",
+        "복강경 소모품"
       ],
-      "product_code": "PROD_MINDRAY",
+      "product_code": "PROD_YOUSHI_LAPARO",
       "next_action": "",
       "region": "세종충북",
       "contact": "관리팀 관리과, 구매",
-      "created_at": "2026-08-26T07:00:53.038971+00:00"
+      "created_at": "2026-08-26T07:00:53.038971+00:00",
+      "product_name": "Youshi 복강경 제품",
+      "deal_status": "제품소개·영업중"
     },
     {
       "id": 1567,
