@@ -1,5 +1,5 @@
 // Service Worker for Junmedical MEDI-SALES 360° PWA
-const CACHE_NAME = 'medi-sales-cache-v29-penko-fix';
+const CACHE_NAME = 'medi-sales-cache-v30-bv-fix';
 const ASSETS_TO_CACHE = [
   './sales.html',
   './index.html',
