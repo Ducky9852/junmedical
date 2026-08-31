@@ -16,9 +16,9 @@
   <meta name="apple-mobile-web-app-title" content="MEDI-SALES">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   
-  <link rel="stylesheet" href="app.css?v=jun-V1-001">
-  <script src="sales_database.js?v=jun-V1-001"></script>
-  <script src="app.js?v=jun-V1-001"></script>
+  <link rel="stylesheet" href="app.css?v=jun-V1-002">
+  <script src="sales_database.js?v=jun-V1-002"></script>
+  <script src="app.js?v=jun-V1-002"></script>
 </head>
 <body>
 
@@ -53,7 +53,7 @@
         <div class="brand-icon">🩺</div>
         <div class="brand-text">
           <div class="brand-title-wrap">
-            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-001</span>
+            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-002</span>
             <h1>MEDI-SALES 360°</h1>
           </div>
           <p>의료기기 스마트 영업관리 & 파이프라인 플랫폼</p>
@@ -1641,7 +1641,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=jun-V1-001').then(reg => {
+        navigator.serviceWorker.register('sw.js?v=jun-V1-002').then(reg => {
           reg.update();
           console.log('⚡ PWA Service Worker Active & Updated:', reg.scope);
         }).catch(err => console.warn('SW register error:', err));
