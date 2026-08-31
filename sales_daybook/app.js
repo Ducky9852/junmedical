@@ -1,10 +1,10 @@
 // Application State & Security
-const APP_VERSION = "jun-V1-002";
+const APP_VERSION = "jun-V1-003";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V5_JUN_V1_002";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V6_JUN_V1_003";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -14,6 +14,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V2");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V3_CLEAN");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V4_RECOVERED");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V5_JUN_V1_002");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -65,14 +66,18 @@ async function sendSalesLogToSlack(logData) {
 }
 
 let supabaseClient = null;
-try {
-  if (window.supabase && typeof window.supabase.createClient === 'function') {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    console.log('⚡ Supabase Cloud Realtime DB Client Initialized!');
+function getSupabaseClient() {
+  if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
+    try {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      console.log('⚡ Supabase Cloud Realtime DB Client Initialized!');
+    } catch(e) {
+      console.warn('Supabase initialization warning:', e);
+    }
   }
-} catch(e) {
-  console.warn('Supabase initialization warning:', e);
+  return supabaseClient;
 }
+getSupabaseClient();
 
 let currentTab = 'hospital';
 let selectedHospitalName = '';
@@ -351,24 +356,28 @@ function syncHospitalsFromLogs() {
 }
 
 // Cloud Async Fetcher from Supabase
-async function fetchLatestFromSupabase() {
-  if (!supabaseClient) return;
+async function fetchLatestFromSupabase(showToastOnManual = false) {
+  const client = getSupabaseClient();
+  if (!client) {
+    console.warn('Supabase client not ready or network offline.');
+    return;
+  }
   try {
     console.log('🔄 Fetching real-time updates from Supabase Cloud...');
     
     // Fetch logs (descending by id/date)
-    const { data: logsData, error: logsErr } = await supabaseClient
+    const { data: logsData, error: logsErr } = await client
       .from('activity_logs')
       .select('*')
       .order('id', { ascending: false });
 
     // Fetch hospitals
-    const { data: hospData, error: hospErr } = await supabaseClient
+    const { data: hospData, error: hospErr } = await client
       .from('hospitals')
       .select('*');
 
     // Fetch pipeline
-    const { data: pipeData, error: pipeErr } = await supabaseClient
+    const { data: pipeData, error: pipeErr } = await client
       .from('pipeline')
       .select('*');
 
@@ -399,6 +408,9 @@ async function fetchLatestFromSupabase() {
       renderExcelLogsTable();
     }
     console.log(`✅ Supabase Cloud Synced: ${logsData?.length || 0} logs, ${window.SALES_DB.hospitals.length} hospitals, ${pipeData?.length || 0} pipelines.`);
+    if (showToastOnManual) {
+      showToast(`☁️ 클라우드 실시간 동기화 완료 (${logsData?.length || 0}개 일지 수신)`);
+    }
   } catch(err) {
     console.warn('Supabase fetch error, using local/server fallback:', err);
   }
@@ -450,8 +462,11 @@ window.addEventListener('DOMContentLoaded', () => {
     selectHospital(defaultHosp.name);
   }
 
-  // Real-time Cloud Sync with Supabase
+  // Real-time Cloud Sync with Supabase (Immediate on load + background polling every 20 seconds)
   fetchLatestFromSupabase();
+  setInterval(() => {
+    fetchLatestFromSupabase(false);
+  }, 20000);
 });
 
 // ----------------------------------------------------

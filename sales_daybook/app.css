@@ -253,6 +253,28 @@ header {
   transform: translateY(-1px);
 }
 
+.btn-cloud-sync {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 0.72rem;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.btn-cloud-sync:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: var(--accent-cyan);
+  color: #fff;
+  transform: rotate(180deg);
+}
+
 .brand-text h1 {
   font-size: 1.25rem;
   font-weight: 700;
