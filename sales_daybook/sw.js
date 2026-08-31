@@ -1,5 +1,5 @@
 // Service Worker for Junmedical MEDI-SALES 360° PWA
-const CACHE_NAME = 'medi-sales-cache-v30-bv-fix';
+const CACHE_NAME = 'medi-sales-cache-jun-V1-001';
 const ASSETS_TO_CACHE = [
   './sales.html',
   './index.html',
@@ -14,7 +14,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('⚡ [ServiceWorker] Pre-caching PWA App Assets (v29)');
+      console.log('⚡ [ServiceWorker] Pre-caching PWA App Assets (v31)');
       return cache.addAll(ASSETS_TO_CACHE).catch(err => console.warn('Cache prefetch error:', err));
     })
   );

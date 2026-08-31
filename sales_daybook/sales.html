@@ -16,9 +16,9 @@
   <meta name="apple-mobile-web-app-title" content="MEDI-SALES">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   
-  <link rel="stylesheet" href="app.css?v=20260831_v30">
-  <script src="sales_database.js?v=20260831_v30"></script>
-  <script src="app.js?v=20260831_v30"></script>
+  <link rel="stylesheet" href="app.css?v=jun-V1-001">
+  <script src="sales_database.js?v=jun-V1-001"></script>
+  <script src="app.js?v=jun-V1-001"></script>
 </head>
 <body>
 
@@ -52,7 +52,10 @@
       <div class="brand-section">
         <div class="brand-icon">🩺</div>
         <div class="brand-text">
-          <h1>MEDI-SALES 360°</h1>
+          <div class="brand-title-wrap">
+            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-001</span>
+            <h1>MEDI-SALES 360°</h1>
+          </div>
           <p>의료기기 스마트 영업관리 & 파이프라인 플랫폼</p>
         </div>
       </div>
@@ -758,10 +761,19 @@
               <label class="parsed-field-lbl">🗓️ 차기 실행 일정 / 다음 할 일</label>
               <input type="text" id="parse-edit-next-action" class="ai-edit-input" placeholder="다음 방문 일정 및 구체적 계획">
             </div>
+
+            <!-- 7. 작성된 영업일지 상세 내용 (직접 수정 가능) -->
+            <div class="parsed-field-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label class="parsed-field-lbl" style="margin-bottom:0;">📝 상세 영업일지 내용 (직접 수정 가능)</label>
+                <span style="font-size:0.68rem; color:var(--accent-cyan); background:rgba(56,189,248,0.1); padding:1px 6px; border-radius:3px;">저장 전 원문/요약 편집</span>
+              </div>
+              <textarea id="parse-edit-note" class="ai-edit-input" style="height:76px; resize:vertical; font-size:0.83rem; line-height:1.45; font-family:inherit; padding:8px 10px;" placeholder="작성된 영업일지 상세 내용 (상담/미팅 메모가 이곳에 표시되며 직접 수정할 수 있습니다)"></textarea>
+            </div>
           </div>
 
           <button class="btn-primary" id="btn-save-ai-log" style="margin-top:16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); display:none; width:100%; justify-content:center;" onclick="saveParsedLogToDB()">
-            <span>💾 파이프라인 & 병원 360°에 즉시 등록</span>
+            <span>💾 영업일지 저장 & 슬랙 자동 전송</span>
           </button>
         </div>
 
@@ -1528,6 +1540,11 @@
       <div class="modal-body" style="display:flex; flex-direction:column; gap:12px;">
         <input type="hidden" id="modal-edit-hosp-name-hidden">
         
+        <div class="modal-field">
+          <label class="modal-label">🏥 거래처 (병원명) *</label>
+          <input type="text" id="modal-edit-hosp-name-input" class="modal-input" placeholder="병원명을 입력하세요" required>
+        </div>
+
         <div class="modal-grid-2">
           <div class="modal-field flex-1">
             <label class="modal-label">병원 권역 (지역) *</label>
@@ -1628,7 +1645,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=20260831_v29').then(reg => {
+        navigator.serviceWorker.register('sw.js?v=jun-V1-001').then(reg => {
           reg.update();
           console.log('⚡ PWA Service Worker Active & Updated:', reg.scope);
         }).catch(err => console.warn('SW register error:', err));

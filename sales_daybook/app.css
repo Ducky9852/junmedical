@@ -223,6 +223,36 @@ header {
   box-shadow: var(--shadow-glow);
 }
 
+.brand-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-version-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--accent-cyan, #38bdf8);
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 6px;
+  letter-spacing: 0.4px;
+  line-height: 1.2;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.15);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.app-version-badge:hover {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: rgba(56, 189, 248, 0.6);
+  transform: translateY(-1px);
+}
+
 .brand-text h1 {
   font-size: 1.25rem;
   font-weight: 700;
@@ -230,12 +260,14 @@ header {
   background: linear-gradient(135deg, #fff 30%, #9ca3af 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  margin: 0;
 }
 
 .brand-text p {
   font-size: 0.78rem;
   color: var(--text-secondary);
   font-weight: 400;
+  margin-top: 2px;
 }
 
 .nav-tabs {
