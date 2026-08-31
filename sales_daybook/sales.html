@@ -16,9 +16,9 @@
   <meta name="apple-mobile-web-app-title" content="MEDI-SALES">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   
-  <link rel="stylesheet" href="app.css?v=20260827_1820_pwa_ios">
-  <script src="sales_database.js?v=penko_remap_v28"></script>
-  <script src="app.js?v=penko_remap_v28"></script>
+  <link rel="stylesheet" href="app.css?v=20260831_v29">
+  <script src="sales_database.js?v=20260831_v29"></script>
+  <script src="app.js?v=20260831_v29"></script>
 </head>
 <body>
 
@@ -1624,14 +1624,13 @@
 
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- App Script -->
-  <script src="app.js?v=20260827_1820_pwa_ios"></script>
-  <!-- PWA Service Worker Registration -->
+  <!-- PWA Service Worker Registration & Cache Flush -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').then(reg => {
-          console.log('⚡ PWA Service Worker Ready:', reg.scope);
+        navigator.serviceWorker.register('sw.js?v=20260831_v29').then(reg => {
+          reg.update();
+          console.log('⚡ PWA Service Worker Active & Updated:', reg.scope);
         }).catch(err => console.warn('SW register error:', err));
       });
     }

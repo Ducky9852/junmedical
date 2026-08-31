@@ -1,11 +1,9 @@
 // Service Worker for Junmedical MEDI-SALES 360° PWA
-const CACHE_NAME = 'medi-sales-cache-v1';
+const CACHE_NAME = 'medi-sales-cache-v29-penko-fix';
 const ASSETS_TO_CACHE = [
   './sales.html',
   './index.html',
   './app.css',
-  './app.js',
-  './sales_database.js',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
@@ -13,13 +11,13 @@ const ASSETS_TO_CACHE = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('⚡ [ServiceWorker] Pre-caching PWA App Assets');
+      console.log('⚡ [ServiceWorker] Pre-caching PWA App Assets (v29)');
       return cache.addAll(ASSETS_TO_CACHE).catch(err => console.warn('Cache prefetch error:', err));
     })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -28,7 +26,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keyList.map((key) => {
           if (key !== CACHE_NAME) {
-            console.log('🧹 [ServiceWorker] Removing old cache:', key);
+            console.log('🧹 [ServiceWorker] Purging old cache:', key);
             return caches.delete(key);
           }
         })
@@ -39,12 +37,12 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Network first, fallback to cache for HTML/JS
+  // Always network first for DB and scripts to prevent stale data
   if (event.request.method === 'GET') {
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, { cache: 'no-store' })
         .then((response) => {
-          if (response && response.status === 200) {
+          if (response && response.status === 200 && !event.request.url.includes('sales_database.js')) {
             const responseClone = response.clone();
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(event.request, responseClone);
