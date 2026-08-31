@@ -1,10 +1,10 @@
 // Application State & Security
-const APP_VERSION = "jun-V1-003";
+const APP_VERSION = "jun-V1-004";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V6_JUN_V1_003";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V7_JUN_V1_004";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -15,6 +15,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V3_CLEAN");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V4_RECOVERED");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V5_JUN_V1_002");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V6_JUN_V1_003");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper

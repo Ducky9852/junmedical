@@ -80661,6 +80661,108 @@
       "updated_at": "2026-08-27T09:47:31.230174+00:00"
     },
     {
+      "name": "충주 건국대학교 병원",
+      "region": "세종충북",
+      "sales_reps": [
+        "이재덕"
+      ],
+      "contacts": [
+        "CV 박금수 교수"
+      ],
+      "status": "신규영업",
+      "last_activity_date": "2026/08/28",
+      "total_logs": 3,
+      "demo_count": 0,
+      "won_count": 0,
+      "as_count": 0,
+      "fail_count": 1,
+      "products_active": [
+        "Surgi FXA Angio Procedure Kit (ST-ANG-PR03)",
+        "Surgi FXA Angio Procedure Kit"
+      ],
+      "created_at": "2026-08-28T10:06:14.266011+00:00",
+      "updated_at": "2026-08-28T10:06:14.266011+00:00"
+    },
+    {
+      "name": "충주의료원",
+      "region": "세종충북",
+      "sales_reps": [
+        "이재덕"
+      ],
+      "contacts": [
+        "CV 진동규 과장"
+      ],
+      "status": "신규영업",
+      "last_activity_date": "2026/08/28",
+      "total_logs": 2,
+      "demo_count": 0,
+      "won_count": 0,
+      "as_count": 0,
+      "fail_count": 1,
+      "products_active": [
+        "Surgi FXA Angio Procedure Kit (ST-ANG-PR03)",
+        "Surgi FXA Angio Procedure Kit"
+      ],
+      "created_at": "2026-08-28T10:06:40.190832+00:00",
+      "updated_at": "2026-08-28T10:06:40.190832+00:00"
+    },
+    {
+      "name": "청주 마디사랑병원",
+      "region": "세종충북",
+      "sales_reps": [
+        "이재덕"
+      ],
+      "contacts": [
+        "관리팀 구매과 담당 부재중. 기다리다 연락처 남기고옴., 구매",
+        "관리팀 구매과, 구매",
+        "관리팀 구매과, 구매, 임상",
+        "관리팀 구매과, 구매, 행정이사",
+        "관리팀 구매팀, 구매",
+        "관리팀 논문자료 제출함. 콜라겐과 히알우론산 직접비교된거 있으면 더 찾아본다고 말함. 지속방문 예정., 구매",
+        "구매과",
+        "구매과 직원",
+        "정형외과 이종혁 행정실장"
+      ],
+      "status": "활동병원",
+      "last_activity_date": "2026/08/28",
+      "total_logs": 28,
+      "demo_count": 0,
+      "won_count": 0,
+      "as_count": 0,
+      "fail_count": 2,
+      "products_active": [
+        "DVT SLEEVE (허벅지형)",
+        "EG-Q BOND N (0.7g /1BOX=5EA)",
+        "HYGENT (하이젠트 살균소독)",
+        "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL) (가로형)",
+        "마킹펜"
+      ],
+      "created_at": "2026-08-27T04:34:18.934003+00:00",
+      "updated_at": "2026-08-27T04:34:18.934003+00:00"
+    },
+    {
+      "name": "청주21세기병원",
+      "region": "세종충북",
+      "sales_reps": [
+        "이재덕"
+      ],
+      "contacts": [
+        "구매과"
+      ],
+      "status": "신규영업",
+      "last_activity_date": "2026/08/28",
+      "total_logs": 1,
+      "demo_count": 0,
+      "won_count": 0,
+      "as_count": 0,
+      "fail_count": 0,
+      "products_active": [
+        "써지패드, 써지패드 엑스레이"
+      ],
+      "created_at": "2026-08-28T10:07:40.064499+00:00",
+      "updated_at": "2026-08-28T10:07:40.064499+00:00"
+    },
+    {
       "name": "김광주산부인과",
       "region": "세종충북",
       "sales_reps": [
@@ -80699,6 +80801,35 @@
       "as_count": 0,
       "fail_count": 0,
       "products_active": [],
+      "created_at": "2026-08-27T04:34:18.757354+00:00",
+      "updated_at": "2026-08-27T04:34:18.757354+00:00"
+    },
+    {
+      "name": "서산중앙병원",
+      "region": "서산당진",
+      "sales_reps": [
+        "이은필"
+      ],
+      "contacts": [
+        "관리팀 성윤제과장, 구매",
+        "관리팀 성윤제과장미팅, 구매",
+        "구매팀 김종현 차장",
+        "심뇌혈관팀장"
+      ],
+      "status": "활동병원",
+      "last_activity_date": "2026/08/28",
+      "total_logs": 9,
+      "demo_count": 2,
+      "won_count": 0,
+      "as_count": 0,
+      "fail_count": 0,
+      "products_active": [
+        "Surgi FXA Angio Procedure Kit (Adv03)",
+        "큐어폼 (Cureform 드레싱)",
+        "Surgi FXA Angio Procedure Kit (ST-ANG-PR03)",
+        "복강경 수술포 (els102-1)",
+        "bhs1720"
+      ],
       "created_at": "2026-08-27T04:34:18.757354+00:00",
       "updated_at": "2026-08-27T04:34:18.757354+00:00"
     },
@@ -80896,28 +81027,6 @@
       "updated_at": "2026-08-27T04:34:18.757354+00:00"
     },
     {
-      "name": "당진종합병원",
-      "region": "서산당진",
-      "sales_reps": [
-        "이은필"
-      ],
-      "contacts": [
-        "김수인 대리"
-      ],
-      "status": "활동병원",
-      "last_activity_date": "2026/08/07",
-      "total_logs": 0,
-      "demo_count": 0,
-      "won_count": 0,
-      "as_count": 0,
-      "fail_count": 0,
-      "products_active": [
-        "Surgi FXA Angio Procedure Kit (Adv03)"
-      ],
-      "created_at": "2026-08-27T04:34:18.757354+00:00",
-      "updated_at": "2026-08-27T04:34:18.757354+00:00"
-    },
-    {
       "name": "대전 복십자",
       "region": "대전논산",
       "sales_reps": [
@@ -81026,38 +81135,6 @@
       "as_count": 0,
       "fail_count": 0,
       "products_active": [],
-      "created_at": "2026-08-27T04:34:18.757354+00:00",
-      "updated_at": "2026-08-27T04:34:18.757354+00:00"
-    },
-    {
-      "name": "모태안여성병원",
-      "region": "세종충북",
-      "sales_reps": [
-        "이은필",
-        "이재덕"
-      ],
-      "contacts": [
-        "관리팀 구매과, 구매",
-        "관리팀 사무장, 구매",
-        "산부인과 난임과 연구소장님",
-        "산부인과 박철종원장님 긴급수술로 미팅못함",
-        "산부인과 서정한",
-        "산부인과 외래",
-        "산부인과 이상훈팀장"
-      ],
-      "status": "활동병원",
-      "last_activity_date": "2026/08/24",
-      "total_logs": 0,
-      "demo_count": 0,
-      "won_count": 0,
-      "as_count": 0,
-      "fail_count": 0,
-      "products_active": [
-        "DVT SLEEVE (허벅지형)",
-        "의료장비 A/S 및 수리 (Oxy9wave/BT350/올림푸스)",
-        "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))",
-        "베리큐어 로션 (200g)"
-      ],
       "created_at": "2026-08-27T04:34:18.757354+00:00",
       "updated_at": "2026-08-27T04:34:18.757354+00:00"
     },
@@ -81465,6 +81542,29 @@
       "updated_at": "2026-08-27T04:34:18.934003+00:00"
     },
     {
+      "name": "당진종합병원",
+      "region": "서산당진",
+      "sales_reps": [
+        "이은필"
+      ],
+      "contacts": [
+        "김수인 대리"
+      ],
+      "status": "활동병원",
+      "last_activity_date": "2026/08/28",
+      "total_logs": 2,
+      "demo_count": 1,
+      "won_count": 0,
+      "as_count": 0,
+      "fail_count": 0,
+      "products_active": [
+        "Surgi FXA Angio Procedure Kit (Adv03)",
+        "소모품"
+      ],
+      "created_at": "2026-08-27T04:34:18.757354+00:00",
+      "updated_at": "2026-08-27T04:34:18.757354+00:00"
+    },
+    {
       "name": "삼성365정형외과",
       "region": "세종충북",
       "sales_reps": [
@@ -81551,32 +81651,6 @@
       "fail_count": 0,
       "products_active": [
         "Surgi FXA Angio Procedure Kit (Adv03)"
-      ],
-      "created_at": "2026-08-27T04:34:18.757354+00:00",
-      "updated_at": "2026-08-27T04:34:18.757354+00:00"
-    },
-    {
-      "name": "서산중앙병원",
-      "region": "서산당진",
-      "sales_reps": [
-        "이은필"
-      ],
-      "contacts": [
-        "관리팀 성윤제과장, 구매",
-        "관리팀 성윤제과장미팅, 구매",
-        "구매팀 김종현 차장",
-        "심뇌혈관팀장"
-      ],
-      "status": "활동병원",
-      "last_activity_date": "2026/08/14",
-      "total_logs": 0,
-      "demo_count": 0,
-      "won_count": 0,
-      "as_count": 0,
-      "fail_count": 0,
-      "products_active": [
-        "Surgi FXA Angio Procedure Kit (Adv03)",
-        "큐어폼 (Cureform 드레싱)"
       ],
       "created_at": "2026-08-27T04:34:18.757354+00:00",
       "updated_at": "2026-08-27T04:34:18.757354+00:00"
@@ -82179,6 +82253,28 @@
       ],
       "created_at": "2026-08-27T04:34:18.860203+00:00",
       "updated_at": "2026-08-27T04:34:18.860203+00:00"
+    },
+    {
+      "name": "모태안",
+      "region": "세종충북",
+      "sales_reps": [
+        "이은필"
+      ],
+      "contacts": [
+        "실무진"
+      ],
+      "status": "신규영업",
+      "last_activity_date": "2026/08/29",
+      "total_logs": 1,
+      "demo_count": 0,
+      "won_count": 0,
+      "as_count": 1,
+      "fail_count": 0,
+      "products_active": [
+        "무영등"
+      ],
+      "created_at": "2026-08-29T07:57:27.224388+00:00",
+      "updated_at": "2026-08-29T07:57:27.224388+00:00"
     },
     {
       "name": "옥천 성모병원",
@@ -83288,41 +83384,6 @@
       "updated_at": "2026-08-27T04:34:18.934003+00:00"
     },
     {
-      "name": "청주 다나여성병원",
-      "region": "세종충북",
-      "sales_reps": [
-        "이재덕"
-      ],
-      "contacts": [
-        "간호부장., 관리팀 사무장, 구매",
-        "관리팀 간호부장, 구매",
-        "관리팀 사무장, 구매",
-        "대표원장, 산부인과 원무부장",
-        "사무장",
-        "산부인과 간호과장",
-        "산부인과 김규동 사무장",
-        "산부인과 김규동사무장",
-        "산부인과 사무장",
-        "산부인과 사무장님 인사드림. 별다른 이야기는 없었음. 타 아이템으로 디테일 예정.",
-        "산부인과 원장"
-      ],
-      "status": "활동병원",
-      "last_activity_date": "2026/08/20",
-      "total_logs": 0,
-      "demo_count": 0,
-      "won_count": 0,
-      "as_count": 0,
-      "fail_count": 0,
-      "products_active": [
-        "DVT SLEEVE (허벅지형)",
-        "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))",
-        "Metal Trocar (Flip) (10.5mm*95mm)",
-        "베리큐어 로션 (200g)"
-      ],
-      "created_at": "2026-08-27T04:34:18.934003+00:00",
-      "updated_at": "2026-08-27T04:34:18.934003+00:00"
-    },
-    {
       "name": "청주 닥터연여성산부인과",
       "region": "세종충북",
       "sales_reps": [
@@ -83386,39 +83447,6 @@
       "updated_at": "2026-08-27T04:34:18.934003+00:00"
     },
     {
-      "name": "청주 마디사랑병원",
-      "region": "세종충북",
-      "sales_reps": [
-        "이재덕"
-      ],
-      "contacts": [
-        "관리팀 구매과 담당 부재중. 기다리다 연락처 남기고옴., 구매",
-        "관리팀 구매과, 구매",
-        "관리팀 구매과, 구매, 임상",
-        "관리팀 구매과, 구매, 행정이사",
-        "관리팀 구매팀, 구매",
-        "관리팀 논문자료 제출함. 콜라겐과 히알우론산 직접비교된거 있으면 더 찾아본다고 말함. 지속방문 예정., 구매",
-        "구매과",
-        "구매과 직원",
-        "정형외과 이종혁 행정실장"
-      ],
-      "status": "활동병원",
-      "last_activity_date": "2026/08/20",
-      "total_logs": 0,
-      "demo_count": 0,
-      "won_count": 0,
-      "as_count": 0,
-      "fail_count": 0,
-      "products_active": [
-        "DVT SLEEVE (허벅지형)",
-        "EG-Q BOND N (0.7g /1BOX=5EA)",
-        "HYGENT (하이젠트 살균소독)",
-        "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL) (가로형)"
-      ],
-      "created_at": "2026-08-27T04:34:18.934003+00:00",
-      "updated_at": "2026-08-27T04:34:18.934003+00:00"
-    },
-    {
       "name": "청주 마이크로병원",
       "region": "세종충북",
       "sales_reps": [
@@ -83464,6 +83492,42 @@
       "updated_at": "2026-08-27T04:34:18.934003+00:00"
     },
     {
+      "name": "청주 다나여성병원",
+      "region": "세종충북",
+      "sales_reps": [
+        "이재덕"
+      ],
+      "contacts": [
+        "간호부장., 관리팀 사무장, 구매",
+        "관리팀 간호부장, 구매",
+        "관리팀 사무장, 구매",
+        "대표원장, 산부인과 원무부장",
+        "사무장",
+        "산부인과 간호과장",
+        "산부인과 김규동 사무장",
+        "산부인과 김규동사무장",
+        "산부인과 사무장",
+        "산부인과 사무장님 인사드림. 별다른 이야기는 없었음. 타 아이템으로 디테일 예정.",
+        "산부인과 원장"
+      ],
+      "status": "활동병원",
+      "last_activity_date": "2026/08/28",
+      "total_logs": 29,
+      "demo_count": 2,
+      "won_count": 0,
+      "as_count": 0,
+      "fail_count": 1,
+      "products_active": [
+        "DVT SLEEVE (허벅지형)",
+        "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))",
+        "Metal Trocar (Flip) (10.5mm*95mm)",
+        "베리큐어 로션 (200g)",
+        "신규 접촉 및 인사 (품목 미정)"
+      ],
+      "created_at": "2026-08-27T04:34:18.934003+00:00",
+      "updated_at": "2026-08-27T04:34:18.934003+00:00"
+    },
+    {
       "name": "청주 미즈맘산부인과",
       "region": "서산당진",
       "sales_reps": [
@@ -83478,16 +83542,17 @@
         "산부인과 주명식, 원장"
       ],
       "status": "활동병원",
-      "last_activity_date": "2026/08/19",
-      "total_logs": 0,
+      "last_activity_date": "2026/08/28",
+      "total_logs": 11,
       "demo_count": 0,
-      "won_count": 0,
+      "won_count": 1,
       "as_count": 0,
       "fail_count": 0,
       "products_active": [
         "소공포 (그린(50*50) 10cm)",
         "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))",
-        "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL) (가로형)"
+        "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL) (가로형)",
+        "의료기기 (품목 미정)"
       ],
       "created_at": "2026-08-27T04:34:18.934003+00:00",
       "updated_at": "2026-08-27T04:34:18.934003+00:00"
@@ -84612,6 +84677,39 @@
       ],
       "created_at": "2026-08-27T04:34:19.005891+00:00",
       "updated_at": "2026-08-27T04:34:19.005891+00:00"
+    },
+    {
+      "name": "모태안여성병원",
+      "region": "세종충북",
+      "sales_reps": [
+        "이은필",
+        "이재덕"
+      ],
+      "contacts": [
+        "관리팀 구매과, 구매",
+        "관리팀 사무장, 구매",
+        "산부인과 난임과 연구소장님",
+        "산부인과 박철종원장님 긴급수술로 미팅못함",
+        "산부인과 서정한",
+        "산부인과 외래",
+        "산부인과 이상훈팀장"
+      ],
+      "status": "활동병원",
+      "last_activity_date": "2026/08/31",
+      "total_logs": 11,
+      "demo_count": 0,
+      "won_count": 0,
+      "as_count": 2,
+      "fail_count": 1,
+      "products_active": [
+        "DVT SLEEVE (허벅지형)",
+        "의료장비 A/S 및 수리 (Oxy9wave/BT350/올림푸스)",
+        "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))",
+        "베리큐어 로션 (200g)",
+        "무영등"
+      ],
+      "created_at": "2026-08-27T04:34:18.757354+00:00",
+      "updated_at": "2026-08-27T04:34:18.757354+00:00"
     },
     {
       "name": "홍성의료원",
@@ -88862,6 +88960,108 @@
     }
   ],
   "activity_logs": [
+    {
+      "id": 1633,
+      "hospital": "이화병원",
+      "date": "2026/08/31",
+      "sales_rep": "최진웅",
+      "action_type": "A/S·클레임",
+      "title": "[A/S·클레임] RZ Cystoscope (253-804-030)",
+      "note": "[긴급 A/S 접수] 병원명: 이화병원 장비명: RZ 4mm 30도 접수증상: 렌즈2개 깨짐 88견적줌 대체기 지원여부: 데모 우리꺼 줌",
+      "products": [
+        "RZ Cystoscope (253-804-030)"
+      ],
+      "product_code": "253-804-030",
+      "next_action": "88 견적 및 데모 대체기 회수 관리",
+      "region": "세종충북",
+      "contact": "원장/실무진",
+      "created_at": "2026-08-31T09:01:20.138369+00:00"
+    },
+    {
+      "id": 1632,
+      "hospital": "대전한국병원",
+      "date": "2026/08/31",
+      "sales_rep": "최진웅",
+      "action_type": "샘플·데모",
+      "title": "[샘플·데모] [CVC] Surgi FXT C-Line Adv.11A Tray Kit (ST-CVC-CLINE11A)",
+      "note": "대전한국병원 C라인 샘플줌",
+      "products": [
+        "[CVC] Surgi FXT C-Line Adv.11A Tray Kit (ST-CVC-CLINE11A)"
+      ],
+      "product_code": "ST-CVC-CLINE11A",
+      "next_action": "C라인 샘플 피드백 확인",
+      "region": "세종충북",
+      "contact": "원장/실무진",
+      "created_at": "2026-08-31T09:01:20.07923+00:00"
+    },
+    {
+      "id": 1631,
+      "hospital": "대전선병원",
+      "date": "2026/08/31",
+      "sales_rep": "최진웅",
+      "action_type": "샘플·데모",
+      "title": "[샘플·데모] [CVC] Surgi FXT C-Line Adv.11A Tray Kit (ST-CVC-CLINE11A)",
+      "note": "대전선병원 C라인키트 샘플줌",
+      "products": [
+        "[CVC] Surgi FXT C-Line Adv.11A Tray Kit (ST-CVC-CLINE11A)"
+      ],
+      "product_code": "ST-CVC-CLINE11A",
+      "next_action": "C라인키트 샘플 피드백 확인",
+      "region": "세종충북",
+      "contact": "원장/실무진",
+      "created_at": "2026-08-31T09:01:20.016572+00:00"
+    },
+    {
+      "id": 1630,
+      "hospital": "논산백제병원",
+      "date": "2026/08/31",
+      "sales_rep": "최진웅",
+      "action_type": "샘플·데모",
+      "title": "[샘플·데모] [CVC] Surgi FXT C-Line Adv.11A Tray Kit (ST-CVC-CLINE11A)",
+      "note": "논산백제병원 C라인키트 샘플줌",
+      "products": [
+        "[CVC] Surgi FXT C-Line Adv.11A Tray Kit (ST-CVC-CLINE11A)"
+      ],
+      "product_code": "ST-CVC-CLINE11A",
+      "next_action": "C라인키트 샘플 피드백 확인",
+      "region": "세종충북",
+      "contact": "원장/실무진",
+      "created_at": "2026-08-31T09:01:19.911188+00:00"
+    },
+    {
+      "id": 1629,
+      "hospital": "청주 엠에스여성병원",
+      "date": "2026/08/31",
+      "sales_rep": "이은필",
+      "action_type": "A/S·클레임",
+      "title": "[A/S·클레임] 청력검사기 (DB-29000)",
+      "note": "엠에스여성병원 신생아 청력검사기 수리요청(베터리충전되지 않음) 9월 1일 택배발송",
+      "products": [
+        "청력검사기 (DB-29000)"
+      ],
+      "product_code": "DB-29000",
+      "next_action": "9월 1일 택배발송",
+      "region": "세종충북",
+      "contact": "신생아실",
+      "created_at": "2026-08-31T09:01:19.825718+00:00"
+    },
+    {
+      "id": 1628,
+      "hospital": "모태안여성병원",
+      "date": "2026/08/31",
+      "sales_rep": "이은필",
+      "action_type": "제품설명·소개",
+      "title": "[제품설명·소개] 무영등 (56+40)",
+      "note": "모태안여성병원 9월 15일경으로 2번 수술방 무영등교체 요청 날짜 조율중",
+      "products": [
+        "무영등 (56+40)"
+      ],
+      "product_code": "PROD_GENERAL",
+      "next_action": "9월 15일경 무영등교체 날짜 조율",
+      "region": "세종충북",
+      "contact": "이상훈팀장",
+      "created_at": "2026-08-31T09:01:19.711534+00:00"
+    },
     {
       "id": 1627,
       "hospital": "모태안여성병원",
@@ -102272,8 +102472,8 @@
     }
   ],
   "stats": {
-    "total_logs": 836,
-    "total_hospitals": 174,
+    "total_logs": 842,
+    "total_hospitals": 188,
     "total_deals": 215,
     "total_erp_items": 4054,
     "active_demos": 89,
