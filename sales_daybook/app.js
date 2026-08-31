@@ -1,10 +1,10 @@
 // Application State & Security
-const APP_VERSION = "jun-V1-004";
+const APP_VERSION = "jun-V1-005";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V7_JUN_V1_004";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V8_JUN_V1_005";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -16,6 +16,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V4_RECOVERED");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V5_JUN_V1_002");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V6_JUN_V1_003");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V7_JUN_V1_004");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -995,11 +996,57 @@ function renderProductMatrixSection(type, items) {
   });
 }
 
+// Cloud Pipeline Sync Helper
+async function syncPipelineDealToCloud(deal) {
+  if (!deal) return;
+  const client = getSupabaseClient();
+  if (!client) return;
+
+  try {
+    const payload = {
+      hospital: deal.hospital,
+      region: deal.region || '세종충북',
+      sales_rep: deal.sales_rep || '미배정',
+      product_id: deal.product_id,
+      product_name: deal.product_name,
+      status: deal.status,
+      last_date: deal.last_date || new Date().toISOString().slice(0, 10).replace(/-/g, '/'),
+      latest_action: deal.latest_action || deal.status,
+      latest_note: deal.latest_note || '',
+      demo_info: deal.demo_info || null,
+      as_info: deal.as_info || null,
+      fail_reasons: deal.fail_reasons || []
+    };
+
+    if (deal.id) {
+      const { error } = await client
+        .from('pipeline')
+        .update(payload)
+        .eq('id', deal.id);
+      if (error) {
+        console.warn('Supabase pipeline update error by id:', error);
+      } else {
+        console.log(`☁️ Supabase pipeline updated: [${deal.hospital}] ${deal.product_name} -> ${deal.status}`);
+      }
+    } else {
+      const { error } = await client
+        .from('pipeline')
+        .upsert([payload]);
+      if (error) {
+        console.warn('Supabase pipeline upsert error:', error);
+      }
+    }
+  } catch(err) {
+    console.warn('Supabase pipeline sync exception:', err);
+  }
+}
+
 // Drag and drop handlers for Hospital Product Matrix (5 Status Cards)
 let draggedDealInfo = null;
 
 function handleDragStart(e, hospital, productId) {
   draggedDealInfo = { hospital, productId };
+  currentDraggedDeal = { hospital, productId };
   if (e.dataTransfer) {
     e.dataTransfer.setData('text/plain', JSON.stringify(draggedDealInfo));
   }
@@ -1009,6 +1056,7 @@ function handleDragStart(e, hospital, productId) {
 function handleDragEnd(e) {
   if (e.currentTarget) e.currentTarget.classList.remove('dragging');
   draggedDealInfo = null;
+  currentDraggedDeal = null;
 }
 
 function handleDragOver(e) {
@@ -1027,31 +1075,49 @@ async function handleDropToHospitalStatus(e, targetStatus) {
   const card = e.currentTarget;
   if (card) card.classList.remove('drag-over');
 
-  if (!draggedDealInfo) return;
-  const { hospital, productId } = draggedDealInfo;
+  let dragData = draggedDealInfo || currentDraggedDeal;
+  if (!dragData) {
+    try {
+      dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+    } catch(err) {}
+  }
+  if (!dragData) return;
+  const { hospital, productId } = dragData;
   
   const cleanHosp = (hospital || '').replace(/\s+/g, '');
   const deal = window.SALES_DB.pipeline.find(d => (d.hospital || '').replace(/\s+/g, '') === cleanHosp && (d.product_id === productId || d.product_name === productId));
   if (!deal) return;
 
+  if (deal.status === targetStatus) return;
+
   deal.status = targetStatus;
   deal.last_date = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
   
-  // Recalculate stats
+  if (targetStatus === '의료장비 데모' || targetStatus === '소모품 샘플' || targetStatus === '데모·샘플평가') {
+    deal.demo_info = { date: deal.last_date, note: `칸반에서 [${targetStatus}] 평가로 이동`, status: '평가진행중' };
+    deal.fail_reasons = [];
+  } else if (targetStatus === '도입완료·납품') {
+    if (deal.demo_info) deal.demo_info.status = '도입완료';
+    deal.fail_reasons = [];
+  } else if (targetStatus === '영업실패·보류') {
+    if (deal.demo_info) deal.demo_info.status = '회수/종료';
+    if (!deal.fail_reasons || deal.fail_reasons.length === 0) {
+      deal.fail_reasons = ['의료진 피드백/보류'];
+    }
+  } else if (targetStatus === 'A/S접수·처리') {
+    deal.as_info = { date: deal.last_date, note: '칸반에서 A/S 접수로 이동', status: '접수/진행중' };
+  }
+
+  // Recalculate stats & re-render
+  recalcGlobalStats();
   syncHospitalsFromLogs();
   persistSalesDB();
   initHeaderMetrics();
   selectHospital(hospital);
   showToast(`✨ [${hospital}] '${deal.product_name}' 상태가 '${targetStatus}'(으)로 이동되었습니다!`);
 
-  // Supabase Sync
-  if (supabaseClient) {
-    try {
-      await supabaseClient.from('pipeline').upsert([deal]);
-    } catch(err) {
-      console.warn('Supabase deal status update error:', err);
-    }
-  }
+  // Supabase Cloud Sync
+  await syncPipelineDealToCloud(deal);
 }
 
 // Deal Editing Modal State
@@ -1315,13 +1381,16 @@ async function deleteCurrentDeal() {
   closeEditModal();
 
   // 4. Delete from Supabase Cloud DB
-  if (supabaseClient) {
+  const client = getSupabaseClient();
+  if (client) {
     try {
-      const { error } = await supabaseClient
-        .from('pipeline')
-        .delete()
-        .eq('hospital', hosp)
-        .eq('product_id', prodId);
+      let query = client.from('pipeline').delete();
+      if (currentEditingDeal.id) {
+        query = query.eq('id', currentEditingDeal.id);
+      } else {
+        query = query.eq('hospital', hosp).eq('product_id', prodId);
+      }
+      const { error } = await query;
       if (error) {
         console.warn('Supabase delete error:', error);
       } else {
@@ -1384,30 +1453,7 @@ async function saveModalChanges() {
   closeEditModal();
 
   // Sync to Supabase Cloud
-  if (supabaseClient) {
-    try {
-      const { error } = await supabaseClient
-        .from('pipeline')
-        .upsert([{
-          hospital: currentEditingDeal.hospital,
-          region: currentEditingDeal.region || '세종충북',
-          sales_rep: currentEditingDeal.sales_rep || '이재덕',
-          product_id: currentEditingDeal.product_id,
-          product_name: currentEditingDeal.product_name,
-          status: currentEditingDeal.status,
-          last_date: currentEditingDeal.last_date || new Date().toISOString().slice(0, 10).replace(/-/g, '/'),
-          latest_action: currentEditingDeal.latest_action || '정보수정',
-          latest_note: currentEditingDeal.latest_note,
-          demo_info: currentEditingDeal.demo_info,
-          as_info: currentEditingDeal.as_info,
-          fail_reasons: currentEditingDeal.fail_reasons || []
-        }]);
-      if (error) console.warn('Supabase pipeline upsert error:', error);
-      else console.log('⚡ Supabase pipeline deal updated in cloud!');
-    } catch(err) {
-      console.warn('Supabase pipeline save error:', err);
-    }
-  }
+  await syncPipelineDealToCloud(currentEditingDeal);
 
   showToast(`✅ [${currentEditingDeal.hospital}] 품목 상태 및 정보가 성공적으로 수정되었습니다!`);
 }
@@ -1946,13 +1992,8 @@ async function handleASDrop(e, targetStage) {
   renderASControlCenter();
   showToast(`✨ [${draggedASDeal.hospital}] A/S 진행상태가 '${targetStage}'(으)로 변경되었습니다.`);
 
-  if (supabaseClient) {
-    try {
-      await supabaseClient.from('pipeline').upsert([draggedASDeal]);
-    } catch(err) {
-      console.warn('Supabase AS status error:', err);
-    }
-  }
+  // Supabase Cloud Sync
+  await syncPipelineDealToCloud(draggedASDeal);
 }
 
 function openNewASModal() {
@@ -2562,55 +2603,12 @@ function handleDragLeave(e) {
   }
 }
 
-// 1. Hospital 360 View Internal Drop Handler
-function handleDropToHospitalStatus(e, targetStatus) {
+// Product Pipeline Kanban Drop Handler
+async function handleDropToProductKanban(e, targetStatus) {
   e.preventDefault();
   e.currentTarget.classList.remove('drag-over');
   
-  let dragData = currentDraggedDeal;
-  if (!dragData) {
-    try {
-      dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
-    } catch(err) {}
-  }
-  if (!dragData) return;
-
-  const deal = window.SALES_DB.pipeline.find(d => d.hospital === dragData.hospital && d.product_id === dragData.productId);
-  if (!deal) return;
-
-  if (deal.status === targetStatus) return; // Same status
-
-  deal.status = targetStatus;
-  deal.last_date = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
-  
-  if (targetStatus === '데모·샘플평가') {
-    deal.demo_info = { date: deal.last_date, note: '칸반 보드에서 데모 진행으로 이동', status: '평가진행중' };
-    deal.fail_reasons = [];
-  } else if (targetStatus === '도입완료·납품') {
-    if (deal.demo_info) deal.demo_info.status = '도입완료';
-    deal.fail_reasons = [];
-  } else if (targetStatus === '영업실패·보류') {
-    if (deal.demo_info) deal.demo_info.status = '회수/종료';
-    if (!deal.fail_reasons || deal.fail_reasons.length === 0) {
-      deal.fail_reasons = ['의료진 피드백/보류'];
-    }
-  } else if (targetStatus === 'A/S접수·처리') {
-    deal.as_info = { date: deal.last_date, note: '칸반 보드에서 A/S 접수로 이동', status: '접수/진행중' };
-  }
-
-  // Update Stats & Re-render
-  recalcGlobalStats();
-  persistSalesDB();
-  selectHospital(dragData.hospital);
-  showToast(`✨ [${deal.product_name}] 상태가 '${targetStatus}'(으)로 이동되었습니다!`);
-}
-
-// 2. Product Pipeline Kanban Drop Handler
-function handleDropToProductKanban(e, targetStatus) {
-  e.preventDefault();
-  e.currentTarget.classList.remove('drag-over');
-  
-  let dragData = currentDraggedDeal;
+  let dragData = currentDraggedDeal || draggedDealInfo;
   if (!dragData) {
     try {
       dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
@@ -2646,6 +2644,9 @@ function handleDropToProductKanban(e, targetStatus) {
   persistSalesDB();
   renderProductPipeline(selectedProductId);
   showToast(`✨ [${deal.hospital}] 상태가 '${targetStatus}'(으)로 이동되었습니다!`);
+
+  // Supabase Cloud Sync
+  await syncPipelineDealToCloud(deal);
 }
 
 function recalcGlobalStats() {

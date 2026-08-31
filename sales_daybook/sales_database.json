@@ -87175,23 +87175,6 @@
       "updated_at": "2026-08-31T04:58:56.306538+00:00"
     },
     {
-      "id": 1546,
-      "hospital": "청주 미즈맘산부인과",
-      "region": "서산당진",
-      "sales_rep": "이재덕",
-      "product_id": "GROUP-SEJONG-SHEET",
-      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
-      "status": "도입완료·납품",
-      "last_date": "2025/11/28",
-      "latest_action": "납품·설치",
-      "latest_note": "바이옵시 아직 결정못함. 의료소모품은 원장님 지인이 납품하고 있다고함.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-31T04:58:56.306538+00:00",
-      "updated_at": "2026-08-31T04:58:56.306538+00:00"
-    },
-    {
       "id": 1547,
       "hospital": "옥천 서울연합정형외과",
       "region": "세종충북",
@@ -87797,6 +87780,25 @@
       "fail_reasons": [],
       "created_at": "2026-08-31T04:58:56.38939+00:00",
       "updated_at": "2026-08-31T04:58:56.38939+00:00"
+    },
+    {
+      "id": 1546,
+      "hospital": "청주 미즈맘산부인과",
+      "region": "서산당진",
+      "sales_rep": "이재덕",
+      "product_id": "GROUP-SEJONG-SHEET",
+      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
+      "status": "영업실패·보류",
+      "last_date": "2026/08/31",
+      "latest_action": "납품·설치",
+      "latest_note": "바이옵시 아직 결정못함. 의료소모품은 원장님 지인이 납품하고 있다고함.",
+      "demo_info": null,
+      "as_info": null,
+      "fail_reasons": [
+        "의료진 피드백/보류"
+      ],
+      "created_at": "2026-08-31T04:58:56.306538+00:00",
+      "updated_at": "2026-08-31T04:58:56.306538+00:00"
     },
     {
       "id": 1580,
@@ -89115,7 +89117,7 @@
     },
     {
       "id": 1624,
-      "hospital": "청주 미즈맘산부인과",
+      "hospital": "당진 미즈맘산부인과",
       "date": "2026/08/28",
       "sales_rep": "이은필",
       "action_type": "납품·설치",
@@ -89125,8 +89127,8 @@
         "의료기기 (품목 미정)"
       ],
       "product_code": "PROD_GENERAL",
-      "next_action": null,
-      "region": "서산당진",
+      "next_action": "",
+      "region": "세종충북",
       "contact": "실무진",
       "created_at": "2026-08-28T10:18:21.094843+00:00"
     },
