@@ -1,10 +1,10 @@
 // Application State & Security
-const APP_VERSION = "jun-V1-005";
+const APP_VERSION = "jun-V1-006";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V8_JUN_V1_005";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V9_JUN_V1_006";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -17,6 +17,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V5_JUN_V1_002");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V6_JUN_V1_003");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V7_JUN_V1_004");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V8_JUN_V1_005");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -3353,8 +3354,9 @@ function saveEditedActivityLog() {
     window.SALES_DB.activity_logs[index] = logData;
     showToast(`✅ [${hosp}] 영업일지가 성공적으로 수정되었습니다.`);
 
-    if (supabaseClient) {
-      supabaseClient.from('activity_logs').upsert([logData]).then(({ error }) => {
+    const client = getSupabaseClient();
+    if (client) {
+      client.from('activity_logs').upsert([logData]).then(({ error }) => {
         if (error) console.warn('Supabase upsert error:', error);
         else console.log('⚡ Supabase log updated successfully');
       });
@@ -3364,10 +3366,14 @@ function saveEditedActivityLog() {
     window.SALES_DB.stats.total_logs = window.SALES_DB.activity_logs.length;
     showToast(`✅ [${hosp}] 신규 영업일지가 성공적으로 등록되었습니다.`);
 
-    if (supabaseClient) {
-      supabaseClient.from('activity_logs').insert([logData]).then(({ error }) => {
+    const client = getSupabaseClient();
+    if (client) {
+      client.from('activity_logs').insert([logData]).select().then(({ data, error }) => {
         if (error) console.warn('Supabase insert error:', error);
-        else console.log('⚡ Supabase log inserted successfully');
+        else {
+          if (data && data[0]) logData.id = data[0].id;
+          console.log('⚡ Supabase log inserted successfully');
+        }
       });
     }
   }
@@ -3419,9 +3425,10 @@ async function deleteActivityLog() {
   }
 
   // 1. Delete from Supabase Cloud DB
-  if (supabaseClient) {
+  const client = getSupabaseClient();
+  if (client) {
     try {
-      let delQuery = supabaseClient.from('activity_logs').delete();
+      let delQuery = client.from('activity_logs').delete();
       if (log.id) {
         delQuery = delQuery.eq('id', log.id);
       } else {
@@ -4150,14 +4157,21 @@ async function saveParsedLogToDB() {
   initHeaderMetrics();
 
   // 4. Sync to Supabase Cloud DB
-  if (supabaseClient) {
+  const client = getSupabaseClient();
+  if (client) {
     try {
-      await supabaseClient.from('activity_logs').insert([logEntry]);
-      await supabaseClient.from('pipeline').upsert([deal]);
+      const { data: insertedLog, error: logErr } = await client.from('activity_logs').insert([logEntry]).select();
+      if (logErr) console.warn('Supabase activity_log insert error:', logErr);
+      else if (insertedLog && insertedLog[0]) logEntry.id = insertedLog[0].id;
+
+      if (deal) await syncPipelineDealToCloud(deal);
       for (const rd of resolvedAsDeals) {
-        await supabaseClient.from('pipeline').upsert([rd]);
+        await syncPipelineDealToCloud(rd);
       }
-      if (hosp) await supabaseClient.from('hospitals').upsert([hosp]);
+      if (hosp) {
+        const { error: hospErr } = await client.from('hospitals').upsert([hosp], { onConflict: 'name' });
+        if (hospErr) console.warn('Supabase hospital upsert error:', hospErr);
+      }
       console.log('⚡ AI Smart Log successfully saved to Supabase cloud!');
     } catch(err) {
       console.warn('Supabase cloud insert error:', err);
@@ -4407,12 +4421,13 @@ async function resolveCurrentHospitalAS() {
   initHeaderMetrics();
 
   // Supabase Cloud sync
-  if (supabaseClient) {
+  const client = getSupabaseClient();
+  if (client) {
     try {
       for (const d of asDeals) {
-        await supabaseClient.from('pipeline').upsert([d]);
+        await syncPipelineDealToCloud(d);
       }
-      await supabaseClient.from('activity_logs').insert([logEntry]);
+      await client.from('activity_logs').insert([logEntry]);
       console.log('⚡ A/S resolution synced to Supabase Cloud');
     } catch(err) {
       console.warn('Supabase A/S resolve error:', err);
