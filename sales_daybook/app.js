@@ -1,10 +1,10 @@
 // Application State & Security
-const APP_VERSION = "jun-V1-008";
+const APP_VERSION = "jun-V1-009";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V11_JUN_V1_008";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V12_JUN_V1_009";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -20,6 +20,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V8_JUN_V1_005");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V9_JUN_V1_006");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V10_JUN_V1_007");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V11_JUN_V1_008");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -3749,6 +3750,334 @@ ${text}
   }
 }
 
+// ----------------------------------------------------
+// 9-2. Intelligent Hangul Hospital Matching & Verification Engine
+// ----------------------------------------------------
+const HANGUL_CHO_LIST = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const HANGUL_JUNG_LIST = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
+const HANGUL_JONG_LIST = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+
+function decomposeHangul(str) {
+  if (!str) return '';
+  let result = '';
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i);
+    if (code >= 0xAC00 && code <= 0xD7A3) {
+      const offset = code - 0xAC00;
+      result += HANGUL_CHO_LIST[Math.floor(offset / 588)] + HANGUL_JUNG_LIST[Math.floor((offset % 588) / 28)] + (HANGUL_JONG_LIST[offset % 28] || '');
+    } else {
+      result += str[i];
+    }
+  }
+  return result;
+}
+
+function extractHangulCho(str) {
+  if (!str) return '';
+  let result = '';
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i);
+    if (code >= 0xAC00 && code <= 0xD7A3) {
+      result += HANGUL_CHO_LIST[Math.floor((code - 0xAC00) / 588)];
+    } else if (/[a-zA-Z0-9]/.test(str[i])) {
+      result += str[i].toLowerCase();
+    }
+  }
+  return result;
+}
+
+function calculateLevenshteinDistance(a, b) {
+  if (!a || !b) return (a || b || '').length;
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+    }
+  }
+  return dp[m][n];
+}
+
+const REGION_PREFIX_KEYWORDS = ['서울', '경기', '천안', '아산', '평택', '안성', '세종', '충북', '청주', '진천', '음성', '충주', '제천', '괴산', '단양', '보은', '영동', '옥천', '증평', '대전', '논산', '공주', '보령', '부여', '서천', '금산', '계룡', '서산', '당진', '홍성', '예산', '태안'];
+const GENERIC_HOSP_SUFFIXES = ['종합병원', '대학교병원', '대학병원', '산부인과의원', '정형외과의원', '마취통증의학과', '마취통증의원', '여성병원', '산부인과', '정형외과', '신경외과', '성형외과', '이비인후과', '비뇨기과', '소아청소년과', '소아과', '안과의원', '치과의원', '한의원', '병원', '의원', '의료원', '보건소', '센터', '클리닉', '외과', '내과', '안과', '치과'];
+
+function extractRegionPrefix(name) {
+  if (!name) return '';
+  const clean = String(name).trim().replace(/\s+/g, '');
+  for (const reg of REGION_PREFIX_KEYWORDS) {
+    if (clean.startsWith(reg) || clean.includes(reg)) return reg;
+  }
+  return '';
+}
+
+function extractCoreHospitalName(name) {
+  if (!name) return '';
+  let clean = String(name).trim().replace(/\s+/g, '');
+  for (const reg of REGION_PREFIX_KEYWORDS) {
+    if (clean.startsWith(reg)) {
+      clean = clean.substring(reg.length);
+      break;
+    }
+  }
+  for (const suf of GENERIC_HOSP_SUFFIXES) {
+    if (clean.endsWith(suf) && clean.length > suf.length) {
+      clean = clean.substring(0, clean.length - suf.length);
+      break;
+    }
+  }
+  return clean.trim();
+}
+
+function calculateHospitalSimilarity(inputName, candidateName, candidateRegion = '') {
+  if (!inputName || !candidateName) return 0;
+  const s1 = String(inputName).trim().replace(/\s+/g, '');
+  const s2 = String(candidateName).trim().replace(/\s+/g, '');
+  if (s1 === s2) return 1.0;
+
+  const core1 = extractCoreHospitalName(s1);
+  const core2 = extractCoreHospitalName(s2);
+  const reg1 = extractRegionPrefix(s1);
+  const reg2 = extractRegionPrefix(s2);
+
+  let coreScore = 0;
+  if (core1 && core2) {
+    if (core1 === core2) {
+      coreScore = 0.90;
+    } else {
+      const coreJamo1 = decomposeHangul(core1);
+      const coreJamo2 = decomposeHangul(core2);
+      const coreDist = calculateLevenshteinDistance(coreJamo1, coreJamo2);
+      const maxCoreLen = Math.max(coreJamo1.length, coreJamo2.length);
+      const coreJamoSim = maxCoreLen > 0 ? (1 - coreDist / maxCoreLen) : 0;
+      if (coreJamoSim >= 0.6) coreScore = 0.75 * coreJamoSim;
+    }
+  }
+
+  // Full Jamo & Cho distance
+  const jamo1 = decomposeHangul(s1);
+  const jamo2 = decomposeHangul(s2);
+  const dist = calculateLevenshteinDistance(jamo1, jamo2);
+  const maxJamoLen = Math.max(jamo1.length, jamo2.length);
+  const jamoSim = maxJamoLen > 0 ? (1 - dist / maxJamoLen) : 0;
+
+  const cho1 = extractHangulCho(s1);
+  const cho2 = extractHangulCho(s2);
+  const choDist = calculateLevenshteinDistance(cho1, cho2);
+  const maxChoLen = Math.max(cho1.length, cho2.length);
+  const choSim = maxChoLen > 0 ? (1 - choDist / maxChoLen) : 0;
+
+  let baseScore = 0.7 * jamoSim + 0.3 * choSim;
+  let finalScore = Math.max(baseScore, coreScore);
+
+  if (s1.includes(s2) || s2.includes(s1)) {
+    finalScore = Math.max(finalScore, 0.86);
+  }
+
+  // Region match bonus
+  if (reg1 && (reg1 === reg2 || (candidateRegion && candidateRegion.includes(reg1)))) {
+    finalScore += 0.10;
+  }
+
+  return Math.min(finalScore, 0.99);
+}
+
+function findSimilarHospitals(inputName) {
+  if (!inputName || inputName === '기타 거래처') return { exact: null, suggestions: [], isNew: false };
+  const cleanInput = inputName.trim().replace(/\s+/g, '');
+  const hospList = (window.SALES_DB && window.SALES_DB.hospitals) ? window.SALES_DB.hospitals : [];
+
+  const exact = hospList.find(h => (h.name || '').replace(/\s+/g, '') === cleanInput);
+  if (exact) return { exact, suggestions: [], isNew: false };
+
+  const scored = [];
+  for (const h of hospList) {
+    if (!h || !h.name) continue;
+    const sim = calculateHospitalSimilarity(inputName, h.name, h.region);
+    if (sim >= 0.68) {
+      scored.push({ hospital: h, score: sim });
+    }
+  }
+
+  scored.sort((a, b) => b.score - a.score);
+  return {
+    exact: null,
+    suggestions: scored.slice(0, 3),
+    isNew: scored.length === 0
+  };
+}
+
+function renderHospitalVerificationBox(hospitalName) {
+  const container = document.getElementById('ai-hospital-verification-box');
+  if (!container) return;
+
+  const rawName = (hospitalName || '').trim();
+  if (!rawName || rawName === '기타 거래처') {
+    container.style.display = 'none';
+    container.innerHTML = '';
+    return;
+  }
+
+  const res = findSimilarHospitals(rawName);
+
+  if (res.exact) {
+    container.className = 'ai-match-badge exact';
+    container.innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span>🟢 <strong>등록 거래처 확인:</strong> ${escapeHtml(res.exact.name)} (${res.exact.region || '세종충북'})</span>
+        <span style="font-size:0.7rem; opacity:0.8;">정규 등록 거래처</span>
+      </div>
+    `;
+    container.style.display = 'block';
+  } else if (res.suggestions.length > 0) {
+    container.className = 'ai-match-badge suggest';
+    const chipsHtml = res.suggestions.map(s => {
+      const hName = s.hospital.name;
+      const hRegion = s.hospital.region || '';
+      const scorePct = Math.round(s.score * 100);
+      const safeName = (hName || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      return `<button type="button" class="ai-hosp-chip" onclick="selectSuggestedHospital('${safeName}')">🏥 ${escapeHtml(hName)} <span style="opacity:0.75; font-size:0.68rem;">(${hRegion} · ${scorePct}%)</span></button>`;
+    }).join(' ');
+
+    container.innerHTML = `
+      <div style="display:flex; align-items:center; gap:6px; font-weight:700;">
+        <span>💡</span>
+        <span>등록된 거래처와 유사합니다. 아래 병원이 맞으신가요?</span>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:2px;">
+        ${chipsHtml}
+      </div>
+    `;
+    container.style.display = 'block';
+  } else {
+    container.className = 'ai-match-badge new';
+    container.innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+        <span>🆕 <strong>미등록 신규 거래처:</strong> '${escapeHtml(rawName)}'</span>
+        <span style="font-size:0.7rem; opacity:0.85;">저장 시 신규 병원으로 등록됩니다</span>
+      </div>
+    `;
+    container.style.display = 'block';
+  }
+}
+
+function onAiHospitalInputChange(value) {
+  renderHospitalVerificationBox(value);
+}
+
+function selectSuggestedHospital(hospitalName) {
+  const input = document.getElementById('parse-edit-hospital');
+  if (input) {
+    input.value = hospitalName;
+    renderHospitalVerificationBox(hospitalName);
+    showToast(`🏥 거래처가 '${hospitalName}'(으)로 선택되었습니다.`);
+  }
+}
+
+// ----------------------------------------------------
+// 9-3. Intelligent ERP 4,054 Products Suggestion Engine
+// ----------------------------------------------------
+function getTopErpProductSuggestions(text, currentMatchedCode = '') {
+  const master = (window.ERP_PRODUCTS_MASTER || []).concat(window.SALES_DB ? (window.SALES_DB.products || []) : []);
+  if (!text || master.length === 0) return [];
+
+  const tLower = text.toLowerCase();
+  const scored = [];
+  const seenCodes = new Set();
+
+  const keywords = [
+    { key: '트로카', terms: ['trocar', '트로카', '원포트', '121-51855', '마인드레이'] },
+    { key: '하이겐트', terms: ['hygent', '하이겐트', '수액세트', '유착방지'] },
+    { key: '소공포', terms: ['소공포', '드레이프', 'sheet', '멸균', '세종'] },
+    { key: '서지소드', terms: ['서지소드', 'surgi sword', '펜코', '메스', 'knife'] },
+    { key: '바이옵시', terms: ['biopsy', '바이옵시', '펀치'] },
+    { key: '크로믹', terms: ['chromic', '크로믹', 'catgut', '봉합사'] },
+    { key: '산소포화도', terms: ['oxy9', '산소포화도', 'pulse oximeter'] },
+    { key: '태아심음', terms: ['bt350', 'bt-350', '태아심음', 'fetal doppler'] },
+    { key: '내시경', terms: ['올림푸스', 'olympus', '내시경', '광원'] },
+    { key: '모슬레이디', terms: ['201.023', 'motor handle', '모슬레이디', '모터'] },
+    { key: '엔지오', terms: ['angio', '엔지오', 'st-ang-pr03'] },
+    { key: 'c라인', terms: ['c-line', 'c라인', 'cvc', 'st-cvc'] },
+    { key: '큐어폼', terms: ['cureform', '큐어폼', '드레싱'] },
+    { key: '좌욕기', terms: ['좌욕기', 'zwayok', '필터'] },
+    { key: '튤립', terms: ['tulip', '튤립', '카테터'] }
+  ];
+
+  for (const p of master) {
+    if (!p) continue;
+    const pCode = p.code || p.id || '';
+    if (seenCodes.has(pCode)) continue;
+    seenCodes.add(pCode);
+
+    const pName = p.name || '';
+    const pNameLower = pName.toLowerCase();
+    let score = 0;
+
+    if (pCode && tLower.includes(pCode.toLowerCase())) score += 100;
+    if (pName && tLower.includes(pNameLower)) score += 80;
+
+    for (const kw of keywords) {
+      const textHasKey = kw.terms.some(t => tLower.includes(t));
+      const prodHasKey = kw.terms.some(t => pNameLower.includes(t) || pCode.toLowerCase().includes(t));
+      if (textHasKey && prodHasKey) score += 50;
+    }
+
+    if (pCode === currentMatchedCode) score += 40;
+
+    if (score > 0) {
+      scored.push({ product: p, score, pCode, pName });
+    }
+  }
+
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, 4).map(s => s.product);
+}
+
+function renderProductSuggestionsBox(text, currentMatchedCode = '') {
+  const box = document.getElementById('ai-product-suggestions-box');
+  const chipsContainer = document.getElementById('ai-product-suggestions-chips');
+  if (!box || !chipsContainer) return;
+
+  const suggestions = getTopErpProductSuggestions(text, currentMatchedCode);
+  if (!suggestions || suggestions.length === 0) {
+    box.style.display = 'none';
+    chipsContainer.innerHTML = '';
+    return;
+  }
+
+  chipsContainer.innerHTML = suggestions.map((p, idx) => {
+    const pCode = p.code || p.id || '';
+    const pName = p.name || '';
+    const isActive = (pCode === currentMatchedCode) ? 'active' : '';
+    const safeCode = (pCode || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    const safeName = (pName || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    return `
+      <button type="button" class="ai-prod-chip ${isActive}" onclick="selectSuggestedProduct('${safeCode}', '${safeName}')">
+        <span>📦 ${idx + 1}.</span> <strong>${escapeHtml(pName)}</strong>
+        <span style="opacity:0.75; font-size:0.68rem; margin-left:2px;">[${escapeHtml(pCode)}]</span>
+      </button>
+    `;
+  }).join('');
+
+  box.style.display = 'block';
+}
+
+function selectSuggestedProduct(prodCode, prodName) {
+  const nameInput = document.getElementById('parse-edit-product-name');
+  const codeInput = document.getElementById('parse-edit-product-code');
+  if (nameInput) nameInput.value = prodName;
+  if (codeInput) codeInput.value = prodCode;
+
+  document.querySelectorAll('.ai-prod-chip').forEach(chip => {
+    if (chip.textContent.includes(prodCode)) chip.classList.add('active');
+    else chip.classList.remove('active');
+  });
+
+  showToast(`📦 ERP 품목이 '${prodName}' [${prodCode}](으)로 매핑되었습니다.`);
+}
+
 function applyParsedResultToUI(data, rawText, isFromGemini = false) {
   const setVal = (id, val) => {
     const el = document.getElementById(id);
@@ -3779,6 +4108,10 @@ function applyParsedResultToUI(data, rawText, isFromGemini = false) {
   setVal('parse-edit-fail-reason', data.fail_reason || '-');
   setVal('parse-edit-next-action', data.next_action || '다음 방문 일정 확인 및 후속 조치');
   setVal('parse-edit-note', data.note || rawText || '');
+
+  // Render smart hospital verification box and ERP product suggestion chips
+  renderHospitalVerificationBox(data.hospital || '기타 거래처');
+  renderProductSuggestionsBox(rawText || data.note || '', data.product_code || 'PROD_GENERAL');
 
   const saveBtn = document.getElementById('btn-save-ai-log');
   if (saveBtn) {
@@ -3858,14 +4191,20 @@ function parseSalesTextLocally(text) {
     }
   }
 
-  // Step 1-2: If no exact full name match, extract via Korean medical institution Regex
+  // Step 1-2: If no exact full name match, check similarity / regex
   if (!matchedHosp) {
-    const regMatch = text.match(/([가-힣]{2,14}(?:대학교병원|대학병원|산부인과|정형외과|외과|내과|병원|의원|의료원|보건소|센터))/);
-    if (regMatch) {
-      matchedHosp = regMatch[1];
-      // Check if there is an exact registered hospital containing this name
-      const foundH = hospList.find(h => h.name.includes(matchedHosp) || matchedHosp.includes(h.name));
-      if (foundH) matchedHosp = foundH.name;
+    const simRes = findSimilarHospitals(text);
+    if (simRes.exact) {
+      matchedHosp = simRes.exact.name;
+    } else if (simRes.suggestions && simRes.suggestions.length > 0 && simRes.suggestions[0].score >= 0.82) {
+      matchedHosp = simRes.suggestions[0].hospital.name;
+    } else {
+      const regMatch = text.match(/([가-힣]{2,14}(?:대학교병원|대학병원|산부인과|정형외과|외과|내과|병원|의원|의료원|보건소|센터))/);
+      if (regMatch) {
+        matchedHosp = regMatch[1];
+        const foundH = hospList.find(h => h.name.includes(matchedHosp) || matchedHosp.includes(h.name));
+        if (foundH) matchedHosp = foundH.name;
+      }
     }
   }
 
