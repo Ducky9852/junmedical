@@ -1,9 +1,9 @@
-const APP_VERSION = "jun-V1-015";
+const APP_VERSION = "jun-V1-016";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V18_JUN_V1_015";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V19_JUN_V1_016";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -26,6 +26,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V15_JUN_V1_012");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V16_JUN_V1_013");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V17_JUN_V1_014");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V18_JUN_V1_015");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -93,7 +94,7 @@ getSupabaseClient();
 let currentTab = 'hospital';
 let selectedHospitalName = '';
 let selectedRegion = '전체';
-let selectedProductId = 'ST-ANG-PR03';
+let selectedProductId = 'ALL';
 let currentParsedData = null;
 
 // Persistent Local DB Sync Helper
@@ -2504,18 +2505,6 @@ let kanbanHospitalSearchQuery = '';
 let pendingErpProducts = [];
 
 function initProductPipelineView() {
-  if (window.SALES_DB && window.SALES_DB.pipeline && window.SALES_DB.pipeline.length > 0) {
-    const productDealCountMap = {};
-    window.SALES_DB.pipeline.forEach(d => {
-      productDealCountMap[d.product_id] = (productDealCountMap[d.product_id] || 0) + 1;
-    });
-    const sortedProds = [...(window.SALES_DB.products || [])].sort((a, b) => {
-      return (productDealCountMap[b.id] || 0) - (productDealCountMap[a.id] || 0);
-    });
-    if (sortedProds.length > 0 && (productDealCountMap[sortedProds[0].id] || 0) > 0) {
-      selectedProductId = sortedProds[0].id;
-    }
-  }
   renderProductPills();
   renderProductPipeline(selectedProductId);
 }
@@ -2527,10 +2516,29 @@ function filterProductList() {
 
 function renderProductPills() {
   const selectorBar = document.getElementById('product-selector-bar');
+  if (!selectorBar) return;
   selectorBar.innerHTML = '';
 
-  const totalCount = window.SALES_DB.products.length;
-  let filtered = [...window.SALES_DB.products];
+  const totalCount = (window.SALES_DB.products || []).length;
+  const totalAllDealsCount = (window.SALES_DB.pipeline || []).length;
+
+  // 1. Always Prepend [ 🌐 전체 품목 통합보기 (총 222건) ] button
+  const allBtn = document.createElement('button');
+  allBtn.className = `product-pill all-products-pill ${selectedProductId === 'ALL' ? 'active' : ''}`;
+  allBtn.innerHTML = `
+    <span style="font-size:0.95rem;">🌐</span> 
+    <strong style="font-size:0.83rem;">전체 품목 통합보기</strong>
+    <span style="font-size:0.68rem; background:linear-gradient(135deg, #ec4899, #8b5cf6); color:#fff; padding:2px 8px; border-radius:10px; font-weight:800; box-shadow:0 2px 6px rgba(236,72,153,0.4);">${totalAllDealsCount}건</span>
+  `;
+  allBtn.onclick = () => {
+    selectedProductId = 'ALL';
+    document.querySelectorAll('.product-pill').forEach(b => b.classList.remove('active'));
+    allBtn.classList.add('active');
+    renderProductPipeline('ALL');
+  };
+  selectorBar.appendChild(allBtn);
+
+  let filtered = [...(window.SALES_DB.products || [])];
 
   if (productSearchQuery) {
     filtered = filtered.filter(p => {
@@ -2544,7 +2552,7 @@ function renderProductPills() {
 
   // Calculate deal count for each product and sort DESC (most hospitals first)
   const productDealCountMap = {};
-  window.SALES_DB.pipeline.forEach(d => {
+  (window.SALES_DB.pipeline || []).forEach(d => {
     productDealCountMap[d.product_id] = (productDealCountMap[d.product_id] || 0) + 1;
   });
 
@@ -2557,22 +2565,23 @@ function renderProductPills() {
     return a.name.localeCompare(b.name, 'ko');
   });
 
-  document.getElementById('product-count-display').textContent = productSearchQuery 
-    ? `검색 결과 ${filtered.length}건 / 전체 ERP ${totalCount}개 품목 (거래처 많은순 정렬)`
-    : `전체 ERP ${totalCount}개 품목 (거래처 많은순 정렬)`;
+  const countDisplayEl = document.getElementById('product-count-display');
+  if (countDisplayEl) {
+    countDisplayEl.textContent = productSearchQuery 
+      ? `검색 결과 ${filtered.length}건 / 전체 ERP ${totalCount}개 품목 (거래처 많은순 정렬)`
+      : `전체 ERP ${totalCount}개 품목 (거래처 많은순 정렬)`;
+  }
 
   if (filtered.length === 0) {
-    selectorBar.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; padding:12px;">'${escapeHtml(productSearchQuery)}' 일치하는 ERP 품목이 없습니다.</div>`;
+    const noMatch = document.createElement('div');
+    noMatch.style.cssText = 'color:var(--text-muted); font-size:0.8rem; padding:12px;';
+    noMatch.textContent = `'${escapeHtml(productSearchQuery)}' 일치하는 ERP 품목이 없습니다.`;
+    selectorBar.appendChild(noMatch);
     return;
   }
 
   // Display top 40 items for ultra-fast rendering performance
   const displayItems = filtered.slice(0, 40);
-
-  // If currently selected product is not in displayed list and not found, auto-select first (top active) one
-  if (!filtered.some(p => p.id === selectedProductId) && filtered.length > 0) {
-    selectedProductId = filtered[0].id;
-  }
 
   displayItems.forEach(p => {
     const btn = document.createElement('button');
@@ -2609,28 +2618,50 @@ function filterKanbanCards() {
 }
 
 function renderProductPipeline(prodId) {
-  const prod = window.SALES_DB.products.find(p => p.id === prodId);
-  if (!prod) return;
-
-  document.getElementById('pipeline-product-title').textContent = prod.name;
-  document.getElementById('pipeline-product-erp-code').textContent = `품목코드: ${prod.id}`;
-  
-  const ediEl = document.getElementById('pipeline-product-edi-code');
-  if (prod.edi) {
-    ediEl.textContent = `보험코드: ${prod.edi}`;
-    ediEl.style.display = 'inline-block';
-  } else {
-    ediEl.textContent = `보험코드: 비급여`;
-    ediEl.style.display = 'inline-block';
+  const isAll = (prodId === 'ALL');
+  let prod = null;
+  if (!isAll) {
+    prod = window.SALES_DB.products.find(p => p.id === prodId);
+    if (!prod) {
+      prodId = 'ALL';
+    }
   }
 
-  document.getElementById('pipeline-product-cat').textContent = `공급처/분류: ${prod.vendor || prod.category || '일반'}`;
+  const titleEl = document.getElementById('pipeline-product-title');
+  const codeEl = document.getElementById('pipeline-product-erp-code');
+  const ediEl = document.getElementById('pipeline-product-edi-code');
+  const catEl = document.getElementById('pipeline-product-cat');
 
-  // Filter deals for this product and by internal search
-  const deals = window.SALES_DB.pipeline.filter(d => {
-    if (d.product_id !== prodId) return false;
+  if (prodId === 'ALL') {
+    if (titleEl) titleEl.textContent = '🌐 전체 품목 통합 파이프라인';
+    if (codeEl) codeEl.textContent = '전체 40여 종 제품군 통합 현황';
+    if (ediEl) {
+      ediEl.textContent = '급여 / 비급여 전체 품목';
+      ediEl.style.display = 'inline-block';
+    }
+    if (catEl) catEl.textContent = '공급처/분류: 준메디칼 전체 공급사 및 취급 품목 마스터 통합 현황';
+  } else if (prod) {
+    if (titleEl) titleEl.textContent = prod.name;
+    if (codeEl) codeEl.textContent = `품목코드: ${prod.id}`;
+    if (ediEl) {
+      if (prod.edi) {
+        ediEl.textContent = `보험코드: ${prod.edi}`;
+        ediEl.style.display = 'inline-block';
+      } else {
+        ediEl.textContent = `보험코드: 비급여`;
+        ediEl.style.display = 'inline-block';
+      }
+    }
+    if (catEl) catEl.textContent = `공급처/분류: ${prod.vendor || prod.category || '일반'}`;
+  }
+
+  // Filter deals (either for specific product or ALL) and by internal search query
+  const deals = (window.SALES_DB.pipeline || []).filter(d => {
+    if (prodId !== 'ALL' && d.product_id !== prodId) return false;
     if (!kanbanHospitalSearchQuery) return true;
-    return d.hospital.toLowerCase().includes(kanbanHospitalSearchQuery) ||
+    return (d.hospital && d.hospital.toLowerCase().includes(kanbanHospitalSearchQuery)) ||
+           (d.product_name && d.product_name.toLowerCase().includes(kanbanHospitalSearchQuery)) ||
+           (d.product_id && d.product_id.toLowerCase().includes(kanbanHospitalSearchQuery)) ||
            (d.region && d.region.toLowerCase().includes(kanbanHospitalSearchQuery)) ||
            (d.sales_rep && d.sales_rep.toLowerCase().includes(kanbanHospitalSearchQuery)) ||
            (d.latest_note && d.latest_note.toLowerCase().includes(kanbanHospitalSearchQuery));
@@ -2643,7 +2674,8 @@ function renderProductPipeline(prodId) {
   const asDeals = deals.filter(d => d.status === 'A/S접수·처리');
   const lostDeals = deals.filter(d => d.status === '영업실패·보류');
 
-  document.getElementById('pipeline-stat-total').textContent = `${deals.length}개 병원`;
+  const distinctHospCount = new Set(deals.map(d => d.hospital)).size;
+  document.getElementById('pipeline-stat-total').textContent = isAll ? `${deals.length}건 (${distinctHospCount}개 병원)` : `${deals.length}개 병원`;
   const rate = deals.length > 0 ? Math.round((wonDeals.length / deals.length) * 100) : 0;
   document.getElementById('pipeline-stat-rate').textContent = `${rate}%`;
 
@@ -2691,6 +2723,10 @@ function renderKanbanCards(statusKey, items) {
       }
     };
 
+    const productTagHtml = (selectedProductId === 'ALL')
+      ? `<div style="font-size:0.72rem; color:var(--accent-cyan); font-weight:600; margin:2px 0 4px 0; display:flex; align-items:center; gap:4px;"><span style="font-size:0.7rem; opacity:0.8;">📦</span><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(d.product_name)}</span></div>`
+      : '';
+
     // Compact representation for Lost / Failed items
     if (statusKey === 'lost') {
       card.className = 'kanban-card lost-compact';
@@ -2699,6 +2735,7 @@ function renderKanbanCards(statusKey, items) {
           <span style="font-size:0.75rem; font-weight:600; color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(d.hospital)}">${escapeHtml(d.hospital)}</span>
           <span class="product-date-txt" style="font-size:0.65rem; color:var(--text-muted); flex-shrink:0;">${d.last_date || ''}</span>
         </div>
+        ${(selectedProductId === 'ALL') ? `<div style="font-size:0.68rem; color:var(--accent-cyan); opacity:0.85; margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📦 ${escapeHtml(d.product_name)}</div>` : ''}
         ${(d.fail_reasons && d.fail_reasons.length > 0) ? `<div style="font-size:0.68rem; color:#fda4af; opacity:0.85; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">사유: ${d.fail_reasons.join(', ')}</div>` : ''}
       `;
       container.appendChild(card);
@@ -2719,6 +2756,7 @@ function renderKanbanCards(statusKey, items) {
         <strong class="kanban-card-hosp" style="font-size:0.85rem; color:#fff;">${escapeHtml(d.hospital)}</strong>
         <span class="hospital-item-region">${escapeHtml(d.region || '기타')}</span>
       </div>
+      ${productTagHtml}
       ${subNote}
       <div style="font-size:0.68rem; color:var(--text-muted); display:flex; justify-content:space-between; margin-top:8px; border-top:1px solid rgba(255,255,255,0.05); padding-top:4px;">
         <span>담당: ${escapeHtml(d.sales_rep || '영업담당')}</span>

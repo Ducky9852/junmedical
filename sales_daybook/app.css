@@ -1222,6 +1222,25 @@ main {
   box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
 }
 
+.product-pill.all-products-pill {
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  color: #ddd6fe;
+}
+
+.product-pill.all-products-pill:hover {
+  background: rgba(139, 92, 246, 0.22);
+  border-color: rgba(167, 139, 250, 0.6);
+  color: #fff;
+}
+
+.product-pill.all-products-pill.active {
+  background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 18px rgba(236, 72, 153, 0.45) !important;
+}
+
 .kanban-board {
   display: grid;
   grid-template-columns: repeat(6, minmax(210px, 1fr));
