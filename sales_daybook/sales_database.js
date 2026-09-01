@@ -85258,40 +85258,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-31T04:58:56.103144+00:00"
     },
     {
-      "id": 1449,
-      "hospital": "봄날의외과의원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "GROUP-SEJONG-SHEET",
-      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
-      "status": "소모품 샘플",
-      "last_date": "2026/04/23",
-      "latest_action": "샘플·데모",
-      "latest_note": "상품권 전달, 소공포 및 응급키트 샘플 출고. 소공포 작은 사이즈 관심 있음.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-31T04:58:56.103144+00:00",
-      "updated_at": "2026-08-31T04:58:56.103144+00:00"
-    },
-    {
-      "id": 1450,
-      "hospital": "봄날의외과의원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "status": "도입완료·납품",
-      "last_date": "2026/04/23",
-      "latest_action": "도입완료",
-      "latest_note": "펜코소드(안전메스)는 이미 원내 도입되어 사용 중임.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-31T04:58:56.103144+00:00",
-      "updated_at": "2026-08-31T04:58:56.103144+00:00"
-    },
-    {
       "id": 1451,
       "hospital": "청주 마디사랑병원",
       "region": "세종충북",
@@ -85389,6 +85355,44 @@ window.SALES_DB = {
         "status": "수리진행중"
       },
       "fail_reasons": [],
+      "created_at": "2026-08-31T04:58:56.103144+00:00",
+      "updated_at": "2026-08-31T04:58:56.103144+00:00"
+    },
+    {
+      "id": 1449,
+      "hospital": "봄날의외과의원",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "product_id": "GROUP-SEJONG-SHEET",
+      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
+      "status": "영업실패·보류",
+      "last_date": "2026/09/01",
+      "latest_action": "샘플·데모",
+      "latest_note": "상품권 전달, 소공포 및 응급키트 샘플 출고. 소공포 작은 사이즈 관심 있음.",
+      "demo_info": null,
+      "as_info": null,
+      "fail_reasons": [
+        "의료진 피드백/보류"
+      ],
+      "created_at": "2026-08-31T04:58:56.103144+00:00",
+      "updated_at": "2026-08-31T04:58:56.103144+00:00"
+    },
+    {
+      "id": 1450,
+      "hospital": "봄날의외과의원",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "product_id": "GROUP-PENKO-SWORD",
+      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
+      "status": "영업실패·보류",
+      "last_date": "2026/09/01",
+      "latest_action": "도입완료",
+      "latest_note": "펜코소드(안전메스)는 이미 원내 도입되어 사용 중임.",
+      "demo_info": null,
+      "as_info": null,
+      "fail_reasons": [
+        "의료진 피드백/보류"
+      ],
       "created_at": "2026-08-31T04:58:56.103144+00:00",
       "updated_at": "2026-08-31T04:58:56.103144+00:00"
     },
@@ -86275,27 +86279,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-31T04:58:56.229955+00:00"
     },
     {
-      "id": 1505,
-      "hospital": "국립소방병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_CUREFORM",
-      "product_name": "큐어폼 (Cureform 드레싱)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/05/28",
-      "latest_action": "샘플·데모",
-      "latest_note": "큐어폼 디테일, obgy한명석교수님 멘트내용 전달함. 급여고 이야기듣고 싸다고 함. 의논해 본다고함. 원래 면담 잘한한다고 함. \n[제공 샘플] 큐어폼",
-      "demo_info": {
-        "date": "2026/05/28",
-        "note": "국립소방병원 샘플 제공 큐어폼 디테일, obgy한명석교수님 멘트내용 전달함. 급여고 이야기듣고 싸다고 함. 의논해 본다고함. 원래 면담 잘한한다고 함. \n[제공 샘플] 큐어폼",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-31T04:58:56.229955+00:00",
-      "updated_at": "2026-08-31T04:58:56.229955+00:00"
-    },
-    {
       "id": 1506,
       "hospital": "진천 미래마취통증의학과",
       "region": "세종충북",
@@ -86628,23 +86611,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-31T04:58:56.306538+00:00"
     },
     {
-      "id": 1524,
-      "hospital": "건국대학교 충주병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "GROUP-SEJONG-SHEET",
-      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
-      "status": "제품소개·영업중",
-      "last_date": "2025/12/24",
-      "latest_action": "제품설명·소개",
-      "latest_note": "구매과장님 별말없으시다고 하심. 드레싱킷으로 디테일 예정.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-31T04:58:56.306538+00:00",
-      "updated_at": "2026-08-31T04:58:56.306538+00:00"
-    },
-    {
       "id": 1525,
       "hospital": "음성 금왕연합정형외과",
       "region": "세종충북",
@@ -86876,27 +86842,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-31T04:58:56.306538+00:00"
     },
     {
-      "id": 1536,
-      "hospital": "봄날의외과의원",
-      "region": "서울경기",
-      "sales_rep": "이은필",
-      "product_id": "PK-CGP202S-TB",
-      "product_name": "펜코 BV 플레이트 듀얼 (가로형)",
-      "status": "데모·샘플평가",
-      "last_date": "2026/02/05",
-      "latest_action": "샘플·데모",
-      "latest_note": "상품권전달, 소공포 및 응급킷트 샘플나가고, 소공포\n작은사이즈는 관심있음. 펜코소드는 이미들어옴",
-      "demo_info": {
-        "date": "2026/02/05",
-        "note": "봄날의외과 신규 아이템 소개 상품권전달, 소공포 및 응급킷트 샘플나가고, 소공포\n작은사이즈는 관심있음. 펜코소드는 이미들어옴",
-        "status": "평가진행중"
-      },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-31T04:58:56.306538+00:00",
-      "updated_at": "2026-08-31T04:58:56.306538+00:00"
-    },
-    {
       "id": 1537,
       "hospital": "청주 뿌리병원",
       "region": "세종충북",
@@ -86931,6 +86876,25 @@ window.SALES_DB = {
       },
       "as_info": null,
       "fail_reasons": [],
+      "created_at": "2026-08-31T04:58:56.306538+00:00",
+      "updated_at": "2026-08-31T04:58:56.306538+00:00"
+    },
+    {
+      "id": 1524,
+      "hospital": "건국대학교 충주병원",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "product_id": "GROUP-SEJONG-SHEET",
+      "product_name": "[세종] 멸균 소공포 (MULTI USEFUL SHEET)",
+      "status": "영업실패·보류",
+      "last_date": "2026/09/01",
+      "latest_action": "제품설명·소개",
+      "latest_note": "구매과장님 별말없으시다고 하심. 드레싱킷으로 디테일 예정.",
+      "demo_info": null,
+      "as_info": null,
+      "fail_reasons": [
+        "의료진 피드백/보류"
+      ],
       "created_at": "2026-08-31T04:58:56.306538+00:00",
       "updated_at": "2026-08-31T04:58:56.306538+00:00"
     },
@@ -87049,23 +87013,6 @@ window.SALES_DB = {
         "note": "오창호수병원 신규 아이템 소개 소공포 디테일\n[비고] Os 과장님 수술들어가셔서 소공포 전달해주겠다고 함.",
         "status": "평가진행중"
       },
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-31T04:58:56.306538+00:00",
-      "updated_at": "2026-08-31T04:58:56.306538+00:00"
-    },
-    {
-      "id": 1545,
-      "hospital": "건국대학교 충주병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "MTHG0505T",
-      "product_name": "Hy gent 하이겐트 (5*5)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/03/10",
-      "latest_action": "제품설명·소개",
-      "latest_note": "하이겐트(Hygent) 디테일 설명.",
-      "demo_info": null,
       "as_info": null,
       "fail_reasons": [],
       "created_at": "2026-08-31T04:58:56.306538+00:00",
@@ -87277,6 +87224,25 @@ window.SALES_DB = {
       "demo_info": null,
       "as_info": null,
       "fail_reasons": [],
+      "created_at": "2026-08-31T04:58:56.306538+00:00",
+      "updated_at": "2026-08-31T04:58:56.306538+00:00"
+    },
+    {
+      "id": 1545,
+      "hospital": "건국대학교 충주병원",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "product_id": "MTHG0505T",
+      "product_name": "Hy gent 하이겐트 (5*5)",
+      "status": "영업실패·보류",
+      "last_date": "2026/09/01",
+      "latest_action": "제품설명·소개",
+      "latest_note": "하이겐트(Hygent) 디테일 설명.",
+      "demo_info": null,
+      "as_info": null,
+      "fail_reasons": [
+        "의료진 피드백/보류"
+      ],
       "created_at": "2026-08-31T04:58:56.306538+00:00",
       "updated_at": "2026-08-31T04:58:56.306538+00:00"
     },
@@ -88218,23 +88184,6 @@ window.SALES_DB = {
       "updated_at": "2026-08-31T04:58:56.38939+00:00"
     },
     {
-      "id": 1646,
-      "hospital": "국립소방병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "PROD_GENERAL",
-      "product_name": "일반 의료소모품/장비 (PROD_GENERAL)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/08/31",
-      "latest_action": "제품설명·소개",
-      "latest_note": "음성 국립소방병원 os. 조계남 교수님 진료시간이어서 지켜봄. 환자가 2시부터 줄곳 5명 이상 유지가 됨. 나올떄 지켜봤는데 6명 대기중 이었음. 상당히 환자가 많음. 오전 진료 끝날때 만나볼 예정임.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-31T10:00:42.278048+00:00",
-      "updated_at": "2026-08-31T10:00:42.278048+00:00"
-    },
-    {
       "id": 1599,
       "hospital": "충청북도 충주의료원",
       "region": "세종충북",
@@ -88266,23 +88215,6 @@ window.SALES_DB = {
       "last_date": "2026/02/05",
       "latest_action": "제품설명·소개",
       "latest_note": "하이겐트(Hygent) 디테일 설명. 팀장인듯한데 안알려줌. 간납사 물어봤으나 다음에 오시라고함.",
-      "demo_info": null,
-      "as_info": null,
-      "fail_reasons": [],
-      "created_at": "2026-08-31T04:58:56.38939+00:00",
-      "updated_at": "2026-08-31T04:58:56.38939+00:00"
-    },
-    {
-      "id": 1601,
-      "hospital": "건국대학교 충주병원",
-      "region": "세종충북",
-      "sales_rep": "이재덕",
-      "product_id": "GROUP-PENKO-SWORD",
-      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
-      "status": "제품소개·영업중",
-      "last_date": "2026/02/24",
-      "latest_action": "제품설명·소개",
-      "latest_note": "서지소드 디테일",
       "demo_info": null,
       "as_info": null,
       "fail_reasons": [],
@@ -88840,6 +88772,29 @@ window.SALES_DB = {
       "updated_at": "2026-08-31T04:58:56.474833+00:00"
     },
     {
+      "id": 1536,
+      "hospital": "봄날의외과의원",
+      "region": "서울경기",
+      "sales_rep": "이은필",
+      "product_id": "PK-CGP202S-TB",
+      "product_name": "펜코 BV 플레이트 듀얼 (가로형)",
+      "status": "영업실패·보류",
+      "last_date": "2026/09/01",
+      "latest_action": "샘플·데모",
+      "latest_note": "상품권전달, 소공포 및 응급킷트 샘플나가고, 소공포\n작은사이즈는 관심있음. 펜코소드는 이미들어옴",
+      "demo_info": {
+        "date": "2026/02/05",
+        "note": "봄날의외과 신규 아이템 소개 상품권전달, 소공포 및 응급킷트 샘플나가고, 소공포\n작은사이즈는 관심있음. 펜코소드는 이미들어옴",
+        "status": "회수/종료"
+      },
+      "as_info": null,
+      "fail_reasons": [
+        "의료진 피드백/보류"
+      ],
+      "created_at": "2026-08-31T04:58:56.306538+00:00",
+      "updated_at": "2026-08-31T04:58:56.306538+00:00"
+    },
+    {
       "id": 1630,
       "hospital": "청주한국병원",
       "region": "세종충북",
@@ -89054,6 +89009,48 @@ window.SALES_DB = {
       "fail_reasons": [],
       "created_at": "2026-08-31T04:58:56.474833+00:00",
       "updated_at": "2026-08-31T04:58:56.474833+00:00"
+    },
+    {
+      "id": 1601,
+      "hospital": "건국대학교 충주병원",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "product_id": "GROUP-PENKO-SWORD",
+      "product_name": "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)",
+      "status": "영업실패·보류",
+      "last_date": "2026/09/01",
+      "latest_action": "제품설명·소개",
+      "latest_note": "서지소드 디테일",
+      "demo_info": null,
+      "as_info": null,
+      "fail_reasons": [
+        "의료진 피드백/보류"
+      ],
+      "created_at": "2026-08-31T04:58:56.38939+00:00",
+      "updated_at": "2026-08-31T04:58:56.38939+00:00"
+    },
+    {
+      "id": 1505,
+      "hospital": "국립소방병원",
+      "region": "세종충북",
+      "sales_rep": "이재덕",
+      "product_id": "PROD_CUREFORM",
+      "product_name": "큐어폼 (Cureform 드레싱)",
+      "status": "영업실패·보류",
+      "last_date": "2026/09/01",
+      "latest_action": "샘플·데모",
+      "latest_note": "큐어폼 디테일, obgy한명석교수님 멘트내용 전달함. 급여고 이야기듣고 싸다고 함. 의논해 본다고함. 원래 면담 잘한한다고 함. \n[제공 샘플] 큐어폼",
+      "demo_info": {
+        "date": "2026/05/28",
+        "note": "국립소방병원 샘플 제공 큐어폼 디테일, obgy한명석교수님 멘트내용 전달함. 급여고 이야기듣고 싸다고 함. 의논해 본다고함. 원래 면담 잘한한다고 함. \n[제공 샘플] 큐어폼",
+        "status": "회수/종료"
+      },
+      "as_info": null,
+      "fail_reasons": [
+        "의료진 피드백/보류"
+      ],
+      "created_at": "2026-08-31T04:58:56.229955+00:00",
+      "updated_at": "2026-08-31T04:58:56.229955+00:00"
     }
   ],
   "activity_logs": [

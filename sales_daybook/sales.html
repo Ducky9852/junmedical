@@ -16,11 +16,11 @@
   <meta name="apple-mobile-web-app-title" content="MEDI-SALES">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   
-  <link rel="stylesheet" href="app.css?v=jun-V1-007">
+  <link rel="stylesheet" href="app.css?v=jun-V1-008">
   <!-- Supabase JS Client (Loaded in Head for Realtime Multi-PC Sync) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="sales_database.js?v=jun-V1-007"></script>
-  <script src="app.js?v=jun-V1-007"></script>
+  <script src="sales_database.js?v=jun-V1-008"></script>
+  <script src="app.js?v=jun-V1-008"></script>
 </head>
 <body>
 
@@ -55,7 +55,7 @@
         <div class="brand-icon">🩺</div>
         <div class="brand-text">
           <div class="brand-title-wrap">
-            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-007</span>
+            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-008</span>
             <button type="button" class="btn-cloud-sync" onclick="fetchLatestFromSupabase(true)" title="클라우드 최신 실시간 동기화">🔄</button>
             <h1>MEDI-SALES 360°</h1>
           </div>
@@ -1646,7 +1646,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=jun-V1-007').then(reg => {
+        navigator.serviceWorker.register('sw.js?v=jun-V1-008').then(reg => {
           reg.update();
           console.log('⚡ PWA Service Worker Active & Updated:', reg.scope);
         }).catch(err => console.warn('SW register error:', err));

@@ -1,10 +1,10 @@
 // Application State & Security
-const APP_VERSION = "jun-V1-007";
+const APP_VERSION = "jun-V1-008";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V10_JUN_V1_007";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V11_JUN_V1_008";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -19,6 +19,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V7_JUN_V1_004");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V8_JUN_V1_005");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V9_JUN_V1_006");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V10_JUN_V1_007");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -1358,27 +1359,29 @@ function onModalStatusChange() {
 
 async function deleteCurrentDeal() {
   if (!currentEditingDeal) return;
-  const hosp = currentEditingDeal.hospital;
-  const prodName = currentEditingDeal.product_name;
-  const prodId = currentEditingDeal.product_id;
+  const targetDeal = currentEditingDeal;
+  const hosp = targetDeal.hospital;
+  const prodName = targetDeal.product_name;
+  const prodId = targetDeal.product_id;
+  const dealId = targetDeal.id;
 
   if (!confirm(`정말로 [${hosp}]의 '${prodName}' 품목을 파이프라인에서 삭제하시겠습니까?`)) {
     return;
   }
 
   // 1. Remove from in-memory pipeline
-  const idx = window.SALES_DB.pipeline.findIndex(d => d.hospital === hosp && (d.product_id === prodId || d.product_name === prodName));
+  const idx = window.SALES_DB.pipeline.findIndex(d => (d.id && d.id === dealId) || ((d.hospital || '').replace(/\s+/g, '') === (hosp || '').replace(/\s+/g, '') && (d.product_id === prodId || d.product_name === prodName)));
   if (idx !== -1) {
     window.SALES_DB.pipeline.splice(idx, 1);
   }
 
   // 2. Remove from hospital's products_active if present
-  const hospObj = window.SALES_DB.hospitals.find(h => h.name === hosp);
+  const hospObj = window.SALES_DB.hospitals.find(h => (h.name || '').replace(/\s+/g, '') === (hosp || '').replace(/\s+/g, ''));
   if (hospObj && hospObj.products_active) {
     hospObj.products_active = hospObj.products_active.filter(p => p !== prodName && p !== prodId);
   }
 
-  // 3. Persist local cache
+  // 3. Persist local cache & re-render
   persistSalesDB();
   recalcGlobalStats();
   selectHospital(hosp);
@@ -1390,8 +1393,8 @@ async function deleteCurrentDeal() {
   if (client) {
     try {
       let query = client.from('pipeline').delete();
-      if (currentEditingDeal.id) {
-        query = query.eq('id', currentEditingDeal.id);
+      if (dealId) {
+        query = query.eq('id', dealId);
       } else {
         query = query.eq('hospital', hosp).eq('product_id', prodId);
       }
@@ -1399,7 +1402,7 @@ async function deleteCurrentDeal() {
       if (error) {
         console.warn('Supabase delete error:', error);
       } else {
-        console.log(`⚡ Deleted [${hosp}] ${prodId} from Supabase pipeline successfully.`);
+        console.log(`⚡ Deleted [${hosp}] ${prodId} (id: ${dealId}) from Supabase pipeline successfully.`);
       }
     } catch(err) {
       console.warn('Supabase cloud delete error:', err);
@@ -1411,6 +1414,7 @@ async function deleteCurrentDeal() {
 
 async function saveModalChanges() {
   if (!currentEditingDeal) return;
+  const targetDeal = currentEditingDeal;
 
   const newStatus = document.getElementById('modal-status-select').value;
   const newNote = document.getElementById('modal-note-input').value.trim();
@@ -1422,26 +1426,26 @@ async function saveModalChanges() {
   });
 
   // If product changed
-  const prevProdId = currentEditingDeal.product_id;
+  const prevProdId = targetDeal.product_id;
   if (newProductId && newProductId !== prevProdId) {
     const master = (window.ERP_PRODUCTS_MASTER || []).concat(window.SALES_DB ? window.SALES_DB.products : []);
     const targetProd = master.find(p => (p.code === newProductId || p.id === newProductId));
     if (targetProd) {
-      currentEditingDeal.product_id = targetProd.code || targetProd.id;
-      currentEditingDeal.product_name = targetProd.name;
+      targetDeal.product_id = targetProd.code || targetProd.id;
+      targetDeal.product_name = targetProd.name;
     }
   }
 
   // Update in-memory deal
-  currentEditingDeal.status = newStatus;
-  currentEditingDeal.latest_note = newNote;
-  currentEditingDeal.fail_reasons = (newStatus === '영업실패·보류') ? selectedReasons : [];
-  currentEditingDeal.last_date = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+  targetDeal.status = newStatus;
+  targetDeal.latest_note = newNote;
+  targetDeal.fail_reasons = (newStatus === '영업실패·보류') ? selectedReasons : [];
+  targetDeal.last_date = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
 
   if (newStatus === '의료장비 데모' || newStatus === '소모품 샘플' || newStatus === '데모·샘플평가') {
-    if (!currentEditingDeal.demo_info) {
-      currentEditingDeal.demo_info = {
-        date: currentEditingDeal.last_date,
+    if (!targetDeal.demo_info) {
+      targetDeal.demo_info = {
+        date: targetDeal.last_date,
         note: newNote || `${newStatus} 평가 진행`,
         status: '평가진행중'
       };
@@ -1451,16 +1455,16 @@ async function saveModalChanges() {
   // Re-render
   recalcGlobalStats();
   initHeaderMetrics();
-  selectHospital(currentEditingDeal.hospital);
+  selectHospital(targetDeal.hospital);
   renderProductPipeline(selectedProductId);
   
   persistSalesDB();
   closeEditModal();
 
   // Sync to Supabase Cloud
-  await syncPipelineDealToCloud(currentEditingDeal);
+  await syncPipelineDealToCloud(targetDeal);
 
-  showToast(`✅ [${currentEditingDeal.hospital}] 품목 상태 및 정보가 성공적으로 수정되었습니다!`);
+  showToast(`✅ [${targetDeal.hospital}] 품목 상태 및 정보가 성공적으로 수정되었습니다!`);
 }
 
 // ----------------------------------------------------
