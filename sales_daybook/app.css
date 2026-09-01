@@ -892,6 +892,21 @@ main {
   border-color: var(--border-glass-hover);
 }
 
+.product-row.lost-compact,
+.kanban-card.lost-compact {
+  padding: 8px 10px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: var(--radius-sm) !important;
+  margin-bottom: 4px;
+}
+
+.product-row.lost-compact:hover,
+.kanban-card.lost-compact:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+}
+
 .product-row-top {
   display: flex;
   justify-content: space-between;

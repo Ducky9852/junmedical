@@ -1,9 +1,9 @@
-const APP_VERSION = "jun-V1-012";
+const APP_VERSION = "jun-V1-013";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V15_JUN_V1_012";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V16_JUN_V1_013";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -23,6 +23,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V12_JUN_V1_009");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V13_JUN_V1_010");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V14_JUN_V1_011");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V15_JUN_V1_012");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -949,7 +950,6 @@ function renderProductMatrixSection(type, items) {
   container.innerHTML = '';
   uniqueItems.forEach(d => {
     const row = document.createElement('div');
-    row.className = 'product-row product-matrix-card';
     row.draggable = true;
     row.title = '마우스로 드래그하여 다른 상태로 이동하거나 클릭하여 수정';
     
@@ -963,17 +963,29 @@ function renderProductMatrixSection(type, items) {
       }
     };
     
+    // Compact representation for Failed / Lost items
+    if (type === 'lost') {
+      row.className = 'product-row product-matrix-card lost-compact';
+      row.innerHTML = `
+        <div class="product-row-top" style="margin-bottom:0; align-items:center; justify-content:space-between; gap:6px;">
+          <span style="font-size:0.75rem; font-weight:600; color:var(--text-secondary); display:flex; align-items:center; gap:4px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+            <span style="font-size:0.7rem; opacity:0.7; flex-shrink:0;">✕</span>
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(d.product_name)}">${escapeHtml(d.product_name)}</span>
+          </span>
+          <span class="product-date-txt" style="font-size:0.65rem; color:var(--text-muted); flex-shrink:0;">${d.last_date || ''}</span>
+        </div>
+        ${(d.fail_reasons && d.fail_reasons.length > 0) ? `<div style="font-size:0.68rem; color:#fda4af; opacity:0.85; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">사유: ${d.fail_reasons.join(', ')}</div>` : ''}
+      `;
+      container.appendChild(row);
+      return;
+    }
+
+    row.className = 'product-row product-matrix-card';
     let subContent = '';
     if (type === 'demo' && d.demo_info) {
       subContent = `<div class="product-note-txt" style="color:#fcd34d;">🔬 [장비데모] ${d.demo_info.date} 전달 (회수추적): ${escapeHtml(d.demo_info.note || d.latest_note || '')}</div>`;
     } else if (type === 'sample' && d.demo_info) {
       subContent = `<div class="product-note-txt" style="color:#7dd3fc;">🧪 [소모품샘플] ${d.demo_info.date} 전달 (피드백추적): ${escapeHtml(d.demo_info.note || d.latest_note || '')}</div>`;
-    } else if (type === 'lost') {
-      const reasons = (d.fail_reasons || []).map(r => `<span class="reason-tag">⚠️ ${escapeHtml(r)}</span>`).join(' ');
-      subContent = `
-        <div class="product-note-txt">${escapeHtml(d.latest_note || '')}</div>
-        <div style="margin-top:4px;">${reasons}</div>
-      `;
     } else {
       subContent = `<div class="product-note-txt">${escapeHtml(d.latest_note || '')}</div>`;
     }
@@ -2666,7 +2678,6 @@ function renderKanbanCards(statusKey, items) {
 
   items.forEach(d => {
     const card = document.createElement('div');
-    card.className = 'kanban-card';
     card.draggable = true;
     card.title = '클릭하여 품목코드/상태 수정 또는 드래그하여 이동';
 
@@ -2678,6 +2689,21 @@ function renderKanbanCards(statusKey, items) {
       }
     };
 
+    // Compact representation for Lost / Failed items
+    if (statusKey === 'lost') {
+      card.className = 'kanban-card lost-compact';
+      card.innerHTML = `
+        <div class="kanban-card-header" style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+          <span style="font-size:0.75rem; font-weight:600; color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(d.hospital)}">${escapeHtml(d.hospital)}</span>
+          <span class="product-date-txt" style="font-size:0.65rem; color:var(--text-muted); flex-shrink:0;">${d.last_date || ''}</span>
+        </div>
+        ${(d.fail_reasons && d.fail_reasons.length > 0) ? `<div style="font-size:0.68rem; color:#fda4af; opacity:0.85; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">사유: ${d.fail_reasons.join(', ')}</div>` : ''}
+      `;
+      container.appendChild(card);
+      return;
+    }
+
+    card.className = 'kanban-card';
     let subNote = '';
     if (d.latest_note) {
       subNote = `<div class="kanban-card-note" style="font-size:0.75rem; color:var(--text-secondary); margin:6px 0; line-height:1.4; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${escapeHtml(d.latest_note)}</div>`;
