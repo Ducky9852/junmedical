@@ -1,9 +1,9 @@
-const APP_VERSION = "jun-V1-013";
+const APP_VERSION = "jun-V1-014";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V16_JUN_V1_013";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V17_JUN_V1_014";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -24,6 +24,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V13_JUN_V1_010");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V14_JUN_V1_011");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V15_JUN_V1_012");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V16_JUN_V1_013");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -5040,6 +5041,69 @@ async function saveEditedHospitalProfile() {
 
   closeEditHospitalModal();
   showToast(`🎉 [${newHospName}] 병원 정보 및 연관 영업일지(${region})가 성공적으로 저장되었습니다!`);
+}
+
+async function deleteCurrentHospital() {
+  const oldHospName = document.getElementById('modal-edit-hosp-name-hidden')?.value || selectedHospitalName;
+  if (!oldHospName) {
+    alert("삭제할 병원 정보가 없습니다.");
+    return;
+  }
+
+  const logs = (window.SALES_DB.activity_logs || []).filter(l => l.hospital === oldHospName);
+  const deals = (window.SALES_DB.pipeline || []).filter(d => d.hospital === oldHospName);
+
+  let confirmMsg = `정말로 [${oldHospName}] 거래처를 완전히 삭제하시겠습니까?`;
+  if (logs.length > 0 || deals.length > 0) {
+    confirmMsg += `\n\n⚠️ 연결된 데이터 안내:\n- 귀속된 영업일지: ${logs.length}건\n- 귀속된 파이프라인: ${deals.length}건\n\n거래처 삭제 시 연관된 일지와 품목 데이터도 함께 정리됩니다. 계속 진행하시겠습니까?`;
+  }
+
+  if (!confirm(confirmMsg)) {
+    return;
+  }
+
+  // 1. Remove from SALES_DB.hospitals
+  window.SALES_DB.hospitals = (window.SALES_DB.hospitals || []).filter(h => h.name !== oldHospName);
+
+  // 2. Remove related activity logs and pipeline deals
+  window.SALES_DB.activity_logs = (window.SALES_DB.activity_logs || []).filter(l => l.hospital !== oldHospName);
+  window.SALES_DB.pipeline = (window.SALES_DB.pipeline || []).filter(d => d.hospital !== oldHospName);
+
+  // 3. Delete from Supabase Cloud
+  if (supabaseClient) {
+    try {
+      await supabaseClient.from('hospitals').delete().eq('name', oldHospName);
+      if (logs.length > 0) {
+        await supabaseClient.from('activity_logs').delete().eq('hospital', oldHospName);
+      }
+      if (deals.length > 0) {
+        await supabaseClient.from('pipeline').delete().eq('hospital', oldHospName);
+      }
+      console.log(`⚡ Deleted [${oldHospName}] and its associated logs/deals from Supabase Cloud.`);
+    } catch(err) {
+      console.warn('Supabase delete hospital error:', err);
+    }
+  }
+
+  // 4. Update UI & persist
+  persistSalesDB();
+  recalcGlobalStats();
+  initHeaderMetrics();
+  renderHospitalList();
+  renderExcelLogsTable();
+  renderProductPipeline(selectedProductId);
+
+  closeEditHospitalModal();
+
+  // Select another hospital if available
+  const remaining = window.SALES_DB.hospitals || [];
+  if (remaining.length > 0) {
+    selectHospital(remaining[0].name);
+  } else {
+    selectedHospitalName = null;
+  }
+
+  showToast(`🗑️ [${oldHospName}] 거래처가 성공적으로 삭제되었습니다.`);
 }
 
 // ----------------------------------------------------
