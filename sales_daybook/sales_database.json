@@ -80405,51 +80405,6 @@
       "updated_at": "2026-08-27T08:07:48.431817+00:00"
     },
     {
-      "name": "청주 참대항외과",
-      "region": "세종충북",
-      "sales_reps": [
-        "이재덕"
-      ],
-      "contacts": [
-        "원장"
-      ],
-      "status": "활동병원",
-      "last_activity_date": "2026/08/31",
-      "total_logs": 1,
-      "demo_count": 0,
-      "won_count": 0,
-      "as_count": 0,
-      "fail_count": 0,
-      "products_active": [
-        "일반 의료소모품/장비"
-      ],
-      "created_at": "2026-09-01T00:21:58.327902+00:00",
-      "updated_at": "2026-09-01T00:21:58.327902+00:00"
-    },
-    {
-      "name": "진천 제일중앙병원",
-      "region": "세종충북",
-      "sales_reps": [
-        "이재덕"
-      ],
-      "contacts": [
-        "병원장",
-        "OS 간호사"
-      ],
-      "status": "활동병원",
-      "last_activity_date": "2026/08/31",
-      "total_logs": 1,
-      "demo_count": 0,
-      "won_count": 0,
-      "as_count": 0,
-      "fail_count": 0,
-      "products_active": [
-        "일반 의료소모품/장비"
-      ],
-      "created_at": "2026-09-01T00:21:58.327902+00:00",
-      "updated_at": "2026-09-01T00:21:58.327902+00:00"
-    },
-    {
       "name": "담소유병원",
       "region": "서울경기",
       "sales_reps": [
@@ -80879,6 +80834,34 @@
       "updated_at": "2026-08-27T04:34:18.757354+00:00"
     },
     {
+      "name": "국립소방병원",
+      "region": "기타",
+      "sales_reps": [
+        "이재덕"
+      ],
+      "contacts": [
+        "김기호",
+        "문덕주",
+        "산부인과 한명석교수",
+        "일반외과 김기호교수",
+        "일반외과 문덕주교수"
+      ],
+      "status": "활동병원",
+      "last_activity_date": "2026/08/31",
+      "total_logs": 5,
+      "demo_count": 0,
+      "won_count": 0,
+      "as_count": 0,
+      "fail_count": 0,
+      "products_active": [
+        "큐어폼 (Cureform 드레싱)",
+        "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))",
+        "Metal Trocar (Flip) (10.5mm*95mm)"
+      ],
+      "created_at": "2026-08-27T04:34:18.757354+00:00",
+      "updated_at": "2026-08-27T04:34:18.757354+00:00"
+    },
+    {
       "name": "오송베스트안병원",
       "region": "세종충북",
       "sales_reps": [
@@ -80951,34 +80934,6 @@
       "fail_count": 0,
       "products_active": [
         "HYGENT (하이젠트 살균소독)"
-      ],
-      "created_at": "2026-08-27T04:34:18.757354+00:00",
-      "updated_at": "2026-08-27T04:34:18.757354+00:00"
-    },
-    {
-      "name": "국립소방병원",
-      "region": "기타",
-      "sales_reps": [
-        "이재덕"
-      ],
-      "contacts": [
-        "김기호",
-        "문덕주",
-        "산부인과 한명석교수",
-        "일반외과 김기호교수",
-        "일반외과 문덕주교수"
-      ],
-      "status": "활동병원",
-      "last_activity_date": "2026/08/24",
-      "total_logs": 0,
-      "demo_count": 0,
-      "won_count": 0,
-      "as_count": 0,
-      "fail_count": 0,
-      "products_active": [
-        "큐어폼 (Cureform 드레싱)",
-        "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))",
-        "Metal Trocar (Flip) (10.5mm*95mm)"
       ],
       "created_at": "2026-08-27T04:34:18.757354+00:00",
       "updated_at": "2026-08-27T04:34:18.757354+00:00"
@@ -83099,31 +83054,6 @@
       "updated_at": "2026-08-27T04:34:18.934003+00:00"
     },
     {
-      "name": "진천 중앙제일병원",
-      "region": "세종충북",
-      "sales_reps": [
-        "이재덕"
-      ],
-      "contacts": [
-        "관리팀 구매과, 구매",
-        "관리팀 구매팀, 구매",
-        "관리팀 성백현 과장, 구매",
-        "임정일 병원장, 홍윤철 과장"
-      ],
-      "status": "활동병원",
-      "last_activity_date": "2026/08/21",
-      "total_logs": 0,
-      "demo_count": 0,
-      "won_count": 0,
-      "as_count": 0,
-      "fail_count": 0,
-      "products_active": [
-        "소공포 (그린(50*50) 10cm)"
-      ],
-      "created_at": "2026-08-27T04:34:18.934003+00:00",
-      "updated_at": "2026-08-27T04:34:18.934003+00:00"
-    },
-    {
       "name": "진천 한사랑외과",
       "region": "세종충북",
       "sales_reps": [
@@ -83452,26 +83382,6 @@
       "updated_at": "2026-08-27T04:34:18.934003+00:00"
     },
     {
-      "name": "청주 담대항외과",
-      "region": "세종충북",
-      "sales_reps": [
-        "이재덕"
-      ],
-      "contacts": [
-        "일반외과 수술방"
-      ],
-      "status": "활동병원",
-      "last_activity_date": "2026/05/27",
-      "total_logs": 0,
-      "demo_count": 0,
-      "won_count": 0,
-      "as_count": 0,
-      "fail_count": 0,
-      "products_active": [],
-      "created_at": "2026-08-27T04:34:18.934003+00:00",
-      "updated_at": "2026-08-27T04:34:18.934003+00:00"
-    },
-    {
       "name": "청주 두리이비인후과",
       "region": "세종충북",
       "sales_reps": [
@@ -83598,6 +83508,51 @@
         "GYNE COLLA (2.5*0.5cm /(40EA=1BOX))",
         "펜코 BV 플레이트 듀얼 (PENKO BV PLATE DUAL) (가로형)",
         "의료기기 (품목 미정)"
+      ],
+      "created_at": "2026-08-27T04:34:18.934003+00:00",
+      "updated_at": "2026-08-27T04:34:18.934003+00:00"
+    },
+    {
+      "name": "청주 담대항외과",
+      "region": "세종충북",
+      "sales_reps": [
+        "이재덕"
+      ],
+      "contacts": [
+        "일반외과 수술방"
+      ],
+      "status": "활동병원",
+      "last_activity_date": "2026/08/31",
+      "total_logs": 2,
+      "demo_count": 0,
+      "won_count": 0,
+      "as_count": 0,
+      "fail_count": 0,
+      "products_active": [],
+      "created_at": "2026-08-27T04:34:18.934003+00:00",
+      "updated_at": "2026-08-27T04:34:18.934003+00:00"
+    },
+    {
+      "name": "진천 중앙제일병원",
+      "region": "세종충북",
+      "sales_reps": [
+        "이재덕"
+      ],
+      "contacts": [
+        "관리팀 구매과, 구매",
+        "관리팀 구매팀, 구매",
+        "관리팀 성백현 과장, 구매",
+        "임정일 병원장, 홍윤철 과장"
+      ],
+      "status": "활동병원",
+      "last_activity_date": "2026/08/31",
+      "total_logs": 2,
+      "demo_count": 0,
+      "won_count": 0,
+      "as_count": 0,
+      "fail_count": 0,
+      "products_active": [
+        "소공포 (그린(50*50) 10cm)"
       ],
       "created_at": "2026-08-27T04:34:18.934003+00:00",
       "updated_at": "2026-08-27T04:34:18.934003+00:00"
@@ -89138,7 +89093,7 @@
     },
     {
       "id": 1638,
-      "hospital": "진천 제일중앙병원",
+      "hospital": "진천 중앙제일병원",
       "date": "2026/08/31",
       "sales_rep": "이재덕",
       "action_type": "제품설명·소개",
@@ -89172,7 +89127,7 @@
     },
     {
       "id": 1636,
-      "hospital": "청주 참대항외과",
+      "hospital": "청주 담대항외과",
       "date": "2026/08/31",
       "sales_rep": "이재덕",
       "action_type": "제품설명·소개",
@@ -102734,7 +102689,7 @@
   ],
   "stats": {
     "total_logs": 849,
-    "total_hospitals": 190,
+    "total_hospitals": 188,
     "total_deals": 215,
     "total_erp_items": 4054,
     "active_demos": 89,

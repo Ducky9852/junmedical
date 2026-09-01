@@ -1,10 +1,10 @@
 // Application State & Security
-const APP_VERSION = "jun-V1-006";
+const APP_VERSION = "jun-V1-007";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V9_JUN_V1_006";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V10_JUN_V1_007";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -18,6 +18,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V6_JUN_V1_003");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V7_JUN_V1_004");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V8_JUN_V1_005");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V9_JUN_V1_006");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -115,8 +116,9 @@ function getCanonicalHospitalKey(name) {
   if (clean.includes('단국대') && clean.includes('천안')) return '단국대학교병원';
   if (clean.includes('대전선병원') || (clean.includes('대전') && clean.includes('선병원'))) return '대전선병원';
   if (clean.includes('유성선병원') || (clean.includes('유성') && clean.includes('선병원'))) return '유성선병원';
-  if (clean === '선병원') return '선병원';
   if (clean.includes('소방병원') || clean.includes('국립소방')) return '국립소방병원';
+  if (clean.includes('대항외과') || clean.includes('담대항') || clean.includes('참대항')) return '청주 담대항외과';
+  if (clean.includes('제일병원') && clean.includes('진천')) return '진천 중앙제일병원';
   return clean;
 }
 
@@ -138,6 +140,8 @@ function normalizeHospitalName(name) {
   if (cleanNoSpace.includes('유성선병원') || (cleanNoSpace.includes('유성') && cleanNoSpace.includes('선병원'))) return '유성선병원';
   if (cleanNoSpace === '선병원') return '선병원';
   if (cleanNoSpace.includes('소방병원') || cleanNoSpace.includes('국립소방')) return '국립소방병원';
+  if (cleanNoSpace.includes('대항외과') || cleanNoSpace.includes('담대항') || cleanNoSpace.includes('참대항')) return '청주 담대항외과';
+  if (cleanNoSpace.includes('제일병원') && cleanNoSpace.includes('진천')) return '진천 중앙제일병원';
 
   // Try matching existing hospital in DB
   if (window.SALES_DB && window.SALES_DB.hospitals) {
