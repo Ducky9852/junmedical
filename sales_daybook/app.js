@@ -1,10 +1,10 @@
 // Application State & Security
-const APP_VERSION = "jun-V1-009";
+const APP_VERSION = "jun-V1-010";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V12_JUN_V1_009";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V13_JUN_V1_010";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -21,6 +21,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V9_JUN_V1_006");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V10_JUN_V1_007");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V11_JUN_V1_008");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V12_JUN_V1_009");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -3887,17 +3888,40 @@ function calculateHospitalSimilarity(inputName, candidateName, candidateRegion =
 function findSimilarHospitals(inputName) {
   if (!inputName || inputName === '기타 거래처') return { exact: null, suggestions: [], isNew: false };
   const cleanInput = inputName.trim().replace(/\s+/g, '');
-  const hospList = (window.SALES_DB && window.SALES_DB.hospitals) ? window.SALES_DB.hospitals : [];
+  
+  const dbHospitals = (window.SALES_DB && window.SALES_DB.hospitals) ? window.SALES_DB.hospitals : [];
+  const erpCustomers = window.ERP_CUSTOMERS_MASTER || [];
 
-  const exact = hospList.find(h => (h.name || '').replace(/\s+/g, '') === cleanInput);
-  if (exact) return { exact, suggestions: [], isNew: false };
+  const candidateMap = new Map();
+
+  for (const h of dbHospitals) {
+    if (!h || !h.name) continue;
+    const key = (h.name || '').replace(/\s+/g, '');
+    candidateMap.set(key, { name: h.name, region: h.region || '세종충북', source: 'db', raw: h });
+  }
+
+  for (const c of erpCustomers) {
+    if (!c || !c.name) continue;
+    const cClean = (c.clean_name || c.name).replace(/\s+/g, '');
+    if (!candidateMap.has(cClean)) {
+      candidateMap.set(cClean, { name: c.clean_name || c.name, region: c.region || '기타', code: c.code, source: 'erp', rawName: c.name });
+    }
+  }
+
+  const allCandidates = Array.from(candidateMap.values());
+  const exact = allCandidates.find(c => c.name.replace(/\s+/g, '') === cleanInput);
+  if (exact) {
+    return { exact, suggestions: [], isNew: false };
+  }
 
   const scored = [];
-  for (const h of hospList) {
-    if (!h || !h.name) continue;
-    const sim = calculateHospitalSimilarity(inputName, h.name, h.region);
+  const seenNames = new Set();
+  for (const cand of allCandidates) {
+    if (seenNames.has(cand.name)) continue;
+    const sim = calculateHospitalSimilarity(inputName, cand.name, cand.region);
     if (sim >= 0.68) {
-      scored.push({ hospital: h, score: sim });
+      seenNames.add(cand.name);
+      scored.push({ hospital: cand, score: sim });
     }
   }
 
@@ -3924,9 +3948,10 @@ function renderHospitalVerificationBox(hospitalName) {
 
   if (res.exact) {
     container.className = 'ai-match-badge exact';
+    const sourceLabel = res.exact.source === 'erp' ? '이카운트 ERP 정규 거래처' : '등록 거래처';
     container.innerHTML = `
       <div style="display:flex; align-items:center; justify-content:space-between;">
-        <span>🟢 <strong>등록 거래처 확인:</strong> ${escapeHtml(res.exact.name)} (${res.exact.region || '세종충북'})</span>
+        <span>🟢 <strong>${sourceLabel} 확인:</strong> ${escapeHtml(res.exact.name)} (${res.exact.region || '기타'})</span>
         <span style="font-size:0.7rem; opacity:0.8;">정규 등록 거래처</span>
       </div>
     `;
@@ -4376,7 +4401,9 @@ async function saveParsedLogToDB() {
   let cleanHospName = (hospName || '').replace(/\s+/g, '');
   
   const existingHosp = window.SALES_DB.hospitals.find(h => (h.name || '').replace(/\s+/g, '') === cleanHospName);
-  if (!existingHosp) {
+  const erpMatch = (window.ERP_CUSTOMERS_MASTER || []).find(c => (c.clean_name || c.name).replace(/\s+/g, '') === cleanHospName || (c.name || '').replace(/\s+/g, '') === cleanHospName);
+
+  if (!existingHosp && !erpMatch) {
     const simRes = findSimilarHospitals(rawHospName);
     if (simRes.suggestions && simRes.suggestions.length > 0) {
       const topSug = simRes.suggestions[0].hospital.name;
@@ -4445,7 +4472,7 @@ async function saveParsedLogToDB() {
     products: [finalProdName],
     product_code: finalProdCode,
     next_action: nextAction,
-    region: existingHosp ? existingHosp.region : "세종충북",
+    region: erpMatch ? erpMatch.region : (existingHosp ? existingHosp.region : "세종충북"),
     contact: contactName
   };
 
@@ -4462,7 +4489,7 @@ async function saveParsedLogToDB() {
     if (!deal) {
       deal = {
         hospital: hospName,
-        region: existingHosp ? existingHosp.region : "세종충북",
+        region: erpMatch ? erpMatch.region : (existingHosp ? existingHosp.region : "세종충북"),
         sales_rep: userRep,
         product_id: finalProdCode,
         product_name: finalProdName,
@@ -4510,9 +4537,11 @@ async function saveParsedLogToDB() {
   // 3. Update Hospital Master Stats (Create new hospital entry if not exists)
   let hosp = window.SALES_DB.hospitals.find(h => (h.name || '').replace(/\s+/g, '') === cleanHospName);
   if (!hosp) {
-    const region = (hospName.includes('천안') || hospName.includes('아산') || hospName.includes('앙즈로') || hospName.includes('연세하임')) ? '천안아산' : 
+    const region = erpMatch ? (erpMatch.region || '세종충북') : 
+                   (hospName.includes('천안') || hospName.includes('아산') || hospName.includes('앙즈로') || hospName.includes('연세하임')) ? '천안아산' : 
                    (hospName.includes('대전') || hospName.includes('논산')) ? '대전논산' :
-                   (hospName.includes('서산') || hospName.includes('당진')) ? '서산당진' : '세종충북';
+                   (hospName.includes('서산') || hospName.includes('당진')) ? '서산당진' :
+                   (hospName.includes('평택') || hospName.includes('안성') || hospName.includes('수원')) ? '경기' : '세종충북';
     hosp = {
       name: hospName,
       region: region,
