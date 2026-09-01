@@ -1,9 +1,9 @@
-const APP_VERSION = "jun-V1-014";
+const APP_VERSION = "jun-V1-015";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V17_JUN_V1_014";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V18_JUN_V1_015";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -25,6 +25,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V14_JUN_V1_011");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V15_JUN_V1_012");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V16_JUN_V1_013");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V17_JUN_V1_014");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -2825,64 +2826,6 @@ function recalcGlobalStats() {
   initHeaderMetrics();
 }
 
-function renderKanbanCards(type, deals) {
-  const container = document.getElementById(`kanban-cards-${type}`);
-  if (!container) return;
-
-  container.innerHTML = '';
-  if (deals.length === 0) {
-    container.innerHTML = `<div style="color:var(--text-muted); font-size:0.75rem; text-align:center; padding:16px; border:1px dashed rgba(255,255,255,0.08); border-radius:8px;">항목 없음 (드래그하여 이동)</div>`;
-    return;
-  }
-
-  deals.forEach(d => {
-    const card = document.createElement('div');
-    card.className = 'kanban-card';
-    card.draggable = true;
-    card.title = '마우스로 드래그하여 다른 단계로 이동하거나 클릭하여 병원 상황실 이동';
-
-    card.ondragstart = (e) => handleDragStart(e, d.hospital, d.product_id);
-    card.ondragend = (e) => handleDragEnd(e);
-    card.onclick = (e) => {
-      if (!card.classList.contains('dragging')) {
-        switchTab('hospital');
-        selectHospital(d.hospital);
-      }
-    };
-
-    let subHtml = '';
-    if (d.demo_info && d.demo_info.status.includes('진행')) {
-      subHtml = `<div class="kanban-card-note">🔬 ${d.demo_info.date}: ${escapeHtml(d.demo_info.note)}</div>`;
-    } else if (d.as_info && d.as_info.status.includes('접수')) {
-      subHtml = `<div class="kanban-card-note" style="color:var(--accent-rose);">🚨 ${d.as_info.date}: ${escapeHtml(d.as_info.note)}</div>`;
-    } else if (d.fail_reasons && d.fail_reasons.length > 0) {
-      const tags = d.fail_reasons.map(r => `<span class="reason-tag">⚠️ ${escapeHtml(r)}</span>`).join(' ');
-      subHtml = `<div style="margin-top:4px;">${tags}</div>`;
-    } else if (d.latest_note) {
-      subHtml = `<div class="kanban-card-note">${escapeHtml(d.latest_note)}</div>`;
-    }
-
-    card.innerHTML = `
-      <div class="kanban-card-header">
-        <span class="kanban-hosp-name" style="display:flex; align-items:center; gap:5px;">
-          <span style="font-size:0.8rem; cursor:grab;">🖐️</span>
-          <strong>${escapeHtml(d.hospital)}</strong>
-        </span>
-        <span class="kanban-card-region">${escapeHtml(d.region || '충청')}</span>
-      </div>
-      <div style="font-size:0.72rem; color:var(--text-muted); display:flex; justify-content:space-between; margin-top:4px;">
-        <span>담당: ${escapeHtml(d.sales_rep || '영업담당')}</span>
-        <span>최근: ${escapeHtml(d.last_date || '-')}</span>
-      </div>
-      ${subHtml}
-      <div class="drag-hint-badge">
-        <span>↔️ 드래그하여 단계 변경</span>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-}
-
 // ----------------------------------------------------
 // ERP Master Modal & Parser
 // ----------------------------------------------------
@@ -2971,46 +2914,6 @@ function applyErpMasterToDB() {
   renderProductPills();
   renderProductPipeline(selectedProductId);
   showToast(`🎉 Ecount ERP 품목 마스터 ${pendingErpProducts.length}건이 성공적으로 등록/동기화되었습니다!`);
-}
-
-function renderKanbanCards(stage, deals) {
-  const container = document.getElementById(`kanban-cards-${stage}`);
-  container.innerHTML = '';
-
-  if (deals.length === 0) {
-    container.innerHTML = `<div style="color:var(--text-muted); font-size:0.75rem; text-align:center; padding:16px;">해당 병원 없음</div>`;
-    return;
-  }
-
-  deals.forEach(d => {
-    const card = document.createElement('div');
-    card.className = 'kanban-card';
-    card.onclick = () => {
-      // Switch to hospital view and open this hospital!
-      switchTab('hospital');
-      selectHospital(d.hospital);
-      showToast(`🏥 ${d.hospital} 병원 360° 뷰로 이동했습니다.`);
-    };
-
-    let footerExtra = '';
-    if (stage === 'lost' && d.fail_reasons && d.fail_reasons.length) {
-      footerExtra = `<div>${d.fail_reasons.map(r => `<span class="reason-tag">⚠️ ${escapeHtml(r)}</span>`).join(' ')}</div>`;
-    }
-
-    card.innerHTML = `
-      <div class="kanban-card-title">
-        <span>${escapeHtml(d.hospital)}</span>
-        <span class="kanban-card-region">${escapeHtml(d.region)}</span>
-      </div>
-      <div class="kanban-card-note">${escapeHtml(d.latest_note || '진행 메모 없음')}</div>
-      ${footerExtra}
-      <div class="kanban-card-footer" style="margin-top:6px;">
-        <span>담당: ${escapeHtml(d.sales_rep || '미정')}</span>
-        <span>${d.last_date || ''}</span>
-      </div>
-    `;
-    container.appendChild(card);
-  });
 }
 
 // ----------------------------------------------------
