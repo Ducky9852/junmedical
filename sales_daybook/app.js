@@ -1,10 +1,10 @@
 // Application State & Security
-const APP_VERSION = "jun-V1-010";
+const APP_VERSION = "jun-V1-011";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V13_JUN_V1_010";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V14_JUN_V1_011";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -22,6 +22,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V10_JUN_V1_007");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V11_JUN_V1_008");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V12_JUN_V1_009");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V13_JUN_V1_010");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -1136,6 +1137,11 @@ function openEditModal(deal) {
   const modal = document.getElementById('edit-deal-modal');
   
   document.getElementById('modal-hosp-name').value = deal.hospital;
+  const newHospInput = document.getElementById('modal-deal-new-hospital');
+  if (newHospInput) newHospInput.value = '';
+  const hospSearchBox = document.getElementById('deal-hospital-search-box');
+  if (hospSearchBox) hospSearchBox.style.display = 'none';
+
   document.getElementById('modal-prod-name').value = `${deal.product_name} (${deal.product_id})`;
   document.getElementById('modal-deal-new-product-id').value = deal.product_id;
   document.getElementById('modal-status-select').value = deal.status;
@@ -1256,6 +1262,90 @@ function normalizeFullWidthToHalfWidth(str) {
   if (!str) return '';
   return str.replace(/[\uff01-\uff5e]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xfee0))
             .replace(/\u3000/g, ' ');
+}
+
+function toggleDealHospitalSearchBox() {
+  const box = document.getElementById('deal-hospital-search-box');
+  if (!box) return;
+  const isHidden = (box.style.display === 'none' || !box.style.display);
+  box.style.display = isHidden ? 'block' : 'none';
+  if (isHidden) {
+    const input = document.getElementById('deal-hospital-search-input');
+    if (input) {
+      input.value = '';
+      input.focus();
+      searchHospitalsForDeal('');
+    }
+  }
+}
+
+function searchHospitalsForDeal(query) {
+  const container = document.getElementById('deal-hospital-search-results');
+  if (!container) return;
+
+  const normQ = (query || '').trim().toLowerCase().replace(/\s+/g, '');
+
+  const dbHospitals = (window.SALES_DB && window.SALES_DB.hospitals) ? window.SALES_DB.hospitals : [];
+  const erpCustomers = window.ERP_CUSTOMERS_MASTER || [];
+
+  const candidateMap = new Map();
+  for (const h of dbHospitals) {
+    if (!h || !h.name) continue;
+    const key = (h.name || '').replace(/\s+/g, '');
+    candidateMap.set(key, { name: h.name, region: h.region || '세종충북', source: 'db' });
+  }
+  for (const c of erpCustomers) {
+    if (!c || !c.name) continue;
+    const cClean = (c.clean_name || c.name).replace(/\s+/g, '');
+    if (!candidateMap.has(cClean)) {
+      candidateMap.set(cClean, { name: c.clean_name || c.name, region: c.region || '기타', code: c.code, source: 'erp', rawName: c.name });
+    }
+  }
+
+  const allCandidates = Array.from(candidateMap.values());
+  let matches = allCandidates;
+
+  if (normQ) {
+    matches = allCandidates.filter(c => {
+      const cName = (c.name || '').toLowerCase().replace(/\s+/g, '');
+      const cRaw = (c.rawName || '').toLowerCase().replace(/\s+/g, '');
+      const cRegion = (c.region || '').toLowerCase();
+      return cName.includes(normQ) || cRaw.includes(normQ) || cRegion.includes(normQ);
+    });
+  }
+
+  container.innerHTML = '';
+  const top25 = matches.slice(0, 25);
+
+  if (top25.length === 0) {
+    container.innerHTML = `<div style="color:var(--text-muted); font-size:0.75rem; padding:12px; text-align:center;">일치하는 거래처(병원)가 없습니다.</div>`;
+    return;
+  }
+
+  top25.forEach(h => {
+    const item = document.createElement('div');
+    item.style.cssText = 'padding:8px 10px; background:rgba(255,255,255,0.05); border:1px solid var(--border-glass); border-radius:6px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; transition:background 0.15s; margin-bottom:2px;';
+    item.onmouseover = () => item.style.background = 'rgba(16,185,129,0.15)';
+    item.onmouseout = () => item.style.background = 'rgba(255,255,255,0.05)';
+    const tagSource = h.source === 'erp' ? 'ERP 정규' : '활동 거래처';
+    item.innerHTML = `
+      <div style="flex:1; min-width:0; padding-right:8px;">
+        <div style="font-weight:700; color:#fff; word-break:break-all;">🏥 ${escapeHtml(h.name)}</div>
+        <div style="font-size:0.68rem; color:var(--accent-emerald); margin-top:2px;">
+          권역: <strong>${escapeHtml(h.region || '기타')}</strong> | [${tagSource}]
+        </div>
+      </div>
+      <button type="button" class="mini-badge" style="background:var(--accent-emerald); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-weight:700; flex-shrink:0;">이동 선택</button>
+    `;
+    item.onclick = () => {
+      const newHospInput = document.getElementById('modal-deal-new-hospital');
+      if (newHospInput) newHospInput.value = h.name;
+      document.getElementById('modal-hosp-name').value = h.name;
+      document.getElementById('deal-hospital-search-box').style.display = 'none';
+      showToast(`🏢 거래처가 '${h.name}'(으)로 변경되었습니다. [변경사항 저장]을 누르면 이동됩니다.`);
+    };
+    container.appendChild(item);
+  });
 }
 
 function toggleDealProductSearchBox() {
@@ -1421,11 +1511,42 @@ async function saveModalChanges() {
   const newStatus = document.getElementById('modal-status-select').value;
   const newNote = document.getElementById('modal-note-input').value.trim();
   const newProductId = document.getElementById('modal-deal-new-product-id').value;
+  const newHospital = document.getElementById('modal-deal-new-hospital')?.value;
   
   const selectedReasons = [];
   document.querySelectorAll('input[name="modal_reason"]:checked').forEach(cb => {
     selectedReasons.push(cb.value);
   });
+
+  // If hospital changed
+  const prevHosp = targetDeal.hospital;
+  let isHospMoved = false;
+  if (newHospital && newHospital !== prevHosp) {
+    targetDeal.hospital = newHospital;
+    const erpH = (window.ERP_CUSTOMERS_MASTER || []).find(c => (c.clean_name || c.name) === newHospital);
+    const dbH = (window.SALES_DB.hospitals || []).find(h => h.name === newHospital);
+    targetDeal.region = erpH ? erpH.region : (dbH ? dbH.region : targetDeal.region);
+    isHospMoved = true;
+
+    // If newHospital is not in SALES_DB.hospitals, add it
+    if (!dbH) {
+      window.SALES_DB.hospitals.push({
+        name: newHospital,
+        region: targetDeal.region || '세종충북',
+        sales_reps: [targetDeal.sales_rep || '영업담당'],
+        contacts: ['원장/실무진'],
+        status: '활동병원',
+        last_activity_date: new Date().toISOString().slice(0, 10).replace(/-/g, '/'),
+        total_logs: 1,
+        demo_count: (newStatus.includes('데모') || newStatus.includes('샘플')) ? 1 : 0,
+        won_count: newStatus === '도입완료·납품' ? 1 : 0,
+        as_count: newStatus === 'A/S접수·처리' ? 1 : 0,
+        fail_count: newStatus === '영업실패·보류' ? 1 : 0,
+        products_active: [targetDeal.product_name]
+      });
+      window.SALES_DB.hospitals.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+    }
+  }
 
   // If product changed
   const prevProdId = targetDeal.product_id;
@@ -1466,7 +1587,11 @@ async function saveModalChanges() {
   // Sync to Supabase Cloud
   await syncPipelineDealToCloud(targetDeal);
 
-  showToast(`✅ [${targetDeal.hospital}] 품목 상태 및 정보가 성공적으로 수정되었습니다!`);
+  if (isHospMoved) {
+    showToast(`🏢 [${targetDeal.product_name}] 품목이 '${prevHosp}'에서 '${targetDeal.hospital}'(으)로 성공적으로 이동되었습니다!`);
+  } else {
+    showToast(`✅ [${targetDeal.hospital}] 품목 상태 및 정보가 성공적으로 수정되었습니다!`);
+  }
 }
 
 // ----------------------------------------------------
@@ -4711,12 +4836,74 @@ function openEditHospitalModal() {
   const contactsTextarea = document.getElementById('modal-edit-hosp-contacts');
   if (contactsTextarea) contactsTextarea.value = currentContacts;
 
+  const suggContainer = document.getElementById('modal-edit-hosp-suggestions');
+  if (suggContainer) suggContainer.innerHTML = '';
+
   modal.showModal();
 }
 
 function closeEditHospitalModal() {
   const modal = document.getElementById('edit-hospital-modal');
   if (modal) modal.close();
+}
+
+function onEditHospNameInput(val) {
+  const container = document.getElementById('modal-edit-hosp-suggestions');
+  if (!container) return;
+  const q = (val || '').trim();
+  if (q.length < 2) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const erpCustomers = window.ERP_CUSTOMERS_MASTER || [];
+  const dbHospitals = (window.SALES_DB && window.SALES_DB.hospitals) ? window.SALES_DB.hospitals : [];
+
+  const candidateMap = new Map();
+  for (const h of dbHospitals) {
+    if (!h || !h.name) continue;
+    candidateMap.set(h.name, { name: h.name, region: h.region || '천안아산' });
+  }
+  for (const c of erpCustomers) {
+    if (!c || !c.name) continue;
+    const name = c.clean_name || c.name;
+    if (!candidateMap.has(name)) {
+      candidateMap.set(name, { name: name, region: c.region || '기타' });
+    }
+  }
+
+  const matches = Array.from(candidateMap.values())
+    .filter(c => c.name.toLowerCase().includes(q.toLowerCase()))
+    .slice(0, 5);
+
+  if (matches.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = matches.map(m => {
+    const safeName = m.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    const safeRegion = (m.region || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    return `<button type="button" class="ai-hosp-chip" onclick="applySuggestedHospToEditModal('${safeName}', '${safeRegion}')">🏥 ${escapeHtml(m.name)} <span style="opacity:0.7; font-size:0.68rem;">(${m.region})</span></button>`;
+  }).join(' ');
+}
+
+function applySuggestedHospToEditModal(hospName, region) {
+  const input = document.getElementById('modal-edit-hosp-name-input');
+  if (input) input.value = hospName;
+  if (region) {
+    const regSelect = document.getElementById('modal-edit-hosp-region');
+    if (regSelect) {
+      for (const opt of regSelect.options) {
+        if (opt.value === region) {
+          regSelect.value = region;
+          break;
+        }
+      }
+    }
+  }
+  const container = document.getElementById('modal-edit-hosp-suggestions');
+  if (container) container.innerHTML = '';
 }
 
 async function saveEditedHospitalProfile() {
@@ -4774,6 +4961,23 @@ async function saveEditedHospitalProfile() {
         renamedDealCount++;
       }
     });
+
+    // 3. If newHospName already exists as another hospital in SALES_DB.hospitals, merge and remove duplicate old object
+    const otherHosp = (window.SALES_DB.hospitals || []).find(h => h.name === newHospName && h !== hosp);
+    if (otherHosp) {
+      otherHosp.sales_reps = Array.from(new Set((otherHosp.sales_reps || []).concat(hosp.sales_reps || [])));
+      otherHosp.contacts = Array.from(new Set((otherHosp.contacts || []).concat(hosp.contacts || [])));
+      otherHosp.total_logs = (otherHosp.total_logs || 0) + (hosp.total_logs || 0);
+      window.SALES_DB.hospitals = window.SALES_DB.hospitals.filter(h => h !== hosp);
+      
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('hospitals').delete().eq('name', oldHospName);
+        } catch(e) {
+          console.warn('Old hospital delete error on merge:', e);
+        }
+      }
+    }
 
     console.log(`⚡ Hospital renamed from [${oldHospName}] to [${newHospName}]: ${renamedLogCount} logs, ${renamedDealCount} deals updated.`);
     selectedHospitalName = newHospName;

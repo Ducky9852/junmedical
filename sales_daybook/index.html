@@ -16,11 +16,11 @@
   <meta name="apple-mobile-web-app-title" content="MEDI-SALES">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   
-  <link rel="stylesheet" href="app.css?v=jun-V1-010">
+  <link rel="stylesheet" href="app.css?v=jun-V1-011">
   <!-- Supabase JS Client (Loaded in Head for Realtime Multi-PC Sync) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="sales_database.js?v=jun-V1-010"></script>
-  <script src="app.js?v=jun-V1-010"></script>
+  <script src="sales_database.js?v=jun-V1-011"></script>
+  <script src="app.js?v=jun-V1-011"></script>
 </head>
 <body>
 
@@ -55,7 +55,7 @@
         <div class="brand-icon">🩺</div>
         <div class="brand-text">
           <div class="brand-title-wrap">
-            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-010</span>
+            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-011</span>
             <button type="button" class="btn-cloud-sync" onclick="fetchLatestFromSupabase(true)" title="클라우드 최신 실시간 동기화">🔄</button>
             <h1>MEDI-SALES 360°</h1>
           </div>
@@ -979,8 +979,23 @@
 
       <div class="modal-body">
         <div class="modal-field">
-          <label class="modal-label">병원명</label>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="modal-label" style="margin-bottom:0;">병원명 (거래처)</label>
+            <button type="button" class="mini-badge" style="background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid rgba(16,185,129,0.4); cursor:pointer;" onclick="toggleDealHospitalSearchBox()">
+              🏢 다른 병원으로 거래처 변경/이동
+            </button>
+          </div>
           <input type="text" id="modal-hosp-name" class="modal-input" readonly>
+          <input type="hidden" id="modal-deal-new-hospital">
+        </div>
+
+        <!-- Inline Hospital Search Box (Hidden by default) -->
+        <div id="deal-hospital-search-box" style="display:none; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:8px; padding:12px; margin-bottom:14px;">
+          <div style="font-size:0.8rem; font-weight:700; color:var(--accent-emerald); margin-bottom:6px;">
+            🏢 1,029개 이카운트 ERP 거래처 & 등록 병원 실시간 검색 및 이동
+          </div>
+          <input type="text" id="deal-hospital-search-input" class="modal-input" placeholder="병원명 또는 조리원명 검색... (예: 지엔, 미즈러브, 백제, 충무)" oninput="searchHospitalsForDeal(this.value)">
+          <div id="deal-hospital-search-results" style="max-height:160px; overflow-y:auto; margin-top:8px; display:flex; flex-direction:column; gap:4px;"></div>
         </div>
 
         <div class="modal-field">
@@ -1554,8 +1569,12 @@
         <input type="hidden" id="modal-edit-hosp-name-hidden">
         
         <div class="modal-field">
-          <label class="modal-label">🏥 거래처 (병원명) *</label>
-          <input type="text" id="modal-edit-hosp-name-input" class="modal-input" placeholder="병원명을 입력하세요" required>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="modal-label" style="margin-bottom:0;">🏥 거래처 (병원명) *</label>
+            <span style="font-size:0.7rem; color:var(--text-muted);">ERP 마스터 자동 연동</span>
+          </div>
+          <input type="text" id="modal-edit-hosp-name-input" class="modal-input" placeholder="병원명을 입력하세요" oninput="onEditHospNameInput(this.value)" required>
+          <div id="modal-edit-hosp-suggestions" style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;"></div>
         </div>
 
         <div class="modal-grid-2">
@@ -1652,7 +1671,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=jun-V1-010').then(reg => {
+        navigator.serviceWorker.register('sw.js?v=jun-V1-011').then(reg => {
           reg.update();
           console.log('⚡ PWA Service Worker Active & Updated:', reg.scope);
         }).catch(err => console.warn('SW register error:', err));
