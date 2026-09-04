@@ -11,8 +11,8 @@
     /* ── 동아제약 스타일 인사말 레이아웃 ── */
     .greeting-donga-layout {
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 56px;
+      grid-template-columns: 1fr 320px;
+      gap: 52px;
       align-items: start;
       margin-top: 24px;
     }
@@ -39,7 +39,9 @@
     .greeting-desc-wrap p {
       font-size: 15.5px;
       color: #334155;
-      line-height: 1.85;
+      line-height: 1.9;
+      text-align: justify;
+      text-justify: inter-word;
       word-break: keep-all;
       margin-bottom: 18px;
     }
@@ -55,30 +57,34 @@
       color: var(--navy);
       margin-top: 10px;
       margin-bottom: 0 !important;
+      text-align: left !important;
     }
 
     .greeting-profile-col {
       display: flex;
       flex-direction: column;
+      width: 100%;
+      max-width: 320px;
+      justify-self: end;
       position: sticky;
       top: 100px;
     }
 
     .greeting-photo-card {
       width: 100%;
-      height: 420px;
+      height: 380px;
       border-radius: 16px;
       overflow: hidden;
-      background: #f1f5f9;
+      background: #ffffff;
       border: 1px solid var(--border);
-      box-shadow: var(--shadow);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     }
 
     .greeting-photo-card img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center 15%;
+      object-position: center top;
       display: block;
     }
 
