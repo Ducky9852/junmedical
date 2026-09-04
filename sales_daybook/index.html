@@ -55,7 +55,7 @@
         <div class="brand-icon">🩺</div>
         <div class="brand-text">
           <div class="brand-title-wrap">
-            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-016</span>
+            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-017</span>
             <button type="button" class="btn-cloud-sync" onclick="fetchLatestFromSupabase(true)" title="클라우드 최신 실시간 동기화">🔄</button>
             <h1>MEDI-SALES 360°</h1>
           </div>
@@ -546,58 +546,58 @@
           </div>
         </div>
 
-        <!-- 6-Column Kanban Board (Demo & Sample Separated) -->
+        <!-- 6-Stage Sales Pipeline Kanban Board -->
         <div class="kanban-board">
           
-          <!-- Col 1: 제안 및 영업중 -->
+          <!-- Col 1: 타겟발굴 및 신규접촉 -->
+          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '신규접촉·타겟발굴')">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title" style="color:#a78bfa;">📍 1. 발굴·신규접촉</span>
+              <span class="kanban-count" id="kanban-count-contact">0</span>
+            </div>
+            <div class="item-list" id="kanban-cards-contact"></div>
+          </div>
+
+          <!-- Col 2: 제품제안 및 영업중 -->
           <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '제품소개·영업중')">
             <div class="kanban-col-header">
-              <span class="kanban-col-title" style="color:var(--accent-cyan);">🔵 제안·영업중</span>
+              <span class="kanban-col-title" style="color:var(--accent-cyan);">🔵 2. 제안·영업중</span>
               <span class="kanban-count" id="kanban-count-active">0</span>
             </div>
             <div class="item-list" id="kanban-cards-active"></div>
           </div>
 
-          <!-- Col 2: 의료장비 데모 (회수관리) -->
-          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '의료장비 데모')">
+          <!-- Col 3: 샘플 제공 및 임상평가 -->
+          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '샘플·임상평가')">
             <div class="kanban-col-header">
-              <span class="kanban-col-title" style="color:var(--accent-amber);">🔬 장비 데모</span>
-              <span class="kanban-count" id="kanban-count-demo">0</span>
-            </div>
-            <div class="item-list" id="kanban-cards-demo"></div>
-          </div>
-
-          <!-- Col 3: 소모품 샘플 평가 (임상테스트) -->
-          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '소모품 샘플')">
-            <div class="kanban-col-header">
-              <span class="kanban-col-title" style="color:#67e8f9;">🧪 소모품 샘플</span>
+              <span class="kanban-col-title" style="color:#2dd4bf;">🧪 3. 샘플·임상평가</span>
               <span class="kanban-count" id="kanban-count-sample">0</span>
             </div>
             <div class="item-list" id="kanban-cards-sample"></div>
           </div>
 
-          <!-- Col 4: 도입완료 및 납품 -->
+          <!-- Col 4: 견적 제출 및 도입심의 -->
+          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '견적·도입협의')">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title" style="color:var(--accent-amber);">📋 4. 견적·도입심의</span>
+              <span class="kanban-count" id="kanban-count-quote">0</span>
+            </div>
+            <div class="item-list" id="kanban-cards-quote"></div>
+          </div>
+
+          <!-- Col 5: 도입완료 및 납품 -->
           <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '도입완료·납품')">
             <div class="kanban-col-header">
-              <span class="kanban-col-title" style="color:var(--accent-emerald);">🟢 도입완료·납품</span>
+              <span class="kanban-col-title" style="color:var(--accent-emerald);">🟢 5. 도입완료·납품</span>
               <span class="kanban-count" id="kanban-count-won">0</span>
             </div>
             <div class="item-list" id="kanban-cards-won"></div>
           </div>
 
-          <!-- Col 5: A/S 및 클레임 -->
-          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, 'A/S접수·처리')">
-            <div class="kanban-col-header">
-              <span class="kanban-col-title" style="color:var(--accent-rose);">🔴 A/S·수리진행</span>
-              <span class="kanban-count" id="kanban-count-as">0</span>
-            </div>
-            <div class="item-list" id="kanban-cards-as"></div>
-          </div>
-
           <!-- Col 6: 영업실패 및 보류 -->
           <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '영업실패·보류')">
             <div class="kanban-col-header">
-              <span class="kanban-col-title" style="color:var(--text-secondary);">❌ 영업실패·보류</span>
+              <span class="kanban-col-title" style="color:var(--text-secondary);">❌ 6. 영업실패·보류</span>
               <span class="kanban-count" id="kanban-count-lost">0</span>
             </div>
             <div class="item-list" id="kanban-cards-lost"></div>
@@ -750,15 +750,14 @@
                 </select>
               </div>
               <div class="parsed-field-group">
-                <label class="parsed-field-lbl">📊 파이프라인 진행 상태</label>
+                <label class="parsed-field-lbl">📊 파이프라인 진행 단계 (6단계)</label>
                 <select id="parse-edit-sales-status" class="ai-edit-select highlight-yellow">
-                  <option value="제품소개·영업중">🔵 제품소개·영업중</option>
-                  <option value="의료장비 데모">🔬 의료장비 데모 (회수관리)</option>
-                  <option value="소모품 샘플">🧪 소모품 샘플 (임상피드백)</option>
-                  <option value="도입완료·납품">🟢 도입완료·납품</option>
-                  <option value="견적·의사결정">⚡ 견적·의사결정</option>
-                  <option value="A/S접수·처리">🔴 A/S접수·처리</option>
-                  <option value="영업실패·보류">❌ 영업실패·보류</option>
+                  <option value="신규접촉·타겟발굴">📍 1. 발굴·신규접촉</option>
+                  <option value="제품소개·영업중">🔵 2. 제품제안·영업중</option>
+                  <option value="샘플·임상평가">🧪 3. 샘플·임상평가</option>
+                  <option value="견적·도입협의">📋 4. 견적·도입심의</option>
+                  <option value="도입완료·납품">🟢 5. 도입완료·납품</option>
+                  <option value="영업실패·보류">❌ 6. 영업실패·보류</option>
                 </select>
               </div>
             </div>
@@ -1029,15 +1028,14 @@
         </div>
 
         <div class="modal-field">
-          <label class="modal-label">파이프라인 진행 상태 변경</label>
+          <label class="modal-label">파이프라인 진행 단계 변경 (표준 6단계)</label>
           <select id="modal-status-select" class="modal-select" onchange="onModalStatusChange()">
-            <option value="도입완료·납품">🟢 정규 도입 및 납품 완료</option>
-            <option value="의료장비 데모">🔬 의료장비 데모 (회수관리 대상)</option>
-            <option value="소모품 샘플">🧪 소모품 샘플 평가 (임상 피드백)</option>
-            <option value="제품소개·영업중">🔵 신규 소개 및 영업 제안중</option>
-            <option value="견적·의사결정">⚡ 견적 제출 및 의사결정중</option>
-            <option value="A/S접수·처리">🔴 긴급 A/S 및 수리 접수</option>
-            <option value="영업실패·보류">❌ 영업 실패 및 보류</option>
+            <option value="신규접촉·타겟발굴">📍 1. 발굴·신규접촉</option>
+            <option value="제품소개·영업중">🔵 2. 제품제안·영업중</option>
+            <option value="샘플·임상평가">🧪 3. 샘플·임상평가 (소모품/임상)</option>
+            <option value="견적·도입협의">📋 4. 견적·도입심의 (가격/원내심의)</option>
+            <option value="도입완료·납품">🟢 5. 도입완료·납품 (정규 수주)</option>
+            <option value="영업실패·보류">❌ 6. 영업실패·보류</option>
           </select>
         </div>
 

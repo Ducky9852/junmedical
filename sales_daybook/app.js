@@ -280,7 +280,7 @@ function syncHospitalsFromLogs() {
     }
   });
 
-  // 3. Deduplicate Pipeline Deals Array & Normalize Legacy Demo/Sample Status
+  // 3. Deduplicate Pipeline Deals Array & Normalize to 6 Standard Sales Stages
   const uniqueDealMap = new Map();
   (window.SALES_DB.pipeline || []).forEach(d => {
     if (!d || !d.hospital) return;
@@ -290,10 +290,16 @@ function syncHospitalsFromLogs() {
     const prodKey = (d.product_id || d.product_name || 'PROD_GENERAL').replace(/\s+/g, '');
     const dealKey = `${canonHospKey}__${prodKey}`;
 
-    // Auto-migrate legacy '데모·샘플평가' to independent '의료장비 데모' vs '소모품 샘플'
-    if (d.status === '데모·샘플평가') {
-      const isEquip = isEquipmentProduct(d.product_name, d.product_id, d.latest_note);
-      d.status = isEquip ? '의료장비 데모' : '소모품 샘플';
+    // Auto-migrate legacy statuses to standard 6 stages
+    if (d.status === '데모·샘플평가' || d.status === '소모품 샘플' || d.status === '의료장비 데모') {
+      if (!d.demo_info && (d.status === '의료장비 데모' || d.status === '데모·샘플평가')) {
+        d.demo_info = { date: d.last_date || '', note: d.latest_note || '데모 평가', status: '평가진행중' };
+      }
+      d.status = '샘플·임상평가';
+    } else if (d.status === '견적·의사결정' || d.status === '견적서제출·협의') {
+      d.status = '견적·도입협의';
+    } else if (d.status === '관계관리·접촉' || d.status === '접촉·니즈파악') {
+      d.status = '신규접촉·타겟발굴';
     }
 
     if (!uniqueDealMap.has(dealKey)) {
@@ -311,6 +317,62 @@ function syncHospitalsFromLogs() {
       }
     }
   });
+
+  // 3-1. Ensure all A/S logs in activity_logs are represented as active A/S deals in pipeline & A/S Control Center
+  (window.SALES_DB.activity_logs || []).forEach(log => {
+    if (!log || !log.hospital) return;
+    const isASLog = (log.action_type === 'A/S·클레임') || 
+                    ((log.title || '').includes('A/S')) || 
+                    ((log.note || '').includes('[긴급 A/S 접수]')) || 
+                    ((log.note || '').includes('A/S 요청'));
+    if (!isASLog) return;
+
+    const stdName = normalizeHospitalName(log.hospital);
+    const prodName = (log.products && log.products[0]) || log.product_name || log.title || '의료장비 A/S';
+    let prodCode = log.product_code || 'PROD_GENERAL';
+    if (prodCode === 'PROD_GENERAL') {
+      if (prodName.includes('253-804-030') || (log.note || '').includes('253-804-030')) prodCode = '253-804-030';
+      else if (prodName.includes('93473') || (log.note || '').includes('93473')) prodCode = '93473';
+      else if (prodName.includes('201.023') || (log.note || '').includes('201.023')) prodCode = '201.023';
+    }
+
+    const canonHospKey = getCanonicalHospitalKey(stdName);
+    const prodKey = prodCode.replace(/\s+/g, '');
+    const dealKey = `${canonHospKey}__${prodKey}`;
+
+    let deal = uniqueDealMap.get(dealKey);
+    if (!deal) {
+      deal = {
+        hospital: stdName,
+        region: log.region || inferRegion(stdName),
+        sales_rep: log.sales_rep || '영업담당',
+        product_id: prodCode,
+        product_name: prodName,
+        status: 'A/S접수·처리',
+        last_date: log.date || '',
+        latest_action: 'A/S·클레임',
+        latest_note: log.note || 'A/S 접수',
+        demo_info: null,
+        as_info: {
+          date: log.date || '',
+          note: log.note || 'A/S 접수',
+          status: '접수완료'
+        },
+        fail_reasons: []
+      };
+      uniqueDealMap.set(dealKey, deal);
+    } else {
+      if (!deal.as_info) {
+        deal.as_info = {
+          date: log.date || deal.last_date || '',
+          note: log.note || deal.latest_note || 'A/S 접수',
+          status: '접수완료'
+        };
+        deal.status = 'A/S접수·처리';
+      }
+    }
+  });
+
   window.SALES_DB.pipeline = Array.from(uniqueDealMap.values());
 
   // Normalize legacy action_types in activity logs
@@ -2667,36 +2729,62 @@ function renderProductPipeline(prodId) {
            (d.latest_note && d.latest_note.toLowerCase().includes(kanbanHospitalSearchQuery));
   });
   
-  const wonDeals = deals.filter(d => d.status === '도입완료·납품');
-  const demoDeals = deals.filter(d => d.status === '의료장비 데모' || (d.status === '데모·샘플평가' && isEquipmentProduct(d.product_name, d.product_id, d.latest_note)));
-  const sampleDeals = deals.filter(d => d.status === '소모품 샘플' || (d.status === '데모·샘플평가' && !isEquipmentProduct(d.product_name, d.product_id, d.latest_note)));
-  const activeDeals = deals.filter(d => d.status.includes('영업중') || d.status.includes('견적') || d.status.includes('관계관리'));
-  const asDeals = deals.filter(d => d.status === 'A/S접수·처리');
-  const lostDeals = deals.filter(d => d.status === '영업실패·보류');
+  // 6-Stage Sales Pipeline Partitioning:
+  // 1. 발굴·신규접촉 (contact)
+  const contactDeals = deals.filter(d => 
+    (d.status.includes('접촉') || d.status.includes('관계관리') || d.status.includes('발굴') || d.status.includes('니즈')) && 
+    !d.status.includes('영업중') && !d.status.includes('소개') && !d.status.includes('샘플') && !d.status.includes('견적')
+  );
+
+  // 2. 제품제안·영업중 (active)
+  const activeDeals = deals.filter(d => 
+    (d.status.includes('영업중') || d.status.includes('소개') || d.status.includes('제안')) && 
+    !d.status.includes('접촉') && !d.status.includes('견적') && !d.status.includes('샘플')
+  );
+
+  // 3. 샘플·임상평가 (sample)
+  const sampleDeals = deals.filter(d => 
+    d.status.includes('샘플') || d.status.includes('데모') || d.status.includes('평가')
+  );
+
+  // 4. 견적·도입심의 (quote)
+  const quoteDeals = deals.filter(d => 
+    d.status.includes('견적') || d.status.includes('심의') || d.status.includes('협의') || d.status.includes('결정')
+  );
+
+  // 5. 도입완료·납품 (won)
+  const wonDeals = deals.filter(d => 
+    d.status === '도입완료·납품' || d.status.includes('납품') || d.status.includes('수주')
+  );
+
+  // 6. 영업실패·보류 (lost)
+  const lostDeals = deals.filter(d => 
+    d.status === '영업실패·보류' || d.status.includes('실패') || d.status.includes('보류')
+  );
 
   const distinctHospCount = new Set(deals.map(d => d.hospital)).size;
   document.getElementById('pipeline-stat-total').textContent = isAll ? `${deals.length}건 (${distinctHospCount}개 병원)` : `${deals.length}개 병원`;
   const rate = deals.length > 0 ? Math.round((wonDeals.length / deals.length) * 100) : 0;
   document.getElementById('pipeline-stat-rate').textContent = `${rate}%`;
 
-  const elCountWon = document.getElementById('kanban-count-won');
-  if (elCountWon) elCountWon.textContent = wonDeals.length;
-  const elCountDemo = document.getElementById('kanban-count-demo');
-  if (elCountDemo) elCountDemo.textContent = demoDeals.length;
-  const elCountSample = document.getElementById('kanban-count-sample');
-  if (elCountSample) elCountSample.textContent = sampleDeals.length;
+  const elCountContact = document.getElementById('kanban-count-contact');
+  if (elCountContact) elCountContact.textContent = contactDeals.length;
   const elCountActive = document.getElementById('kanban-count-active');
   if (elCountActive) elCountActive.textContent = activeDeals.length;
-  const elCountAs = document.getElementById('kanban-count-as');
-  if (elCountAs) elCountAs.textContent = asDeals.length;
+  const elCountSample = document.getElementById('kanban-count-sample');
+  if (elCountSample) elCountSample.textContent = sampleDeals.length;
+  const elCountQuote = document.getElementById('kanban-count-quote');
+  if (elCountQuote) elCountQuote.textContent = quoteDeals.length;
+  const elCountWon = document.getElementById('kanban-count-won');
+  if (elCountWon) elCountWon.textContent = wonDeals.length;
   const elCountLost = document.getElementById('kanban-count-lost');
   if (elCountLost) elCountLost.textContent = lostDeals.length;
 
+  renderKanbanCards('contact', contactDeals);
   renderKanbanCards('active', activeDeals);
-  renderKanbanCards('demo', demoDeals);
   renderKanbanCards('sample', sampleDeals);
+  renderKanbanCards('quote', quoteDeals);
   renderKanbanCards('won', wonDeals);
-  renderKanbanCards('as', asDeals);
   renderKanbanCards('lost', lostDeals);
 }
 
@@ -2826,7 +2914,7 @@ async function handleDropToProductKanban(e, targetStatus) {
   deal.status = targetStatus;
   deal.last_date = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
 
-  if (targetStatus === '의료장비 데모' || targetStatus === '소모품 샘플' || targetStatus === '데모·샘플평가') {
+  if (targetStatus === '샘플·임상평가' || targetStatus === '의료장비 데모' || targetStatus === '소모품 샘플' || targetStatus === '데모·샘플평가') {
     deal.demo_info = { date: deal.last_date, note: `칸반 보드에서 [${targetStatus}] 진행으로 이동`, status: '평가진행중' };
     deal.fail_reasons = [];
   } else if (targetStatus === '도입완료·납품') {
@@ -2837,6 +2925,8 @@ async function handleDropToProductKanban(e, targetStatus) {
     if (!deal.fail_reasons || deal.fail_reasons.length === 0) {
       deal.fail_reasons = ['의료진 피드백/보류'];
     }
+  } else if (targetStatus === '신규접촉·타겟발굴' || targetStatus === '제품소개·영업중' || targetStatus === '견적·도입협의') {
+    deal.fail_reasons = [];
   } else if (targetStatus === 'A/S접수·처리') {
     deal.as_info = { date: deal.last_date, note: '칸반 보드에서 A/S 접수로 이동', status: '접수/진행중' };
   }
@@ -2856,9 +2946,9 @@ function recalcGlobalStats() {
   const stats = window.SALES_DB.stats;
 
   stats.won_deals = deals.filter(d => d.status === '도입완료·납품').length;
-  stats.active_demos = deals.filter(d => d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status === '평가진행중')).length;
-  stats.active_as = deals.filter(d => d.status === 'A/S접수·처리' || (d.as_info && d.as_info.status.includes('접수'))).length;
-  stats.progress_deals = deals.filter(d => d.status.includes('영업중') || d.status.includes('견적')).length;
+  stats.active_demos = deals.filter(d => d.status === '의료장비 데모' || d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status === '평가진행중')).length;
+  stats.active_as = deals.filter(d => d.status === 'A/S접수·처리' || (d.as_info && d.as_info.status && d.as_info.status.includes('접수'))).length;
+  stats.progress_deals = deals.filter(d => d.status.includes('영업중') || d.status.includes('견적') || d.status.includes('접촉') || d.status.includes('샘플')).length;
   stats.lost_deals = deals.filter(d => d.status === '영업실패·보류').length;
 
   initHeaderMetrics();
@@ -4614,13 +4704,18 @@ async function saveParsedLogToDB() {
     }
   }
 
-  // Auto-resolve pending A/S deals if this log completes A/S or replaces equipment with new purchase
+  // Auto-resolve pending A/S deals only if this log specifically completes A/S for THIS product or replaces THIS equipment
   let resolvedAsDeals = [];
-  if (salesStatus === '도입완료·납품' || actionType === '납품·설치' || noteVal.includes('A/S 불가') || noteVal.includes('새 제품 판매') || noteVal.includes('수리완료') || noteVal.includes('조치완료')) {
-    resolvedAsDeals = window.SALES_DB.pipeline.filter(d => (d.hospital || '').replace(/\s+/g, '') === cleanHospName && ((d.as_info && d.as_info.status.includes('접수')) || d.status === 'A/S접수·처리'));
+  const isASCompletion = noteVal.includes('A/S 수리완료') || noteVal.includes('A/S 조치완료') || noteVal.includes('수리 완료') || (actionType === 'A/S·클레임' && (salesStatus === '도입완료·납품' || noteVal.includes('출고')));
+  if (isASCompletion) {
+    resolvedAsDeals = window.SALES_DB.pipeline.filter(d => 
+      (d.hospital || '').replace(/\s+/g, '') === cleanHospName && 
+      (d.product_id === finalProdCode || d.product_name === finalProdName || finalProdCode === 'PROD_GENERAL') &&
+      ((d.as_info && d.as_info.status && d.as_info.status.includes('접수')) || d.status === 'A/S접수·처리')
+    );
     resolvedAsDeals.forEach(d => {
       if (d.as_info) {
-        d.as_info.status = 'A/S 조치완료';
+        d.as_info.status = '수리완료';
         d.as_info.resolved_date = dateStr;
       }
       d.status = '도입완료·납품';

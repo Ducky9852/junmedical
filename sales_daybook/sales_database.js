@@ -85359,6 +85359,27 @@ window.SALES_DB = {
       "updated_at": "2026-08-31T04:58:56.103144+00:00"
     },
     {
+      "id": 1634,
+      "hospital": "이화병원",
+      "region": "대전논산",
+      "sales_rep": "최진용",
+      "product_id": "253-804-030",
+      "product_name": "RZ Cystoscope (253-804-030)",
+      "status": "A/S접수·처리",
+      "last_date": "2026/08/31",
+      "latest_action": "A/S·클레임",
+      "latest_note": "[긴급 A/S 접수] 병원명: 이화병원 장비명: RZ 4mm 30도 접수증상: 렌즈2개 깨짐 88견적줌 대체기 지원여부: 데모 우리꺼 줌",
+      "demo_info": null,
+      "as_info": {
+        "date": "2026/08/31",
+        "note": "[긴급 A/S 접수] 병원명: 이화병원 장비명: RZ 4mm 30도 접수증상: 렌즈2개 깨짐 88견적줌 대체기 지원여부: 데모 우리꺼 줌",
+        "status": "접수완료"
+      },
+      "fail_reasons": [],
+      "created_at": "2026-08-31T09:01:20.138369+00:00",
+      "updated_at": "2026-08-31T09:01:20.138369+00:00"
+    },
+    {
       "id": 1449,
       "hospital": "봄날의외과의원",
       "region": "세종충북",
