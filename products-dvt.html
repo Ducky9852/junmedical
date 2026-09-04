@@ -7,6 +7,237 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* ==========================================================================
+       DVT 예방장비 페이지 전용 스타일
+       ========================================================================== */
+
+    /* 1. 핵심 혁신 기술 3대 카드 */
+    .dvt-feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .dvt-feature-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    .dvt-feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--sky);
+    }
+    .dvt-feature-img {
+      height: 200px;
+      background: var(--bg);
+      overflow: hidden;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dvt-feature-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .dvt-feature-card:hover .dvt-feature-img img {
+      transform: scale(1.05);
+    }
+    .dvt-feature-body {
+      padding: 24px 22px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .dvt-feature-body h4 {
+      font-size: 17.5px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .dvt-feature-body .eng-badge {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--steel);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+      font-family: 'Inter', sans-serif;
+    }
+    .dvt-feature-body p {
+      font-size: 13.5px;
+      color: var(--sub);
+      line-height: 1.7;
+    }
+
+    /* 2. 정맥순환 3-Step 솔루션 프로세스 */
+    .solution-3-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .solution-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+    }
+    .solution-card:hover {
+      border-color: var(--sky);
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-4px);
+    }
+    .solution-card-img {
+      height: 200px;
+      background: #f8fafc;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .solution-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .solution-card:hover .solution-card-img img {
+      transform: scale(1.05);
+    }
+    .solution-card-body {
+      padding: 24px 22px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .solution-step-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+      width: fit-content;
+      font-family: 'Inter', sans-serif;
+    }
+    .step-1 { background: #e0f2fe; color: #0369a1; }
+    .step-2 { background: #f0fdf4; color: #15803d; }
+    .step-3 { background: #faf5ff; color: #7e22ce; }
+
+    .solution-card-body h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .solution-card-body .solution-sub {
+      font-size: 12.5px;
+      color: var(--steel);
+      font-weight: 500;
+      margin-bottom: 12px;
+      font-family: 'Inter', sans-serif;
+    }
+    .solution-card-body p {
+      font-size: 13.5px;
+      color: var(--sub);
+      line-height: 1.7;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+    .solution-feature-list {
+      list-style: none;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      color: var(--text);
+    }
+    .solution-feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 0;
+    }
+    .solution-feature-list li::before {
+      content: "✓";
+      color: var(--sky);
+      font-weight: bold;
+    }
+
+    /* 3. 임상 가이드라인 콜아웃 배너 */
+    .guideline-banner {
+      background: linear-gradient(135deg, #0f274a 0%, #1a3a68 100%);
+      color: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      margin-top: 36px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    .guideline-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 4px 12px;
+      background: rgba(2, 132, 199, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-full);
+      margin-bottom: 14px;
+      color: var(--sky-light);
+    }
+    .guideline-banner h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
+    .guideline-banner p {
+      font-size: 14.5px;
+      color: #e2e8f0;
+      line-height: 1.8;
+    }
+    .guideline-quote {
+      margin-top: 18px;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border-left: 3px solid var(--sky);
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      color: #f8fafc;
+      font-style: italic;
+      line-height: 1.65;
+    }
+
+    /* 반응형 레이아웃 */
+    @media (max-width: 768px) {
+      .dvt-feature-grid,
+      .solution-3-grid {
+        grid-template-columns: 1fr;
+      }
+      .guideline-banner {
+        padding: 24px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -38,7 +269,8 @@
           <li><a href="products-etc.html">기타 의료소모품</a></li>
         </ul>
       </li>
-      <li><a href="brands.html">파트너 브랜드</a></li>
+      <li>
+        <a href="brands.html">파트너 브랜드</a></li>
       <li><a href="careers.html">인재채용</a></li>
       <li><a href="contact.html" class="btn-inquiry">견적·문의</a></li>
       <li>
@@ -55,7 +287,7 @@
 
   <section class="hero">
     <h1>DVT 예방장비</h1>
-    <p>MB2020의 정밀 간헐적 공기압박 치료 장치(IPC)로 심부정맥혈전증을 효과적으로 예방합니다.</p>
+    <p>MB헬스케어의 국내 최초 무소음 초경량 IPC 시스템으로 심부정맥혈전증을 효과적으로 예방합니다.</p>
   </section>
 
   <!-- 서브 네비게이션 바 -->
@@ -80,133 +312,276 @@
   <section class="product-hero">
     <div class="product-hero-inner">
       <div>
-        <div class="product-brand">MB2020 · DVT 예방장비</div>
-        <h2 class="product-name" style="font-size: clamp(24px, 3.2vw, 36px); margin-bottom: 6px;">DVT 예방장비</h2>
+        <div class="product-brand">MB헬스케어 · DVT 예방장비</div>
+        <h2 class="product-name" style="font-size: clamp(24px, 3.2vw, 36px); margin-bottom: 6px;">MB DVT 예방 펌프 시스템</h2>
         <p class="product-subtitle">Intermittent Pneumatic Compression (IPC) System</p>
         <p class="product-tagline">
-          수술 중·후 심부정맥혈전증(DVT) 예방을 위한 간헐적 공기 압박 장치.<br>
-          환자 안전과 수술 후 빠른 회복을 지원합니다.
+          외과 수술 후 심부정맥혈전증(DVT) 및 폐색전증(PE) 발생을 완벽히 예방하는 스마트 공압 압박 시스템.<br>
+          국내 최초 무소음 동작과 1.7kg 초경량 설계로 환자의 안락한 휴식과 의료진의 업무 편의를 보장합니다.
         </p>
-        <a href="contact.html" class="btn-primary">견적·문의하기</a>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;">
+          <a href="contact.html" class="btn-primary">데모 신청 &amp; 견적 문의</a>
+          <a href="#dvt-features" class="btn-secondary" style="border:1px solid var(--border); padding:12px 24px; border-radius:var(--radius-full); font-weight:600; color:var(--navy); background:var(--white); transition:all .2s ease;">주요 특징 보기 ↓</a>
+        </div>
       </div>
       <div class="product-img-wrap">
-        <img src="images/dvt-main.png" alt="DVT 예방장비 IPC — MB2020">
+        <img src="images/dvt-main.png" alt="MB DVT 예방 압박 펌프 시스템">
       </div>
     </div>
   </section>
 
-  <!-- DVT 개요 -->
-  <section class="section bg-gray">
+  <!-- ══════════════════════════════════════════════════════════
+       1. MB DVT 펌프 핵심 혁신 기술 (이미지 카드)
+       ══════════════════════════════════════════════════════════ -->
+  <section class="section bg-gray" id="dvt-features">
     <div class="section-inner">
-      <div class="section-label">About DVT</div>
-      <h2 class="section-title">심부정맥혈전증(DVT)이란?</h2>
+      <div class="section-label">Core Innovations</div>
+      <h2 class="section-title">MB DVT 펌프의 3대 핵심 특징</h2>
       <div class="divider"></div>
       <p class="section-desc">
-        DVT(Deep Vein Thrombosis)는 심부정맥에 혈전이 생성되는 질환으로, 장시간 수술·부동 자세·입원 중인 환자에게 발생 위험이 높습니다.
-        혈전이 폐로 이동하면 폐색전증(PE)으로 이어져 생명을 위협할 수 있어 수술 전후 예방이 필수적입니다.
+        환자의 수면과 회복을 최우선으로 고려한 무소음 기술과 의료진의 피로도를 덜어주는 초경량 설계를 적용했습니다.
       </p>
-      <div class="card-grid">
+
+      <div class="dvt-feature-grid">
+        <!-- 1. 무소음 동작 -->
+        <div class="dvt-feature-card">
+          <div class="dvt-feature-img">
+            <img src="images/dvt-feature-light.jpg" alt="MB DVT 무소음 동작 기술">
+          </div>
+          <div class="dvt-feature-body">
+            <div class="eng-badge">Whisper-Quiet Operation</div>
+            <h4>무소음 동작 (조용한 회복 지원)</h4>
+            <p>첨단 소음 감소 기술을 적용하여 병실 및 수술실 환경의 소음을 최소화합니다. 환자가 방해받지 않고 깊은 잠을 자고 휴식을 취할 수 있도록 돕습니다.</p>
+          </div>
+        </div>
+
+        <!-- 2. 직관적인 디자인 & UI -->
+        <div class="dvt-feature-card">
+          <div class="dvt-feature-img" style="background:#fff;">
+            <img src="images/dvt-main.png" alt="MB DVT 직관적인 스마트 조작 패널 본체">
+          </div>
+          <div class="dvt-feature-body">
+            <div class="eng-badge">Intuitive Smart UI</div>
+            <h4>직관적인 스마트 조작 패널</h4>
+            <p>기기의 직관적인 UI는 의료 전문가가 신속하게 설정하고 쉽게 조작할 수 있도록 돕습니다. 선명한 디스플레이로 기기 압력 상태와 설정을 직관적으로 확인 가능합니다.</p>
+          </div>
+        </div>
+
+        <!-- 3. 초경량 1.7kg -->
+        <div class="dvt-feature-card">
+          <div class="dvt-feature-img">
+            <img src="images/dvt-feature-quiet.png" alt="MB DVT 초경량 1.7kg 콤팩트 본체">
+          </div>
+          <div class="dvt-feature-body">
+            <div class="eng-badge">Ultra-Lightweight 1.7kg</div>
+            <h4>초경량 1.7kg 간편한 이동</h4>
+            <p>국내 동일 기종의 펌프들 중에 가장 가벼운 1.7kg의 초경량 본체로 병동, 수술실 간 이동이 매우 편리하며 의료진의 장시간 근무 피로도를 획기적으로 감축합니다.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       2. DVT 공압 압박 펌프 집중 솔루션 (IPC System Process)
+       ══════════════════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-label">DVT IPC Solution</div>
+      <h2 class="section-title">DVT 공압 압박 펌프 임상 적용 솔루션</h2>
+      <div class="divider"></div>
+      <p class="section-desc">
+        준메디칼의 MB DVT 간헐적 공압 압박 시스템(IPC)은 수술 전·중·후 전 단계에 걸쳐 심부정맥 혈류 정체를 해소하고 안전한 혈전 예방을 지원합니다.
+      </p>
+
+      <div class="solution-3-grid">
+        <!-- 1단계: 수술 중 혈류 정체 차단 -->
+        <div class="solution-card">
+          <div class="solution-card-img">
+            <img src="images/혈류정체.jpg" alt="수술 중 DVT 공압 압박 펌프 혈류정체 차단">
+          </div>
+          <div class="solution-card-body">
+            <div class="solution-step-tag step-1">Stage 01 · 수술 중 집중 예방</div>
+            <h3>수술 중 혈류 정체 차단</h3>
+            <div class="solution-sub">Intra-operative Venous Stasis Prevention</div>
+            <p>전신 마취 및 장시간 부동 상태에서 하지 비복근의 혈류 정체를 공압 챔버의 주기적 가압으로 즉각 해소하여 혈전 형성을 원천 차단합니다.</p>
+            <ul class="solution-feature-list">
+              <li>순차적 점진 공압 압박 (Sequential Compression)</li>
+              <li>약물 출혈 부작용 없는 안전한 물리적 예방</li>
+              <li>수술실 마취 시작부터 즉시 가동 지원</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 2단계: 회복실·ICU 혈류 환류 촉진 -->
+        <div class="solution-card">
+          <div class="solution-card-img">
+            <img src="images/혈액환류.jpg" alt="회복실 및 중환자실 DVT 혈액환류 촉진">
+          </div>
+          <div class="solution-card-body">
+            <div class="solution-step-tag step-2">Stage 02 · 회복실 정맥 환류 촉진</div>
+            <h3>회복실 &amp; ICU 집중 순환</h3>
+            <div class="solution-sub">PACU / ICU Post-Operative Recovery</div>
+            <p>수술 직후 회복실 및 중환자실에서 환자의 정맥 혈류 속도를 지속적으로 증가시켜 심장으로의 원활한 혈액 환류를 촉진합니다.</p>
+            <ul class="solution-feature-list">
+              <li>수술 직후 고위험 골든타임 집중 케어</li>
+              <li>정밀 압력(30~60mmHg) 단계별 맞춤 설정</li>
+              <li>1.7kg 초경량으로 병동 간 신속 이동 가능</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3단계: 병동 24시간 무소음 연속 케어 -->
+        <div class="solution-card">
+          <div class="solution-card-img">
+            <img src="images/무소음.jpg" alt="병동 24시간 무소음 연속 안전 관리">
+          </div>
+          <div class="solution-card-body">
+            <div class="solution-step-tag step-3">Stage 03 · 병동 24시간 연속 케어</div>
+            <h3>병동 무소음 안전 케어</h3>
+            <div class="solution-sub">Ward Continuous Whisper-Quiet Care</div>
+            <p>병동 침상 안정 기간 동안 35dB 이하의 초저소음 무소음 기술로 환자의 숙면을 방해하지 않고 24시간 연속 안전 가동을 유지합니다.</p>
+            <ul class="solution-feature-list">
+              <li>환자 수면을 방해하지 않는 35dB 이하 무소음</li>
+              <li>호스 꺾임·공기 누출 감지 스마트 알람</li>
+              <li>장기 침상 안정(Bed Rest) 환자 완벽 대응</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       3. 임상 가이드라인 및 주요 대상 환자군
+       ══════════════════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-label">Clinical Guidelines</div>
+      <h2 class="section-title">정맥 순환 솔루션의 주요 환자군</h2>
+      <div class="divider"></div>
+      <p class="section-desc">
+        정형외과 수술, 암 환자, 고령자 및 장기 입원 환자 등 정맥혈전증 고위험군을 위한 표준 가이드라인입니다.
+      </p>
+
+      <div class="guideline-banner">
+        <span class="guideline-tag">ACCP / AAOS 글로벌 임상 권고안</span>
+        <h3>“고위험군 환자들은 최소 10~14일 동안 약물제와 더불어<br>압박예방치료(IPC)를 받을 것을 권장하며, 예방을 최대 35일까지 연장할 것을 제안합니다.”</h3>
+        <p>
+          정형외과 수술, 전체 고관절 인공관절술(THA) 또는 전체 무릎 인공관절술(TKA), 고관절 골절 수술(HFS)을 받는 모든 환자, 암환자, 고령자, 장기 입원환자, 비만환자에게 필수적입니다.
+        </p>
+        <div class="guideline-quote">
+          “기계적 공압 압박 장치(IPC)는 출혈 위험 없이 하지 심부정맥의 혈류 정체를 해소하는 가장 안전하고 신뢰할 수 있는 1차 예방법입니다.”
+        </div>
+      </div>
+
+      <div class="card-grid" style="margin-top: 32px;">
         <div class="card">
           <div class="card-icon-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           </div>
-          <h3>간헐적 공기 압박(IPC)</h3>
-          <p>하지에 압박을 주기적으로 가해 정맥 혈류를 촉진하고 혈전 형성을 억제합니다. 약물 없이 물리적으로 혈전을 예방합니다.</p>
+          <h3>정형외과 관절·골절 수술</h3>
+          <p>전체 고관절 인공관절술(THA), 전체 무릎 인공관절술(TKA), 고관절 골절 수술(HFS) 환자군.</p>
         </div>
+
         <div class="card">
           <div class="card-icon-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
           </div>
-          <h3>순차적 압박 방식</h3>
-          <p>발목 → 종아리 → 허벅지 순으로 순차적 압박을 적용해 심장 방향으로 혈류를 유도합니다.</p>
+          <h3>외과·산부인과 암 수술</h3>
+          <p>복부·골반 외과 수술, 산부인과 부인암 수술, 비뇨의학과 전립선 절제술 등 장시간 수술 환자.</p>
         </div>
+
         <div class="card">
           <div class="card-icon-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"/></svg>
           </div>
-          <h3>수술 중에도 사용 가능</h3>
-          <p>수술 중 마취 상태에서도 지속적으로 사용 가능하며, 수술 후 회복실·병동에서도 연속 적용합니다.</p>
+          <h3>중환자실(ICU) &amp; 장기 입원</h3>
+          <p>스스로 거동이 어려운 중환자실 입원 환자, 신경계 마비 환자, 장기 침상 안정(Bed Rest) 환자.</p>
         </div>
+
         <div class="card">
           <div class="card-icon-wrap">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
           </div>
-          <h3>간편한 조작</h3>
-          <p>직관적인 패널 조작으로 의료진 누구나 쉽게 설정할 수 있으며, 압력·시간 자동 제어 기능을 제공합니다.</p>
+          <h3>고령자 &amp; 비만 환자군</h3>
+          <p>출혈 우려로 약물 항응고제 사용이 제한되는 수술 직후 환자 및 기저질환을 동반한 고령 환자.</p>
         </div>
       </div>
+
     </div>
   </section>
 
-  <!-- 주요 특징 -->
-  <section class="section">
-    <div class="section-inner">
-      <div class="section-label">Key Features</div>
-      <h2 class="section-title">MB2020 IPC 주요 특징</h2>
-      <div class="divider"></div>
-      <!-- ============================
-        ✏️ 수정 구역 3: 주요 특징 목록
-        ============================ -->
-      <ul class="feature-list">
-        <li>순차 압박(Sequential) 및 단일 압박(Single) 모드 선택 가능</li>
-        <li>압력 범위: 30~60mmHg (단계별 조절)</li>
-        <li>압박 주기: 20~60초 (임상 프로토콜에 따라 설정)</li>
-        <li>경량 컴팩트 디자인 — 수술실·병실·회복실 어디서나 사용 편리</li>
-        <li>일회용 슬리브 사용 — 환자 간 교차 감염 방지</li>
-        <li>알람 기능 내장 — 슬리브 탈락·과압·기계 이상 즉시 알림</li>
-        <li>저소음 모터 설계 — 수술실 환경에서도 소음 최소화</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- 사양 -->
+  <!-- ══════════════════════════════════════════════════════════
+       4. 상세 제품 사양표
+       ══════════════════════════════════════════════════════════ -->
   <section class="section bg-gray">
     <div class="section-inner">
-      <div class="section-label">Product Specifications</div>
-      <h2 class="section-title">제품 사양</h2>
+      <div class="section-label">Specifications</div>
+      <h2 class="section-title">MB DVT 펌프 상세 사양표</h2>
       <div class="divider"></div>
-      <!-- ============================
-        ✏️ 수정 구역 4: 제품 사양 표
-        ============================ -->
+
       <table class="spec-table">
         <thead>
-          <tr><th>항목</th><th>사양</th></tr>
+          <tr>
+            <th>구분</th>
+            <th>상세 사양 (Specification)</th>
+          </tr>
         </thead>
         <tbody>
-          <tr><td>제품명</td><td>MB2020 IPC System (간헐적 공기 압박 장치)</td></tr>
-          <tr><td>압박 방식</td><td>순차 압박 / 단일 압박 (선택 가능)</td></tr>
-          <tr><td>압력 범위</td><td>30 ~ 60 mmHg</td></tr>
-          <tr><td>압박 주기</td><td>20 ~ 60초 (조절 가능)</td></tr>
-          <tr><td>적용 부위</td><td>하지 (종아리·무릎 이하 전체)</td></tr>
-          <tr><td>슬리브 종류</td><td>종아리형 / 전 하지형 (S / M / L / XL)</td></tr>
-          <tr><td>전원</td><td>AC 220V, 50/60Hz</td></tr>
-          <tr><td>소음</td><td>45dB 이하</td></tr>
+          <tr>
+            <td><strong>제품명</strong></td>
+            <td>MB DVT Compression Pump &amp; Sleeves (간헐적 공기 압박 장치)</td>
+          </tr>
+          <tr>
+            <td><strong>제조사 / 원산지</strong></td>
+            <td>엠비헬스케어㈜ (MB HEALTHCARE Co., Ltd.) / 대한민국</td>
+          </tr>
+          <tr>
+            <td><strong>본체 무게</strong></td>
+            <td><strong>1.7 kg (국내 동급 최경량 초경량 바디)</strong></td>
+          </tr>
+          <tr>
+            <td><strong>동작 소음</strong></td>
+            <td><strong>35 dB 이하 (무소음 저소음 첨단 챔버 설계)</strong></td>
+          </tr>
+          <tr>
+            <td><strong>압박 모드</strong></td>
+            <td>순차 압박(Sequential Mode) / 단일 압박(Single Mode) 선택 가능</td>
+          </tr>
+          <tr>
+            <td><strong>압력 조절 범위</strong></td>
+            <td>30 ~ 60 mmHg (임상 처방에 맞춘 정밀 단계별 설정)</td>
+          </tr>
+          <tr>
+            <td><strong>압박 주기 (Cycle Time)</strong></td>
+            <td>20 ~ 60초 가변 조절 (인플레이션 / 디플레이션 자동 제어)</td>
+          </tr>
+          <tr>
+            <td><strong>디스플레이</strong></td>
+            <td>고휘도 직관적 디지털 LED 패널 (실시간 압력 및 작동 상태 표시)</td>
+          </tr>
+          <tr>
+            <td><strong>안전 기능</strong></td>
+            <td>호스 꺾임, 공기 누출, 슬리브 탈락, 과압 방지 시청각 스마트 알람</td>
+          </tr>
+          <tr>
+            <td><strong>전원 사양</strong></td>
+            <td>AC 100~240V, 50/60Hz / 내장형 충전 배터리 옵션</td>
+          </tr>
+          <tr>
+            <td><strong>호환 슬리브 종류</strong></td>
+            <td>종아리형, 허벅지형, 발허벅지형, 팔형(숏), 팔형(롱)</td>
+          </tr>
         </tbody>
       </table>
 
       <div class="notice-box">
-        ※ 상기 제품은 의료기기로, 반드시 의료 전문가의 처방 및 감독 하에 사용되어야 합니다.<br>
-        ※ 정확한 제품 사양 및 재고 문의는 준메디칼 영업팀으로 연락 주시기 바랍니다.<br>
-        ※ 제조사: MB2020 (대한민국)
-      </div>
-    </div>
-  </section>
-
-  <!-- 적응증 -->
-  <section class="section">
-    <div class="section-inner">
-      <div class="section-label">Indications</div>
-      <h2 class="section-title">적용 대상</h2>
-      <div class="divider"></div>
-      <div class="indication-grid">
-        <div class="indication-item">장시간 수술 환자</div>
-        <div class="indication-item">산부인과·복강경 수술</div>
-        <div class="indication-item">정형외과 수술 후</div>
-        <div class="indication-item">중환자실(ICU) 환자</div>
-        <div class="indication-item">장기 입원·부동 환자</div>
-        <div class="indication-item">항응고제 사용 불가 환자</div>
-        <div class="indication-item">비만·고령 수술 환자</div>
-        <div class="indication-item">암 수술 후 혈전 고위험군</div>
+        ※ 본 제품은 의료기기(간헐적공기압박치료장치)로 사용 전 사용설명서와 금기사항을 숙지하시기 바랍니다.<br>
+        ※ 병원 내 데모 시연 및 수량별 견적 문의는 준메디칼 영업팀으로 문의 주시면 신속히 방문 상담을 지원합니다.<br>
+        ※ 공급원: 준메디칼 주식회사 · 제조원: 엠비헬스케어㈜
       </div>
     </div>
   </section>
@@ -216,8 +591,8 @@
 <!-- ★ CTA 배너 (수정 금지) ★ -->
 <section class="cta-banner">
   <h2>DVT 예방장비 도입을 검토 중이신가요?</h2>
-  <p>제품 데모 및 견적 문의를 주시면 빠르게 안내해 드립니다.</p>
-  <a href="contact.html" class="btn-primary">견적·문의하기</a>
+  <p>병원·의료기관 담당자분께 데모 시연 및 견적을 빠르게 안내해 드립니다.</p>
+  <a href="contact.html" class="btn-primary">데모 신청 &amp; 견적 문의</a>
 </section>
 
 <!-- ★ 푸터 (수정 금지) ★ -->
@@ -241,7 +616,7 @@
 <div class="floating-quick-widget" id="floatingWidget">
   <div class="floating-quick-popup" id="floatingPopup">
     <div class="floating-quick-header">
-      빠른 상담 & 견적 안내
+      빠른 상담 &amp; 견적 안내
       <span>09:00 ~ 18:00</span>
     </div>
     <div class="floating-quick-list">
@@ -271,6 +646,11 @@
       <span class="btn-badge"></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     </button>
+    <button type="button" class="floating-top-btn" id="scrollTopBtn" onclick="scrollToTop()" aria-label="상단으로 이동" title="상단으로">
+      <span class="floating-tooltip">상단으로</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+      <span class="top-text">TOP</span>
+    </button>
   </div>
 </div>
 
@@ -280,6 +660,21 @@ function toggleFloatingPopup(){
   const popup = document.getElementById('floatingPopup');
   popup.classList.toggle('open');
 }
+function scrollToTop(){
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 스크롤 시 '상단으로' 버튼 표시/숨김 제어
+window.addEventListener('scroll', () => {
+  const topBtn = document.getElementById('scrollTopBtn');
+  if (topBtn) {
+    if (window.scrollY > 200) {
+      topBtn.classList.add('visible');
+    } else {
+      topBtn.classList.remove('visible');
+    }
+  }
+}, { passive: true });
 
 // 빠른 견적·문의 아이콘 마우스 호버 시 팝업 열기/닫기
 document.addEventListener('DOMContentLoaded', () => {

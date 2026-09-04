@@ -1467,7 +1467,8 @@ img {
 
 
 .floating-quick-btn,
-.floating-kakao-btn {
+.floating-kakao-btn,
+.floating-top-btn {
   width: 54px;
   height: 54px;
   border-radius: 50%;
@@ -1477,7 +1478,7 @@ img {
   cursor: pointer;
   border: none;
   text-decoration: none;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, opacity 0.25s ease, visibility 0.25s ease;
   position: relative;
   box-sizing: border-box;
 }
@@ -1524,6 +1525,57 @@ img {
   width: 26px;
   height: 26px;
   fill: #191919;
+}
+
+.floating-top-btn {
+  background: var(--white);
+  color: var(--navy);
+  border: 1.5px solid var(--border);
+  box-shadow: 0 6px 20px rgba(15, 39, 74, 0.14);
+  flex-direction: column;
+  gap: 1px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px) scale(0.9);
+  pointer-events: none;
+}
+
+.floating-top-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.floating-top-btn:hover {
+  background: var(--navy);
+  color: var(--white);
+  border-color: var(--navy);
+  transform: translateY(-3px) scale(1.08);
+  box-shadow: 0 10px 26px rgba(15, 39, 74, 0.25);
+}
+
+.floating-top-btn svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.floating-top-btn:hover svg {
+  transform: translateY(-2px);
+}
+
+.floating-top-btn .top-text {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  font-family: 'Inter', sans-serif;
+  line-height: 1;
+}
+
+.floating-top-btn:hover .floating-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
 }
 
 .floating-tooltip {
@@ -1575,7 +1627,8 @@ img {
     gap: 10px;
   }
   .floating-quick-btn,
-  .floating-kakao-btn {
+  .floating-kakao-btn,
+  .floating-top-btn {
     width: 48px;
     height: 48px;
   }
@@ -1584,6 +1637,14 @@ img {
     width: 22px;
     height: 22px;
   }
+  .floating-top-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  .floating-top-btn .top-text {
+    font-size: 8px;
+  }
+}
   .floating-tooltip {
     display: none;
   }

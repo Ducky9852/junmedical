@@ -255,6 +255,11 @@
       <span class="btn-badge"></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     </button>
+    <button type="button" class="floating-top-btn" id="scrollTopBtn" onclick="scrollToTop()" aria-label="상단으로 이동" title="상단으로">
+      <span class="floating-tooltip">상단으로</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+      <span class="top-text">TOP</span>
+    </button>
   </div>
 </div>
 
@@ -266,6 +271,21 @@ function toggleFloatingPopup(){
   const popup = document.getElementById('floatingPopup');
   popup.classList.toggle('open');
 }
+function scrollToTop(){
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 스크롤 시 '상단으로' 버튼 표시/숨김 제어
+window.addEventListener('scroll', () => {
+  const topBtn = document.getElementById('scrollTopBtn');
+  if (topBtn) {
+    if (window.scrollY > 200) {
+      topBtn.classList.add('visible');
+    } else {
+      topBtn.classList.remove('visible');
+    }
+  }
+}, { passive: true });
 
 // 빠른 견적·문의 아이콘 마우스 호버 시 팝업 열기/닫기
 document.addEventListener('DOMContentLoaded', () => {

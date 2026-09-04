@@ -7,6 +7,339 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* ==========================================================================
+       수술포·멸균포 페이지 전용 스타일
+       ========================================================================== */
+    
+    /* 1. 원단 기술 섹션 (SM(MM)S Structure) */
+    .fabric-split-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 36px;
+      align-items: center;
+      margin-top: 28px;
+    }
+    .fabric-img-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+    .fabric-img-card img {
+      width: 100%;
+      height: auto;
+      border-radius: var(--radius);
+      display: block;
+      margin: 0 auto;
+    }
+    .fabric-img-caption {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--sub);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .fabric-info-wrap h3 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .fabric-info-wrap p {
+      font-size: 14.5px;
+      color: var(--sub);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+    .fabric-badge-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+    .fabric-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: var(--sky-light);
+      color: var(--navy);
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* 5대 핵심 보호 기능 그리드 */
+    .protection-5-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 36px;
+    }
+    .protection-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 18px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .protection-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: var(--sky);
+    }
+    .protection-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius);
+      background: var(--sky-subtle);
+      color: var(--sky);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .protection-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+    .protection-card h4 {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+    .protection-card .eng-title {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--sky);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+      font-family: 'Inter', sans-serif;
+    }
+    .protection-card p {
+      font-size: 13px;
+      color: var(--sub);
+      line-height: 1.65;
+      margin-top: auto;
+    }
+
+    /* 2. 진료과별 수술포 & 수술팩 라인업 그리드 */
+    .pack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
+      gap: 22px;
+      margin-top: 32px;
+    }
+    .pack-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .pack-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--sky);
+    }
+    .pack-card-img {
+      position: relative;
+      height: 190px;
+      background: var(--bg);
+      overflow: hidden;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .pack-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .pack-card:hover .pack-card-img img {
+      transform: scale(1.06);
+    }
+    .pack-category-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(15, 39, 74, 0.85);
+      backdrop-filter: blur(4px);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.02em;
+    }
+    .pack-card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .pack-card-body h4 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .pack-card-body .pack-en {
+      font-size: 12px;
+      color: var(--steel);
+      font-weight: 500;
+      margin-bottom: 12px;
+      font-family: 'Inter', sans-serif;
+    }
+    .pack-card-body p {
+      font-size: 13.5px;
+      color: var(--sub);
+      line-height: 1.65;
+      margin-bottom: 14px;
+    }
+    .pack-items-list {
+      list-style: none;
+      padding: 10px 12px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      margin-bottom: 16px;
+      font-size: 12.5px;
+      color: var(--text);
+    }
+    .pack-items-list li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 0;
+    }
+    .pack-items-list li::before {
+      content: "•";
+      color: var(--sky);
+      font-weight: bold;
+    }
+    .pack-footer {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .pack-pill {
+      font-size: 11.5px;
+      padding: 3px 8px;
+      background: var(--sky-subtle);
+      color: var(--sky);
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+    }
+    .pack-inquiry-btn {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--navy);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.2s ease;
+    }
+    .pack-inquiry-btn:hover {
+      color: var(--sky);
+    }
+
+    /* 3. 투톤 멸균포 (2-Tone Sterilization Wrap) 섹션 */
+    .wrap-showcase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 36px;
+      align-items: center;
+      margin-top: 24px;
+    }
+    .wrap-img-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      text-align: center;
+    }
+    .wrap-img-card img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      display: block;
+    }
+    .wrap-feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .wrap-feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .wrap-feature-num {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-full);
+      background: var(--navy);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .wrap-feature-text h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .wrap-feature-text p {
+      font-size: 13px;
+      color: var(--sub);
+      line-height: 1.6;
+    }
+
+    /* 반응형 레이아웃 조정 */
+    @media (max-width: 960px) {
+      .fabric-split-grid,
+      .wrap-showcase-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .wrap-img-card img {
+        height: 260px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -38,7 +371,8 @@
           <li><a href="products-etc.html">기타 의료소모품</a></li>
         </ul>
       </li>
-      <li><a href="brands.html">파트너 브랜드</a></li>
+      <li>
+        <a href="brands.html">파트너 브랜드</a></li>
       <li><a href="careers.html">인재채용</a></li>
       <li><a href="contact.html" class="btn-inquiry">견적·문의</a></li>
       <li>
@@ -81,13 +415,16 @@
     <div class="product-hero-inner">
       <div>
         <div class="product-brand">세종헬스케어 · 수술포·멸균포</div>
-        <h2 class="product-name" style="font-size: clamp(24px, 3.2vw, 36px); margin-bottom: 6px;">수술포 · 멸균포</h2>
-        <p class="product-subtitle">Surgical Drape &amp; Sterilization Wrap</p>
+        <h2 class="product-name" style="font-size: clamp(24px, 3.2vw, 36px); margin-bottom: 6px;">수술포 · 멸균포 &amp; 수술팩</h2>
+        <p class="product-subtitle">Surgical Drapes, Specialty Packs &amp; Sterilization Wrap</p>
         <p class="product-tagline">
-          수술 부위별 맞춤 설계로 감염을 차단하고 청결한 수술 환경을 유지합니다.<br>
-          엄격한 품질관리와 안정적인 공급으로 전국 의료기관의 신뢰를 받고 있습니다.
+          진료과·수술 부위별 최적화된 맞춤 설계와 감염 차단 Spun-Melt 원단 기술을 적용하여<br>
+          의료진에게는 수술의 편의성을, 환자에게는 안전하고 쾌적한 멸균 수술 환경을 보장합니다.
         </p>
-        <a href="contact.html" class="btn-primary">견적·문의하기</a>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;">
+          <a href="contact.html" class="btn-primary">견적·납품 문의하기</a>
+          <a href="#drape-packs" class="btn-secondary" style="border:1px solid var(--border); padding:12px 24px; border-radius:var(--radius-full); font-weight:600; color:var(--navy); background:var(--white); transition:all .2s ease;">진료과별 제품 보기 ↓</a>
+        </div>
       </div>
       <div class="product-img-wrap">
         <img src="images/drape-main.png" alt="수술포·멸균포 — 세종헬스케어">
@@ -95,158 +432,509 @@
     </div>
   </section>
 
-  <!-- 제품 개요 -->
+  <!-- ══════════════════════════════════════════════════════════
+       1. 세종헬스케어 원단 특성 및 기술 (SM(MM)S Structure)
+       ══════════════════════════════════════════════════════════ -->
   <section class="section bg-gray">
     <div class="section-inner">
-      <div class="section-label">Product Overview</div>
-      <!-- ============================
-        ✏️ 수정 구역 3: 제품 개요 카드
-        카드 추가/수정 시 .card 블록 복사해서 편집
-        ============================ -->
-      <h2 class="section-title">안전한 수술 환경의 시작</h2>
+      <div class="section-label">Fabric Technology</div>
+      <h2 class="section-title">최고급 Spun-Melt 원단의 특성</h2>
       <div class="divider"></div>
       <p class="section-desc">
-        세종헬스케어의 수술포·멸균포는 국내 의료기기 기준에 적합한 소재와 공정으로 제조됩니다.
-        수술 부위별 최적화된 설계로 의료진의 편의성을 높이고 감염 위험을 최소화합니다.
+        세종헬스케어의 수술가운과 수술포는 엄선된 고품질 Spun-Melt 다층 부직포로 제조됩니다.
+        뛰어난 방수성, 내혈성 및 항균 성능으로 혈액·체액 누수를 완벽히 차단하며 우수한 통기성을 제공합니다.
       </p>
-      <div class="card-grid">
-        <div class="card">
-          <div class="card-icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+
+      <div class="fabric-split-grid">
+        <div class="fabric-img-card">
+          <img src="images/drape-fabric-structure.jpg" alt="세종헬스케어 SM(MM)S 원단 다층 구조 다이어그램">
+          <div class="fabric-img-caption">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            원단의 SM(MM)S 5중 다층 복합 부직포 구조도
           </div>
-          <h3>감염 차단 소재</h3>
-          <p>SMS(Spunbond-Meltblown-Spunbond) 복합 부직포 소재로 우수한 방수성과 세균 차단 효과를 제공합니다.</p>
         </div>
-        <div class="card">
-          <div class="card-icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.848 8.25l1.536.887M7.848 8.25a3 3 0 11-5.196-3 3 3 0 015.196 3zm1.536.887a2.165 2.165 0 011.083 1.839c.005.351.054.695.14 1.024M9.384 9.137l2.077 1.2M9.384 9.137a3 3 0 10-5.197 3 3 3 0 005.197-3zm6.768 6.613l-1.536-.887m1.536.887a3 3 0 115.196 3 3 3 0 01-5.196-3zm-1.536-.887a2.165 2.165 0 01-1.083-1.838c-.005-.352-.054-.696-.14-1.025m2.759 1.663l-2.077-1.2m2.077 1.2a3 3 0 105.197-3 3 3 0 00-5.197 3z"/></svg>
+
+        <div class="fabric-info-wrap">
+          <div class="fabric-badge-list">
+            <span class="fabric-badge">SM(MM)S 다층 구조</span>
+            <span class="fabric-badge">Blood Repellency</span>
+            <span class="fabric-badge">Lint-Free</span>
+            <span class="fabric-badge">Latex Free</span>
           </div>
-          <h3>수술 부위별 맞춤 설계</h3>
-          <p>복부, 정형외과, 안과, 산부인과 등 수술 종류에 따라 최적화된 형태와 규격으로 제공됩니다.</p>
+          <h3>완벽한 감염 차단과<br>의료진·환자를 위한 쾌적성</h3>
+          <p>
+            Spunbond 층이 뛰어난 인장 강도와 내구성을 제공하고, 초극세 Meltblown 층이 미세 박테리아와 바이러스, 수분을 촘촘하게 여과합니다.
+            장시간의 수술 중에도 체액 침투를 완벽히 막아내며, 뛰어난 공기 투과성으로 쾌적한 수술 환경을 유지합니다.
+          </p>
+          <ul class="feature-list" style="margin-top:0;">
+            <li><strong>완벽한 차단 기능</strong> — 높은 정수압, Blood Repellency 및 뛰어난 항균력</li>
+            <li><strong>우수한 통기성</strong> — 장시간 착용 및 덮개 시에도 편안함 유지</li>
+            <li><strong>고강도 &amp; 낮은 보풀</strong> — Lint 발생을 억제하여 수술 부위 이물질 오염 방지</li>
+          </ul>
         </div>
-        <div class="card">
-          <div class="card-icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>
+      </div>
+
+      <!-- 5대 보호 기능 카드 -->
+      <div class="protection-5-grid">
+        <!-- 1. 방수 및 내혈성 -->
+        <div class="protection-card">
+          <div class="protection-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
           </div>
-          <h3>개별 멸균 포장</h3>
-          <p>제품 개봉 전까지 무균 상태를 유지하는 이중 포장으로 안전한 사용을 보장합니다.</p>
+          <div class="eng-title">High Water Repellency</div>
+          <h4>혈액·체액 흡수 방어</h4>
+          <p>혈액 및 각종 소독 용액의 흡수를 방어하여 교차 오염 및 매개 감염을 원천 차단합니다.</p>
         </div>
-        <div class="card">
-          <div class="card-icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.25V4.875A1.125 1.125 0 0013.125 3.75h-9.75A1.125 1.125 0 002.25 4.875v9.375c0 .621.504 1.125 1.125 1.125H6.75"/></svg>
+
+        <!-- 2. 저보풀 및 방진 -->
+        <div class="protection-card">
+          <div class="protection-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
           </div>
-          <h3>안정적 공급</h3>
-          <p>충분한 재고 확보와 신속한 납기로 병원 수술 일정에 차질이 없도록 지원합니다.</p>
+          <div class="eng-title">Low Lint &amp; Dust</div>
+          <h4>먼지·보풀 최소화</h4>
+          <p>미세 보풀 및 먼지 발생을 극소화하여 감염 오염율을 낮추고 정밀 수술기구 수명을 보호합니다.</p>
         </div>
+
+        <!-- 3. 미생물 침투 차단 -->
+        <div class="protection-card">
+          <div class="protection-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="eng-title">Microbial Resistance</div>
+          <h4>미생물·세균 차단</h4>
+          <p>오염 및 감염원으로부터 수술 부위를 효과적으로 격리하여 완전한 무균 멸균 상태를 유지합니다.</p>
+        </div>
+
+        <!-- 4. 정전기 방지 -->
+        <div class="protection-card">
+          <div class="protection-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <div class="eng-title">Anti-Statics</div>
+          <h4>정전기 방지 처리</h4>
+          <p>정전기 발생에 따른 수술실 정밀 전자기기 오작동을 예방하고 공기 중 먼지 흡착을 방지합니다.</p>
+        </div>
+
+        <!-- 5. 내알코올성 -->
+        <div class="protection-card">
+          <div class="protection-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v7.31M14 2v7.31M8.5 2h7M14 9.3a6.5 6.5 0 1 1-4 0"/></svg>
+          </div>
+          <div class="eng-title">Anti-Alcohol &amp; Iodine</div>
+          <h4>소독액 발수 유지력</h4>
+          <p>Alcohol 또는 Iodine 등 소독약제에 노출되어도 원단의 고유 발수·차단 기능이 손상되지 않습니다.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       2. 수술 부위·진료과별 수술포 & 수술팩 라인업
+       ══════════════════════════════════════════════════════════ -->
+  <section class="section" id="drape-packs">
+    <div class="section-inner">
+      <div class="section-label">Surgical Packs Lineup</div>
+      <h2 class="section-title">진료과별 일회용 수술포 &amp; 맞춤 수술팩</h2>
+      <div class="divider"></div>
+      <p class="section-desc">
+        수술 부위 및 시술 유형에 따라 구성된 일회용 멸균 드레이프 팩으로, 수술 준비 시간을 획기적으로 단축시키고 수술 중 감염 위험을 최소화합니다.
+      </p>
+
+      <div class="pack-grid">
+
+        <!-- 팩 1: Basic / Setup -->
+        <div class="pack-card">
+          <div class="pack-card-img">
+            <img src="images/drape-pack-basic.jpg" alt="기본 수술포 및 외래 처치 세트 팩">
+            <span class="pack-category-tag">기본 / 외래 처치</span>
+          </div>
+          <div class="pack-card-body">
+            <h4>기본 수술포 &amp; 셋업 팩</h4>
+            <div class="pack-en">Basic / Setup &amp; Minor Pack</div>
+            <p>외래 시술, 기본 처치, 조직 생검(Biopsy) 및 표준 외과 셋업에 필요한 올인원 멸균 드레이프 팩입니다.</p>
+            <ul class="pack-items-list">
+              <li>Basic Pack / Setup Pack</li>
+              <li>Minor Pack / Universal Pack</li>
+              <li>Biopsy Pack (생검 전용)</li>
+            </ul>
+            <div class="pack-footer">
+              <span class="pack-pill">표준 멸균 구성</span>
+              <a href="contact.html" class="pack-inquiry-btn">규격 문의 →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 팩 2: 복강경 & 일반외과 -->
+        <div class="pack-card">
+          <div class="pack-card-img">
+            <img src="images/drape-pack-laparoscopy.jpg" alt="복강경 수술포 및 일반외과 개복술 팩">
+            <span class="pack-category-tag">복강경 / 일반외과</span>
+          </div>
+          <div class="pack-card-body">
+            <h4>복강경 &amp; 일반외과 팩</h4>
+            <div class="pack-en">Laparoscopy &amp; General Surgery Pack</div>
+            <p>복강경 트로카 삽입부 전용 절개창과 체액 포집 파우치, 튜브 홀더가 일체화된 고기능 외과 팩입니다.</p>
+            <ul class="pack-items-list">
+              <li>Laparoscopy Pack (복강경 전용)</li>
+              <li>General / Transverse Laparotomy</li>
+              <li>Thyroid Pack / Breast Pack</li>
+            </ul>
+            <div class="pack-footer">
+              <span class="pack-pill">체액 포집 파우치</span>
+              <a href="contact.html" class="pack-inquiry-btn">규격 문의 →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 팩 3: 산부인과 & 제왕절개 -->
+        <div class="pack-card">
+          <div class="pack-card-img">
+            <img src="images/drape-pack-csection.jpg" alt="산부인과 제왕절개 및 자연분만 수술포 팩">
+            <span class="pack-category-tag">산부인과 (OBGY)</span>
+          </div>
+          <div class="pack-card-body">
+            <h4>제왕절개 &amp; 산부인과 팩</h4>
+            <div class="pack-en">C-Section &amp; OBGY Pack</div>
+            <p>대용량 양수·혈액 흡수 패드 및 눈금형 체액 수집 파우치, 절개용 점착 필름이 통합된 분만 전용 팩입니다.</p>
+            <ul class="pack-items-list">
+              <li>C-Section Pack (제왕절개 전용)</li>
+              <li>Normal Delivery Pack (자연분만)</li>
+              <li>Lithotomy / LAVH / IVF Pack</li>
+            </ul>
+            <div class="pack-footer">
+              <span class="pack-pill">고흡수 &amp; 집수백</span>
+              <a href="contact.html" class="pack-inquiry-btn">규격 문의 →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 팩 4: 정형외과 -->
+        <div class="pack-card">
+          <div class="pack-card-img">
+            <img src="images/drape-pack-ortho-knee.jpg" alt="정형외과 무릎 인공관절 및 사지 수술포 팩">
+            <span class="pack-category-tag">정형외과 (Ortho)</span>
+          </div>
+          <div class="pack-card-body">
+            <h4>인공관절 &amp; 정형외과 팩</h4>
+            <div class="pack-en">Knee / TKR &amp; Orthopedic Pack</div>
+            <p>무릎 인공관절(TKR), 고관절(Hip), 사지 관절 수술 시 세척액 포집 파우치와 탄성 슬리브가 결합된 팩입니다.</p>
+            <ul class="pack-items-list">
+              <li>Knee Pack / TKR Pack</li>
+              <li>Hip Pack / Shoulder Pack</li>
+              <li>Limb / Hand / Foot &amp; Ankle Pack</li>
+            </ul>
+            <div class="pack-footer">
+              <span class="pack-pill">탄성 슬리브 일체형</span>
+              <a href="contact.html" class="pack-inquiry-btn">규격 문의 →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 팩 5: 척추 & 신경외과 -->
+        <div class="pack-card">
+          <div class="pack-card-img">
+            <img src="images/drape-pack-spine.jpg" alt="척추 수술포 및 신경외과 개두술 팩">
+            <span class="pack-category-tag">척추 / 신경외과</span>
+          </div>
+          <div class="pack-card-body">
+            <h4>척추 &amp; 신경외과 팩</h4>
+            <div class="pack-en">Spine &amp; Neurosurgery Pack</div>
+            <p>척추(PELD/Lumbar) 및 뇌신경 수술 시 세균 침투를 완벽히 막고 멸균 영역을 안정적으로 유지합니다.</p>
+            <ul class="pack-items-list">
+              <li>Spine Pack / PELD Spine Pack</li>
+              <li>Craniotomy Pack (개두술 전용)</li>
+              <li>NS Basic Pack / Lumbar Pack</li>
+            </ul>
+            <div class="pack-footer">
+              <span class="pack-pill">정밀 멸균 설계</span>
+              <a href="contact.html" class="pack-inquiry-btn">규격 문의 →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 팩 6: 심혈관 & 혈관조영술 -->
+        <div class="pack-card">
+          <div class="pack-card-img">
+            <img src="images/drape-pack-cardio.jpg" alt="심혈관 수술 및 혈관조영술 수술포 팩">
+            <span class="pack-category-tag">심혈관 / 조영술</span>
+          </div>
+          <div class="pack-card-body">
+            <h4>심혈관 &amp; 혈관조영술 팩</h4>
+            <div class="pack-en">Cardiovascular &amp; Angiography Pack</div>
+            <p>관상동맥우회술(CABG), 개심술, 중심정맥관(C-Line) 및 대퇴·요골동맥 조영술 전용 수술 드레이프입니다.</p>
+            <ul class="pack-items-list">
+              <li>CABG Pack / Open Heart Pack</li>
+              <li>Femoral / Radial Angiography</li>
+              <li>Chemo Port / Pacemaker Pack</li>
+            </ul>
+            <div class="pack-footer">
+              <span class="pack-pill">다공형 조영창</span>
+              <a href="contact.html" class="pack-inquiry-btn">규격 문의 →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 팩 7: 비뇨기과 -->
+        <div class="pack-card">
+          <div class="pack-card-img">
+            <img src="images/drape-pack-cysto.jpg" alt="비뇨기과 방광경 및 TUR 수술포 팩">
+            <span class="pack-category-tag">비뇨기과 (Urology)</span>
+          </div>
+          <div class="pack-card-body">
+            <h4>비뇨기과 &amp; 방광경 팩</h4>
+            <div class="pack-en">Urology &amp; Cystoscopy Pack</div>
+            <p>경요도 전립선 절제술(TUR), 방광경 시술 및 로봇 전립선 수술 시 연속 세척액 집수 및 여과를 지원합니다.</p>
+            <ul class="pack-items-list">
+              <li>TUR Pack / Cystoscopy Pack</li>
+              <li>Nephroscopy Pack / Lithotomy</li>
+              <li>Robotic Prostate Pack</li>
+            </ul>
+            <div class="pack-footer">
+              <span class="pack-pill">세척액 여과망 장착</span>
+              <a href="contact.html" class="pack-inquiry-btn">규격 문의 →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 팩 8: 안과 & 이비인후과 -->
+        <div class="pack-card">
+          <div class="pack-card-img">
+            <img src="images/drape-pack-cataract.jpg" alt="안과 백내장 수술포 및 이비인후과 팩">
+            <span class="pack-category-tag">안과 / 이비인후과</span>
+          </div>
+          <div class="pack-card-body">
+            <h4>안과 &amp; 이비인후과 팩</h4>
+            <div class="pack-en">Ophthalmology &amp; ENT Pack</div>
+            <p>백내장(Cataract) 및 유리체절제술, 안면·이비인후과 수술 시 환자 호흡을 방해하지 않는 정밀 드레이프입니다.</p>
+            <ul class="pack-items-list">
+              <li>Cataract Pack / Vitrectomy</li>
+              <li>Strabismus / Entropion Repair</li>
+              <li>Facial Pack / Ear &amp; Nose Pack</li>
+            </ul>
+            <div class="pack-footer">
+              <span class="pack-pill">배출 파우치 일체형</span>
+              <a href="contact.html" class="pack-inquiry-btn">규격 문의 →</a>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- 주요 특징 -->
-  <section class="section">
+  <!-- ══════════════════════════════════════════════════════════
+       3. 프리미엄 2-Tone 멸균포 (Two-Tone Sterilization Wrap)
+       ══════════════════════════════════════════════════════════ -->
+  <section class="section bg-gray">
     <div class="section-inner">
-      <div class="section-label">Key Features</div>
-      <h2 class="section-title">제품 주요 특징</h2>
+      <div class="section-label">Sterilization Wrap</div>
+      <h2 class="section-title">세종헬스케어 2-Tone 멸균포</h2>
       <div class="divider"></div>
-      <!-- ============================
-        ✏️ 수정 구역 4: 주요 특징 목록
-        항목 추가/수정 시 <li> 태그 복사해서 편집
-        ============================ -->
-      <ul class="feature-list">
-        <li>일회용(Single Use) 설계 — 교차 감염 위험 원천 차단</li>
-        <li>SMS 3중 구조 부직포 — 방수·방균·통기성 동시 확보</li>
-        <li>점착 테이프(Adhesive Strip) 일체형 — 수술 중 위치 고정</li>
-        <li>흡수층 일체형 옵션 — 수술 중 혈액·체액 흡수 처리</li>
-        <li>Lint-Free 소재 — 수술 부위 이물질 오염 최소화</li>
-        <li>EO(에틸렌 옥사이드) 가스 멸균 처리</li>
-        <li>Latex Free 설계 — 알레르기 반응 우려 없음</li>
-      </ul>
+      <p class="section-desc">
+        멸균을 위해 요구되는 엄격한 물리적 강도와 박테리아 차단성을 완벽히 충족하는 고밀도 5중 SMMMS 소독·멸균포입니다.
+      </p>
+
+      <div class="wrap-showcase-grid">
+        <div class="wrap-img-card">
+          <img src="images/sterile-wrap-twotone.jpg" alt="세종헬스케어 2-Tone 멸균포 실물 이미지 (청색/보라색 투톤)">
+          <div style="margin-top: 14px; display:flex; justify-content:center; gap:8px;">
+            <span class="fabric-badge" style="background:#e0f2fe; color:#0369a1;">전면: 블루톤</span>
+            <span class="fabric-badge" style="background:#f3e8ff; color:#6b21a8;">후면: 퍼플톤</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="wrap-feature-list">
+            <div class="wrap-feature-item">
+              <div class="wrap-feature-num">1</div>
+              <div class="wrap-feature-text">
+                <h4>투톤(Two-Tone) 컬러로 멸균 작업 효율 극대화</h4>
+                <p>전면 청색(Blue) / 후면 보라색(Purple)으로 구분되어, 표준 이중 포장 시 내·외 포장 상태를 즉각 확인하고 멸균 오류를 방지합니다.</p>
+              </div>
+            </div>
+
+            <div class="wrap-feature-item">
+              <div class="wrap-feature-num">2</div>
+              <div class="wrap-feature-text">
+                <h4>고밀도 5중 SMMMS 원단의 강화된 멸균 차단력</h4>
+                <p>초극세 3중 Meltblown 필터가 미세 세균과 바이러스를 완벽 차단하며, 원단 자체의 높은 발수성으로 먼지 흡착 및 액체 오염을 방지합니다.</p>
+              </div>
+            </div>
+
+            <div class="wrap-feature-item">
+              <div class="wrap-feature-num">3</div>
+              <div class="wrap-feature-text">
+                <h4>Steam 및 EO Gas 침투성 &amp; 빠른 건조</h4>
+                <p>증기(고압증기멸균) 및 EO(에틸렌옥사이드) 가스가 원활하게 침투하며 건조 속도가 빨라 멸균 프로세스 시간을 최적화합니다.</p>
+              </div>
+            </div>
+
+            <div class="wrap-feature-item">
+              <div class="wrap-feature-num">4</div>
+              <div class="wrap-feature-text">
+                <h4>진공 압축 분할 포장으로 보관 공간 최소화</h4>
+                <p>비닐백에 나누어 진공 압축 포장되어 병원 중앙공급실(CSR) 및 수술실 내 보관 부피를 획기적으로 줄여줍니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 멸균포 규격 표 -->
+      <div style="margin-top: 36px;">
+        <h3 style="font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 14px;">멸균포 규격 및 포장 단위 (Packaging Specifications)</h3>
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th>주문 코드 (Order Code)</th>
+              <th>규격 (Size, cm)</th>
+              <th>박스당 수량 (SH / Box)</th>
+              <th>진공백 포장 단위 (Poly Bag)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>JSWG04 / JSWT04</strong></td>
+              <td>40 × 40</td>
+              <td>500매</td>
+              <td>250매 × 2 Bag (진공 압축)</td>
+            </tr>
+            <tr>
+              <td><strong>JSWG05 / JSWT05</strong></td>
+              <td>50 × 50</td>
+              <td>500매</td>
+              <td>250매 × 2 Bag (진공 압축)</td>
+            </tr>
+            <tr>
+              <td><strong>JSWG06 / JSWT06</strong></td>
+              <td>60 × 60</td>
+              <td>500매</td>
+              <td>250매 × 2 Bag (진공 압축)</td>
+            </tr>
+            <tr>
+              <td><strong>JSWG07 / JSWT07</strong></td>
+              <td>70 × 70</td>
+              <td>300매</td>
+              <td>150매 × 2 Bag (진공 압축)</td>
+            </tr>
+            <tr>
+              <td><strong>JSWG09 / JSWT09</strong></td>
+              <td>90 × 90</td>
+              <td>150매</td>
+              <td>150매 × 1 Bag (진공 압축)</td>
+            </tr>
+            <tr>
+              <td><strong>JSWG11 / JSWT11</strong></td>
+              <td>110 × 110</td>
+              <td>150매</td>
+              <td>150매 × 1 Bag (진공 압축)</td>
+            </tr>
+            <tr>
+              <td><strong>JSWG13 / JSWT13</strong></td>
+              <td>130 × 130</td>
+              <td>100매</td>
+              <td>50매 × 2 Bag (진공 압축)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </section>
 
-  <!-- 제품 종류 및 사양 -->
-  <section class="section bg-gray">
+  <!-- ══════════════════════════════════════════════════════════
+       4. 종합 제품 사양 및 인증
+       ══════════════════════════════════════════════════════════ -->
+  <section class="section">
     <div class="section-inner">
-      <div class="section-label">Product Specifications</div>
-      <h2 class="section-title">제품 종류 및 사양</h2>
+      <div class="section-label">Specifications</div>
+      <h2 class="section-title">수술포 및 멸균포 종합 사양표</h2>
       <div class="divider"></div>
-      <p class="section-desc">수술 종류와 용도에 따라 다양한 규격으로 공급됩니다. 정확한 규격 및 재고 문의는 영업팀으로 연락 주세요.</p>
-      <!-- ============================
-        ✏️ 수정 구역 5: 제품 사양 표
-        행 추가 시 <tr> 블록 복사해서 편집
-        ============================ -->
+      <p class="section-desc">병원 수술실 및 외래 환경에 맞추어 다양한 규격과 패키지로 안정적으로 공급됩니다.</p>
+
       <table class="spec-table">
         <thead>
           <tr>
-            <th>품목</th>
-            <th>규격/종류</th>
-            <th>소재</th>
+            <th>품목군</th>
+            <th>적용 수술 / 용도</th>
+            <th>원단 소재</th>
+            <th>핵심 특성</th>
             <th>포장 단위</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>전신 수술포 세트</td>
-            <td>전신마취 수술용 (복부, 사지 등)</td>
+            <td><strong>전신 맞춤 수술포 팩</strong></td>
+            <td>전신마취 외과 수술 (개복·복강경·흉부)</td>
+            <td>SM(MM)S 부직포</td>
+            <td>체액 포집 파우치, 튜브 홀더 일체형</td>
+            <td>1세트/개별 멸균팩</td>
+          </tr>
+          <tr>
+            <td><strong>산부인과 전용 팩</strong></td>
+            <td>제왕절개(C-Section), 자연분만</td>
+            <td>SMS + 고흡수 패드</td>
+            <td>눈금형 체액 수집백, 절개용 점착 필름</td>
+            <td>1세트/개별 멸균팩</td>
+          </tr>
+          <tr>
+            <td><strong>정형외과 관절 팩</strong></td>
+            <td>인공관절(TKR/Hip), 사지·척추 수술</td>
+            <td>고강도 SMMMS</td>
+            <td>탄성 고무 슬리브, 세척액 드레인 포집백</td>
+            <td>1세트/개별 멸균팩</td>
+          </tr>
+          <tr>
+            <td><strong>심혈관 / 조영술 팩</strong></td>
+            <td>관상동맥우회술, 대퇴/요골 혈관조영술</td>
             <td>SMS 부직포</td>
-            <td>1세트/박스</td>
+            <td>방사선 투과창, 다공형 천공 셋업</td>
+            <td>1세트/개별 멸균팩</td>
           </tr>
           <tr>
-            <td>복부 수술포</td>
-            <td>복강경·개복 수술용</td>
+            <td><strong>비뇨기과 / 안과 팩</strong></td>
+            <td>TUR, 방광경, 백내장(Cataract) 수술</td>
             <td>SMS 부직포</td>
-            <td>5매/박스</td>
+            <td>세척액 배출 파우치, 액체 여과망 장착</td>
+            <td>5~10매/박스</td>
           </tr>
           <tr>
-            <td>정형외과 수술포</td>
-            <td>상지·하지·관절 수술용</td>
-            <td>SMS 부직포</td>
-            <td>5매/박스</td>
-          </tr>
-          <tr>
-            <td>안과 수술포</td>
-            <td>백내장·안과 수술용</td>
-            <td>SMS 부직포</td>
-            <td>10매/박스</td>
-          </tr>
-          <tr>
-            <td>멸균 포장지 (시트형)</td>
-            <td>다양한 규격 (30×30 ~ 120×120cm)</td>
-            <td>SMS/크레이프지</td>
-            <td>100매/박스</td>
-          </tr>
-          <tr>
-            <td>멸균 봉투 (자체접착형)</td>
-            <td>다양한 규격 (소·중·대)</td>
-            <td>PE+크라프트지</td>
-            <td>200매/박스</td>
+            <td><strong>2-Tone 멸균포 (시트)</strong></td>
+            <td>의료기기 멸균 및 중앙공급실(CSR) 포장</td>
+            <td>5중 SMMMS</td>
+            <td>블루/퍼플 투톤 식별, 고압증기·EO가스 호환</td>
+            <td>100~500매/박스</td>
           </tr>
         </tbody>
       </table>
 
       <div class="notice-box">
-        ※ 상기 제품은 의료기기로, 반드시 의료 전문가에 의해 사용되어야 합니다.<br>
-        ※ 정확한 규격·재고 및 납기 문의는 준메디칼 영업팀으로 연락 주시기 바랍니다.<br>
-        ※ 제조사: 세종헬스케어 (SEJONG HEALTH CARE, 대한민국)
+        ※ 본 제품은 의료기기(비접촉식일회용외과용드레이프 / 멸균포)로, 사용 설명서와 멸균 주의사항을 준수하여 사용하십시오.<br>
+        ※ 병원 맞춤형 전용 패키지(Custom Pack) 구성 및 대량 납품 문의는 준메디칼 영업팀으로 문의 바랍니다.<br>
+        ※ 제조원: ㈜세종헬스케어 (SEJONG HEALTH CARE, 대한민국) · 공급원: 준메디칼 주식회사
       </div>
     </div>
   </section>
 
-  <!-- 적용 수술 -->
-  <section class="section">
+  <!-- ══════════════════════════════════════════════════════════
+       5. 적용 가능 진료과 및 수술
+       ══════════════════════════════════════════════════════════ -->
+  <section class="section bg-gray">
     <div class="section-inner">
       <div class="section-label">Indications</div>
-      <h2 class="section-title">적용 가능 수술·시술</h2>
+      <h2 class="section-title">적용 가능 진료과 및 수술</h2>
       <div class="divider"></div>
       <div class="indication-grid">
-        <div class="indication-item">복강경 수술</div>
-        <div class="indication-item">개복 수술</div>
-        <div class="indication-item">정형외과 수술</div>
-        <div class="indication-item">산부인과 수술</div>
-        <div class="indication-item">안과 수술</div>
-        <div class="indication-item">비뇨기과 수술</div>
-        <div class="indication-item">신경외과 수술</div>
-        <div class="indication-item">응급 수술</div>
+        <div class="indication-item">일반외과 / 개복·복강경 수술</div>
+        <div class="indication-item">산부인과 / 제왕절개·자연분만</div>
+        <div class="indication-item">정형외과 / TKR·인공관절·사지</div>
+        <div class="indication-item">신경외과 / 개두술·척추 수술</div>
+        <div class="indication-item">심장혈관외과 / CABG·조영술</div>
+        <div class="indication-item">비뇨의학과 / TUR·로봇수술</div>
+        <div class="indication-item">안과 / 백내장·유리체 절제술</div>
+        <div class="indication-item">이비인후과 / 안면·비강 수술</div>
       </div>
     </div>
   </section>
@@ -281,7 +969,7 @@
 <div class="floating-quick-widget" id="floatingWidget">
   <div class="floating-quick-popup" id="floatingPopup">
     <div class="floating-quick-header">
-      빠른 상담 & 견적 안내
+      빠른 상담 &amp; 견적 안내
       <span>09:00 ~ 18:00</span>
     </div>
     <div class="floating-quick-list">
@@ -311,6 +999,11 @@
       <span class="btn-badge"></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     </button>
+    <button type="button" class="floating-top-btn" id="scrollTopBtn" onclick="scrollToTop()" aria-label="상단으로 이동" title="상단으로">
+      <span class="floating-tooltip">상단으로</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+      <span class="top-text">TOP</span>
+    </button>
   </div>
 </div>
 
@@ -320,6 +1013,21 @@ function toggleFloatingPopup(){
   const popup = document.getElementById('floatingPopup');
   popup.classList.toggle('open');
 }
+function scrollToTop(){
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 스크롤 시 '상단으로' 버튼 표시/숨김 제어
+window.addEventListener('scroll', () => {
+  const topBtn = document.getElementById('scrollTopBtn');
+  if (topBtn) {
+    if (window.scrollY > 200) {
+      topBtn.classList.add('visible');
+    } else {
+      topBtn.classList.remove('visible');
+    }
+  }
+}, { passive: true });
 
 // 빠른 견적·문의 아이콘 마우스 호버 시 팝업 열기/닫기
 document.addEventListener('DOMContentLoaded', () => {

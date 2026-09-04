@@ -25,6 +25,16 @@
       overflow: hidden;
       transition: all .25s ease;
       align-items: stretch;
+      scroll-margin-top: 100px;
+    }
+    .brand-card:target {
+      border-color: var(--sky);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25), var(--shadow-hover);
+      animation: highlightTarget 1.2s ease;
+    }
+    @keyframes highlightTarget {
+      0% { transform: translateY(-4px); border-color: var(--sky); box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.35), var(--shadow-hover); }
+      100% { transform: translateY(0); }
     }
     .brand-card:hover {
       box-shadow: var(--shadow-hover);
@@ -314,7 +324,11 @@
   <div class="sub-nav-bar">
     <div class="sub-nav-inner">
       <ul class="sub-depth-tabs">
-        <li class="active"><a href="brands.html">파트너 브랜드</a></li>
+        <li class="active"><a href="brands.html">전체 브랜드</a></li>
+        <li><a href="#wisap">WISAP (독일)</a></li>
+        <li><a href="#coopersurgical">CooperSurgical (미국)</a></li>
+        <li><a href="#sejong">세종헬스케어 (한국)</a></li>
+        <li><a href="#mb2020">MB2020 (한국)</a></li>
       </ul>
       <div class="breadcrumbs">
         <a href="index.html">홈</a>
@@ -338,7 +352,7 @@
       <div class="brand-list">
 
         <!-- ── 브랜드 1: WISAP ── -->
-        <div class="brand-card">
+        <div class="brand-card" id="wisap">
           <div class="brand-logo-wrap">
             <img src="images/brand-wisap.png" alt="WISAP Laparoscopy 로고" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
             <div class="brand-logo-text" style="display:none;">WISAP</div>
@@ -376,7 +390,7 @@
         </div>
 
         <!-- ── 브랜드 2: CooperSurgical ── -->
-        <div class="brand-card">
+        <div class="brand-card" id="coopersurgical">
           <div class="brand-logo-wrap">
             <img src="images/brand-coopersurgical.png" alt="CooperSurgical 로고" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
             <div class="brand-logo-text" style="display:none;">Cooper<br>Surgical</div>
@@ -414,7 +428,7 @@
         </div>
 
         <!-- ── 브랜드 3: 세종헬스케어 ── -->
-        <div class="brand-card">
+        <div class="brand-card" id="sejong">
           <div class="brand-logo-wrap">
             <img src="images/brand-sejong.png" alt="세종헬스케어 로고" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
             <div class="brand-logo-text" style="display:none;">세종<br>헬스케어</div>
@@ -452,7 +466,7 @@
         </div>
 
         <!-- ── 브랜드 4: MB2020 ── -->
-        <div class="brand-card">
+        <div class="brand-card" id="mb2020">
           <div class="brand-logo-wrap">
             <img src="images/brand-mb2020.png" alt="MB2020 로고" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
             <div class="brand-logo-text" style="display:none;">MB2020</div>
@@ -573,6 +587,11 @@
       <span class="btn-badge"></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     </button>
+    <button type="button" class="floating-top-btn" id="scrollTopBtn" onclick="scrollToTop()" aria-label="상단으로 이동" title="상단으로">
+      <span class="floating-tooltip">상단으로</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+      <span class="top-text">TOP</span>
+    </button>
   </div>
 </div>
 
@@ -584,6 +603,21 @@ function toggleFloatingPopup(){
   const popup = document.getElementById('floatingPopup');
   popup.classList.toggle('open');
 }
+function scrollToTop(){
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 스크롤 시 '상단으로' 버튼 표시/숨김 제어
+window.addEventListener('scroll', () => {
+  const topBtn = document.getElementById('scrollTopBtn');
+  if (topBtn) {
+    if (window.scrollY > 200) {
+      topBtn.classList.add('visible');
+    } else {
+      topBtn.classList.remove('visible');
+    }
+  }
+}, { passive: true });
 
 // 빠른 견적·문의 아이콘 마우스 호버 시 팝업 열기/닫기
 document.addEventListener('DOMContentLoaded', () => {
