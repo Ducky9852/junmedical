@@ -1009,47 +1009,67 @@
   </div>
 </div>
 
-<!-- 메인 홈 오픈 안내 모달 팝업 -->
-<div class="welcome-modal-overlay" id="welcomeModalOverlay">
-  <div class="welcome-modal-dialog">
-    <button type="button" class="welcome-modal-close" onclick="closeWelcomeModal()" aria-label="팝업 닫기">
-      <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-    </button>
-    <div class="welcome-modal-header">
-      <div class="welcome-badge">
-        <span class="badge-dot"></span> GRAND OPEN
-      </div>
-      <h3 class="welcome-title">준메디칼 주식회사<br><span>공식 홈페이지 오픈</span></h3>
-    </div>
-    <div class="welcome-modal-body">
-      <div class="welcome-intro-card">
-        <p class="welcome-message">
-          항상 준메디칼을 성원해 주시는 병원·의료기관 관계자 및 고객 여러분께 진심으로 감사드립니다.<br><br>
-          의료 현장에 꼭 필요한 <strong>정밀 복강경 수술기구, 맞춤형 수술포·멸균포, DVT 예방장비</strong>의 정보를 보다 쉽고 빠르게 확인하고 문의하실 수 있도록 공식 웹사이트를 개편 오픈하였습니다.
-        </p>
-      </div>
-      <div class="welcome-features">
-        <div class="welcome-feat-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          <span>글로벌 공식 파트너 브랜드별 제품 카탈로그 제공</span>
+<!-- 메인 홈 오픈 안내 듀얼 플로팅 팝업 -->
+<div class="popup-showcase-overlay" id="popupShowcaseOverlay">
+  <div class="popup-card-group">
+
+    <!-- 카드 1: 다크 네이비 테마 (준메디칼 공식 오픈 & 주요 취급 품목 안내) -->
+    <div class="popup-card popup-card-dark">
+      <a href="products.html" style="display: flex; flex-direction: column; text-decoration: none; color: inherit; flex: 1;">
+        <div class="popup-card-dark-header">
+          <div class="popup-card-dark-tag">준메디칼 주식회사 (JUN MEDICAL)</div>
+          <div class="popup-card-dark-subtag">의료 현장의 신뢰할 수 있는 파트너</div>
+          <div class="popup-card-dark-highlight">공식 홈페이지 OPEN!</div>
         </div>
-        <div class="welcome-feat-item">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          <span>병원·의료기관 전담 신속 온라인 견적 및 상담</span>
+        <div class="popup-card-dark-imgbox">
+          <img src="images/복강경수술기구_이미지.jpg" alt="준메디칼 정밀 복강경 수술기구">
         </div>
-      </div>
-      <div class="welcome-modal-actions">
-        <a href="products.html" class="btn-modal-primary" onclick="closeWelcomeModal()">취급제품 둘러보기</a>
-        <a href="contact.html" class="btn-modal-secondary" onclick="closeWelcomeModal()">견적·문의하기</a>
+        <div class="popup-card-dark-footer-info">
+          <h4>복강경 수술기구 · 수술포 · DVT 예방장비</h4>
+          <p>전국 병원 및 의료기관 전문 공급 토탈 솔루션</p>
+        </div>
+      </a>
+      <div class="popup-bottom-bar">
+        <label class="popup-check-label">
+          <input type="checkbox" id="dontShowPopupChk1">
+          <span>오늘 하루동안 열지 않기</span>
+        </label>
+        <button type="button" class="popup-close-btn" onclick="handleClosePopup(1)">
+          닫기 &times;
+        </button>
       </div>
     </div>
-    <div class="welcome-modal-footer">
-      <label class="welcome-check-label">
-        <input type="checkbox" id="dontShowTodayChk">
-        <span>오늘 하루 동안 열지 않기</span>
-      </label>
-      <button type="button" class="btn-modal-close-text" onclick="handleCloseWithCheck()">닫기</button>
+
+    <!-- 카드 2: 브라이트 화이트 테마 (의료 수술 이미지 + 견적/상담 신청) -->
+    <div class="popup-card popup-card-light">
+      <a href="contact.html" style="display: flex; flex-direction: column; text-decoration: none; color: inherit; flex: 1;">
+        <div class="popup-card-light-top">
+          <img src="images/수술포멸균포_이미지.png" alt="준메디칼 맞춤 수술포 멸균포">
+          <div class="popup-card-light-badge">준메디칼 공식 웹사이트</div>
+        </div>
+        <div class="popup-card-light-body">
+          <div class="popup-card-light-title">
+            <span>온라인 견적 및<br>제품 상담 신청하기</span>
+            <span class="popup-card-light-arrow">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </div>
+          <p class="popup-card-light-sub">
+            병원·의료기관 맞춤 1:1 빠른 견적 및<br>최신 카탈로그를 신속히 안내해 드립니다.
+          </p>
+        </div>
+      </a>
+      <div class="popup-bottom-bar">
+        <label class="popup-check-label">
+          <input type="checkbox" id="dontShowPopupChk2">
+          <span>오늘 하루동안 열지 않기</span>
+        </label>
+        <button type="button" class="popup-close-btn" onclick="handleClosePopup(2)">
+          닫기 &times;
+        </button>
+      </div>
     </div>
+
   </div>
 </div>
 
@@ -1063,41 +1083,41 @@ function scrollToTop(){
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// 오픈 안내 모달 팝업 제어
-function checkWelcomeModal() {
-  const hideDate = localStorage.getItem('junmedical_welcome_popup_hide');
+// 메인 팝업 노출 및 닫기 제어
+function checkShowcasePopup() {
+  const hideDate = localStorage.getItem('junmedical_popup_hide_date');
   const today = new Date().toISOString().slice(0, 10);
   if (hideDate !== today) {
-    const modal = document.getElementById('welcomeModalOverlay');
-    if (modal) {
+    const overlay = document.getElementById('popupShowcaseOverlay');
+    if (overlay) {
       setTimeout(() => {
-        modal.classList.add('active');
-      }, 300);
+        overlay.classList.add('active');
+      }, 250);
     }
   }
 }
 
-function closeWelcomeModal() {
-  const modal = document.getElementById('welcomeModalOverlay');
-  if (modal) {
-    modal.classList.remove('active');
+function closeShowcasePopup() {
+  const overlay = document.getElementById('popupShowcaseOverlay');
+  if (overlay) {
+    overlay.classList.remove('active');
   }
 }
 
-function handleCloseWithCheck() {
-  const chk = document.getElementById('dontShowTodayChk');
+function handleClosePopup(cardIndex) {
+  const chk = document.getElementById('dontShowPopupChk' + cardIndex) || document.getElementById('dontShowPopupChk1') || document.getElementById('dontShowPopupChk2');
   if (chk && chk.checked) {
     const today = new Date().toISOString().slice(0, 10);
-    localStorage.setItem('junmedical_welcome_popup_hide', today);
+    localStorage.setItem('junmedical_popup_hide_date', today);
   }
-  closeWelcomeModal();
+  closeShowcasePopup();
 }
 
 // 모달 바깥 배경 클릭 시 닫기
 document.addEventListener('click', (e) => {
-  const overlay = document.getElementById('welcomeModalOverlay');
+  const overlay = document.getElementById('popupShowcaseOverlay');
   if (e.target === overlay) {
-    closeWelcomeModal();
+    closeShowcasePopup();
   }
 });
 
@@ -1116,7 +1136,7 @@ window.addEventListener('scroll', () => {
 // 빠른 견적·문의 아이콘 마우스 호버 시 팝업 열기/닫기
 document.addEventListener('DOMContentLoaded', () => {
   // 오픈 안내 팝업 확인
-  checkWelcomeModal();
+  checkShowcasePopup();
 
   const popup = document.getElementById('floatingPopup');
   const quickBtn = document.querySelector('.floating-quick-btn');
