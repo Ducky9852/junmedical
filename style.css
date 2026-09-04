@@ -1118,20 +1118,13 @@ img {
 .footer-logo {
   display: inline-flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 22px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-lg);
-  transition: all 0.25s ease;
+  gap: 12px;
   text-decoration: none;
+  transition: opacity 0.2s ease;
 }
 
 .footer-logo:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(56, 189, 248, 0.35);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  opacity: 0.85;
 }
 
 .footer-logo-symbol {
