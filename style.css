@@ -688,8 +688,8 @@ img {
   border-radius: var(--radius);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  padding: 24px 18px 22px;
-  min-height: 470px;
+  padding: 18px 16px 16px;
+  min-height: 410px;
   display: flex;
   flex-direction: column;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -705,7 +705,7 @@ img {
   border-radius: var(--radius);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  padding: 32px 24px 26px;
+  padding: 28px 22px 22px;
   display: flex;
   flex-direction: column;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -717,17 +717,17 @@ img {
 
 .category-card:hover,
 .card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-5px);
   border-color: var(--sky);
-  box-shadow: 0 14px 26px -6px rgba(15, 39, 74, 0.12), 0 0 0 1.5px rgba(2, 132, 199, 0.35);
+  box-shadow: 0 12px 24px -6px rgba(15, 39, 74, 0.12), 0 0 0 1.5px rgba(2, 132, 199, 0.35);
   text-decoration: none;
 }
 
 .category-card .category-img-wrap,
 .category-card .product-card-img {
-  width: calc(100% + 36px);
-  margin: -24px -18px 18px -18px;
-  height: 195px;
+  width: calc(100% + 32px);
+  margin: -18px -16px 14px -16px;
+  height: 170px;
   overflow: hidden;
   border-radius: var(--radius) var(--radius) 0 0;
   background: var(--sky-subtle);
@@ -753,16 +753,16 @@ img {
 
 .card-icon-wrap,
 .category-icon {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 12px;
   background: var(--sky-subtle);
   color: var(--sky);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
-  font-size: 24px;
+  margin-bottom: 16px;
+  font-size: 22px;
   transition: all 0.3s ease;
 }
 
@@ -775,47 +775,47 @@ img {
 
 .card-icon-wrap svg,
 .category-icon svg {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   stroke-width: 1.8;
 }
 
 .category-card h3 {
-  font-size: 17px;
+  font-size: 16.5px;
   font-weight: 800;
   color: var(--navy);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   line-height: 1.35;
   letter-spacing: -0.02em;
 }
 
 .card h3 {
-  font-size: 17px;
+  font-size: 16.5px;
   font-weight: 700;
   color: var(--navy);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   line-height: 1.35;
 }
 
 .category-card p {
+  font-size: 13px;
+  color: var(--sub);
+  line-height: 1.6;
+  flex: 1;
+  word-break: keep-all;
+  margin-bottom: 12px;
+}
+
+.card p {
   font-size: 13.5px;
   color: var(--sub);
   line-height: 1.65;
   flex: 1;
-  word-break: keep-all;
-  margin-bottom: 16px;
-}
-
-.card p {
-  font-size: 14px;
-  color: var(--sub);
-  line-height: 1.7;
-  flex: 1;
 }
 
 .category-card .section-label {
-  font-size: 11.5px;
-  margin-bottom: 4px;
+  font-size: 11px;
+  margin-bottom: 3px;
   letter-spacing: 0.04em;
 }
 
@@ -824,9 +824,9 @@ img {
   align-items: center;
   gap: 4px;
   margin-top: auto;
-  padding-top: 10px;
+  padding-top: 8px;
   border-top: 1px solid var(--border-light);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--sky);
   transition: gap 0.2s ease, color 0.2s ease;
