@@ -7,25 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* 취급제품 카테고리 카드 — 1줄 5칸 세로 확장형 사각 이미지 프레임 (모든 카드 동일 크기) */
-    .product-card-img {
-      width: calc(100% + 36px);
-      margin: -24px -18px 18px -18px;
-      height: 195px;
-      overflow: hidden;
-      border-radius: var(--radius) var(--radius) 0 0;
-      background: var(--sky-subtle);
-      border-bottom: 1px solid var(--border);
-    }
-    .product-card-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-    }
-  </style>
 </head>
 <body>
 
@@ -119,73 +100,53 @@
       <div class="category-grid">
         
         <!-- 카테고리 1: 복강경 수술기구 -->
-        <a href="products-laparoscopy.html" class="category-card">
-          <div class="product-card-img">
+        <a href="products-laparoscopy.html" class="category-card reveal">
+          <div class="category-img-wrap">
             <img src="images/복강경수술기구_이미지.jpg" alt="복강경 수술기구">
           </div>
-          <span class="section-label" style="margin-bottom: 4px;">Laparoscopy</span>
           <h3>복강경 수술기구</h3>
-          <p>독일 WISAP 사의 정교한 엔지니어링 기술로 설계된 정밀 복강경 트로카, 일회용 겸자, 가위 및 니들홀더 제품군입니다.</p>
-          <div style="margin-top:auto; padding-top:10px; display:flex; gap:4px; flex-wrap:wrap;">
-            <span class="brand-pill" style="font-size:11px; padding:3px 8px;">WISAP(독일)</span>
-          </div>
-          <span class="category-link">자세히 보기 →</span>
+          <p>WISAP·CooperSurgical의 정밀 복강경 기구. 트로카, 겸자, 자궁 조작기 등 다양한 품목을 공급합니다.</p>
+          <span class="category-link">제품 상세 보기 →</span>
         </a>
 
-        <!-- 카테고리 2: DVT 예방장비 -->
-        <a href="products-dvt.html" class="category-card">
-          <div class="product-card-img">
+        <!-- 카테고리 2: 수술포·멸균포 -->
+        <a href="products-drape.html" class="category-card reveal">
+          <div class="category-img-wrap">
+            <img src="images/수술포멸균포_이미지.png" alt="수술포·멸균포">
+          </div>
+          <h3>수술포·멸균포</h3>
+          <p>세종헬스케어의 수술 부위별 맞춤 수술포와 의료기기 멸균 포장재를 안정적으로 공급합니다.</p>
+          <span class="category-link">제품 상세 보기 →</span>
+        </a>
+
+        <!-- 카테고리 3: DVT 예방장비 -->
+        <a href="products-dvt.html" class="category-card reveal">
+          <div class="category-img-wrap">
             <img src="images/DVT예방장비_이미지.jpg" alt="DVT 예방장비">
           </div>
-          <span class="section-label" style="margin-bottom: 4px;">DVT Prevention</span>
           <h3>DVT 예방장비</h3>
-          <p>수술 전후 및 장기 입원 환자의 혈액 순환을 도와 심부정맥혈전증(DVT) 예방을 돕는 정밀 간헐적 공기압박 치료 장치입니다.</p>
-          <div style="margin-top:auto; padding-top:10px; display:flex; gap:4px; flex-wrap:wrap;">
-            <span class="brand-pill" style="font-size:11px; padding:3px 8px;">DVT 예방시스템</span>
-          </div>
-          <span class="category-link">자세히 보기 →</span>
-        </a>
-
-        <!-- 카테고리 3: 수술포 / 멸균포 -->
-        <a href="products-drape.html" class="category-card">
-          <div class="product-card-img">
-            <img src="images/수술포멸균포_이미지.png" alt="수술포 및 멸균포">
-          </div>
-          <span class="section-label" style="margin-bottom: 4px;">Surgical Drapes</span>
-          <h3>수술포 및 멸균포</h3>
-          <p>철저한 감염 예방과 수술실 위생을 보장하는 일회용 멸균 수술포 및 특수 수술실 린넨 대용 소모품군입니다.</p>
-          <div style="margin-top:auto; padding-top:10px; display:flex; gap:4px; flex-wrap:wrap;">
-            <span class="brand-pill" style="font-size:11px; padding:3px 8px;">세종헬스케어</span>
-          </div>
-          <span class="category-link">자세히 보기 →</span>
+          <p>MB2020의 간헐적 공기 압박 장치(IPC)로 수술 전후 심부정맥혈전증을 예방합니다.</p>
+          <span class="category-link">제품 상세 보기 →</span>
         </a>
 
         <!-- 카테고리 4: 좌욕온수 세정기 -->
-        <a href="products-sitzbath.html" class="category-card">
-          <div class="product-card-img">
+        <a href="products-sitzbath.html" class="category-card reveal">
+          <div class="category-img-wrap">
             <img src="images/bowon-sitz-01.jpg" alt="좌욕온수 세정기">
           </div>
-          <span class="section-label" style="margin-bottom: 4px;">Sitz Bath System</span>
           <h3>좌욕온수 세정기</h3>
-          <p>산모 및 환자의 신속한 회복을 돕는 온수세정(비데), 공기방울 온수좌욕, 원적외선 온풍건조 3-in-1 메디컬 케어 시스템입니다.</p>
-          <div style="margin-top:auto; padding-top:10px; display:flex; gap:4px; flex-wrap:wrap;">
-            <span class="brand-pill" style="font-size:11px; padding:3px 8px;">보원테크 (BOWON)</span>
-          </div>
-          <span class="category-link">자세히 보기 →</span>
+          <p>보원테크의 산모 전용 온수세정·공기방울 좌욕·원적외선 온풍건조 3-in-1 케어 시스템입니다.</p>
+          <span class="category-link">제품 상세 보기 →</span>
         </a>
 
-        <!-- 카테고리 5: 기타 소모품 -->
-        <a href="products-etc.html" class="category-card">
-          <div class="product-card-img">
-            <img src="images/기타의료소모품_이미지.jpg" alt="기타 의료 소모품">
+        <!-- 카테고리 5: 기타 의료소모품 -->
+        <a href="products-etc.html" class="category-card reveal">
+          <div class="category-img-wrap">
+            <img src="images/기타의료소모품_이미지.jpg" alt="기타 의료소모품">
           </div>
-          <span class="section-label" style="margin-bottom: 4px;">Medical Supplies</span>
-          <h3>기타 의료 소모품</h3>
-          <p>환자의 빠른 통증 완화와 회복을 위한 고품질 PCA 무통백(일회용 자가통증조절장치) 및 조직 유착방지제 제품군입니다.</p>
-          <div style="margin-top:auto; padding-top:10px; display:flex; gap:4px; flex-wrap:wrap;">
-            <span class="brand-pill" style="font-size:11px; padding:3px 8px;">자가통증조절기</span>
-          </div>
-          <span class="category-link">자세히 보기 →</span>
+          <h3>기타 의료소모품</h3>
+          <p>무통백(PCA), 유착방지제 등 수술 후 회복과 환자 편의를 위한 소모품을 공급합니다.</p>
+          <span class="category-link">제품 상세 보기 →</span>
         </a>
 
       </div>
