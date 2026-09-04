@@ -1020,8 +1020,8 @@
   </div>
 </div>
 
-<!-- 메인 홈 오픈 안내 듀얼 플로팅 팝업 -->
-<div class="popup-showcase-overlay" id="popupShowcaseOverlay">
+<!-- 메인 홈 오픈 안내 듀얼 플로팅 팝업 (임시 비활성화 상태로 안전하게 보관 — '팝업창 다시 오픈' 요청 시 즉시 노출) -->
+<div class="popup-showcase-overlay" id="popupShowcaseOverlay" style="display: none;">
   <div class="popup-card-group">
 
     <!-- 카드 1: 다크 네이비 테마 (폰트 타이포그래피 강조 — 공식 홈페이지 GRAND OPEN) -->
@@ -1103,25 +1103,35 @@ function scrollToTop(){
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// 메인 팝업 노출 스위치 (false: 임시 비활성화 보관 / true: 활성화 - '팝업창 다시 오픈' 요청 시 활성화)
+const POPUP_AUTO_OPEN = false;
+
 // 메인 팝업 개별 노출 및 독립 닫기 제어
 function checkShowcasePopup() {
+  const overlay = document.getElementById('popupShowcaseOverlay');
+  if (!POPUP_AUTO_OPEN) {
+    if (overlay) overlay.style.display = 'none';
+    return;
+  }
+
   const today = new Date().toISOString().slice(0, 10);
   const hide1 = localStorage.getItem('junmedical_popup1_hide') === today;
   const hide2 = localStorage.getItem('junmedical_popup2_hide') === today;
 
   const card1 = document.getElementById('popupCard1');
   const card2 = document.getElementById('popupCard2');
-  const overlay = document.getElementById('popupShowcaseOverlay');
 
   if (card1 && hide1) card1.style.display = 'none';
   if (card2 && hide2) card2.style.display = 'none';
 
   // 둘 다 오늘 하루 닫기 설정된 경우 오버레이 자체를 띄우지 않음
   if (hide1 && hide2) {
+    if (overlay) overlay.style.display = 'none';
     return;
   }
 
   if (overlay) {
+    overlay.style.display = '';
     setTimeout(() => {
       overlay.classList.add('active');
     }, 250);
