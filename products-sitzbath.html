@@ -121,7 +121,7 @@
     /* 3. 단일 제품 쇼케이스 */
     .single-product-showcase {
       display: grid;
-      grid-template-columns: 420px 1fr;
+      grid-template-columns: 440px 1fr;
       background: var(--white);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -129,6 +129,7 @@
       box-shadow: var(--shadow-sm);
       margin-top: 36px;
       transition: all 0.3s ease;
+      align-items: stretch;
     }
     .single-product-showcase:hover {
       border-color: var(--sky);
@@ -137,41 +138,46 @@
     .showcase-img-box {
       background: #f8fafc;
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: center;
-      padding: 24px;
+      padding: 0;
       position: relative;
       border-right: 1px solid var(--border);
+      overflow: hidden;
     }
     .showcase-img-box img {
       width: 100%;
-      height: auto;
-      max-height: 480px;
-      object-fit: contain;
-      border-radius: 8px;
+      height: 100%;
+      min-height: 520px;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
       transition: transform 0.4s ease;
     }
     .single-product-showcase:hover .showcase-img-box img {
-      transform: scale(1.02);
-    }
-    .showcase-badge-top {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      background: rgba(15, 39, 74, 0.9);
-      backdrop-filter: blur(4px);
-      color: #ffffff;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 5px 14px;
-      border-radius: var(--radius-full);
-      letter-spacing: 0.02em;
+      transform: scale(1.03);
     }
     .showcase-info-box {
       padding: 36px 40px;
       display: flex;
       flex-direction: column;
       justify-content: center;
+    }
+    .showcase-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .badge-hospital {
+      background: var(--navy);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      letter-spacing: -0.01em;
     }
     .showcase-tag {
       display: inline-flex;
@@ -181,14 +187,12 @@
       font-weight: 700;
       padding: 4px 12px;
       border-radius: var(--radius-full);
-      margin-bottom: 12px;
-      width: fit-content;
       background: #e0f2fe;
       color: #0369a1;
       font-family: 'Inter', sans-serif;
     }
     .showcase-info-box h3 {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 800;
       color: var(--navy);
       margin-bottom: 4px;
@@ -204,39 +208,85 @@
     .showcase-desc {
       font-size: 14.5px;
       color: var(--sub);
-      line-height: 1.75;
-      margin-bottom: 22px;
+      line-height: 1.7;
+      margin-bottom: 20px;
     }
+
+    /* 4대 핵심 기능 아이콘 카드 바 */
+    .showcase-core-icons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      background: #f8fafc;
+      padding: 14px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      margin-bottom: 20px;
+    }
+    .core-icon-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 6px;
+    }
+    .core-icon-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 1px solid var(--border);
+      color: var(--sky);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(15, 39, 74, 0.05);
+    }
+    .core-icon-circle svg {
+      width: 20px;
+      height: 20px;
+    }
+    .core-icon-text strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.2;
+    }
+    .core-icon-text span {
+      display: block;
+      font-size: 11px;
+      color: var(--steel);
+      margin-top: 2px;
+    }
+
     .showcase-feature-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 8px 14px;
       margin-bottom: 24px;
     }
     .showcase-feature-item {
       display: flex;
       align-items: flex-start;
       gap: 8px;
-      padding: 10px 12px;
-      background: var(--bg);
-      border-radius: var(--radius-sm);
       font-size: 13px;
       color: var(--navy);
       font-weight: 600;
       line-height: 1.45;
     }
     .showcase-feature-item svg {
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
       color: var(--sky);
       flex-shrink: 0;
-      margin-top: 1px;
+      margin-top: 2px;
     }
     .showcase-actions {
       display: flex;
       gap: 12px;
       align-items: center;
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
     @media (max-width: 992px) {
@@ -246,10 +296,17 @@
       .showcase-img-box {
         border-right: none;
         border-bottom: 1px solid var(--border);
-        padding: 24px;
+      }
+      .showcase-img-box img {
+        min-height: 360px;
+        max-height: 440px;
       }
       .showcase-info-box {
         padding: 28px 20px;
+      }
+      .showcase-core-icons {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
       }
       .showcase-feature-grid {
         grid-template-columns: 1fr;
@@ -453,11 +510,13 @@
       <!-- 단일 제품 상세 쇼케이스 -->
       <div class="single-product-showcase reveal">
         <div class="showcase-img-box">
-          <span class="showcase-badge-top">산부인과 / 산후조리원 공식 표준</span>
-          <img src="images/bowon-sitz-01.jpg" alt="보원테크 산모 전용 좌욕·온수세정기">
+          <img src="images/bowon-sitz-main.jpg" alt="보원테크 산모 전용 좌욕·온수세정기">
         </div>
         <div class="showcase-info-box">
-          <span class="showcase-tag">일체형 고정식 시스템 · 산모 전용 특화</span>
+          <div class="showcase-badge-group">
+            <span class="badge-hospital">산부인과 / 산후조리원 공식 표준</span>
+            <span class="showcase-tag">일체형 고정식 시스템 · 산모 전용 특화</span>
+          </div>
           <h3>산모 전용 좌욕·온수세정기</h3>
           <span class="showcase-sub">Maternal Care Specialized Sitz Bath &amp; Warm Bidet System</span>
           <p class="showcase-desc">
@@ -465,11 +524,50 @@
             병원 병실 및 산후조리원 화장실에 일체형으로 직결 설치되어 24시간 안전하고 쾌적한 공기방울 온수좌욕과 저자극 온수세정을 제공합니다.
           </p>
 
-          <div class="showcase-feature-grid">
-            <div class="showcase-feature-item">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>공기방울 온수좌욕 &amp; 온수세정 &amp; 온풍건조 3-in-1</span>
+          <!-- 4대 핵심 기능 아이콘 바 (하단 아이콘 영역 우측 이관) -->
+          <div class="showcase-core-icons">
+            <div class="core-icon-item">
+              <div class="core-icon-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+              </div>
+              <div class="core-icon-text">
+                <strong>온수 세정</strong>
+                <span>저자극 청결 세정</span>
+              </div>
             </div>
+
+            <div class="core-icon-item">
+              <div class="core-icon-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14c2-2 4-2 6 0s4 2 6 0 4-2 6 0M4 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0M8 6c0-1.5 1-2.5 2.5-2.5s2.5 1 2.5 2.5M13 7c0-1.5 1-2.5 2.5-2.5S18 5.5 18 7"/></svg>
+              </div>
+              <div class="core-icon-text">
+                <strong>온수 좌욕</strong>
+                <span>공기방울 기포 케어</span>
+              </div>
+            </div>
+
+            <div class="core-icon-item">
+              <div class="core-icon-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v9a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V3zM6 16v5M18 16v5M9 7h6"/></svg>
+              </div>
+              <div class="core-icon-text">
+                <strong>온열 시트</strong>
+                <span>따뜻한 착좌 온도</span>
+              </div>
+            </div>
+
+            <div class="core-icon-item">
+              <div class="core-icon-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 4c0 1.5-1 2.5-2.5 2.5H2M18 9c0 1.5-1 2.5-2.5 2.5H2M20 14c0 1.5-1 2.5-2.5 2.5H2M16 19c0 1.5-1 2.5-2.5 2.5H2"/></svg>
+              </div>
+              <div class="core-icon-text">
+                <strong>온풍 건조</strong>
+                <span>원적외선 쾌속 건조</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="showcase-feature-grid">
             <div class="showcase-feature-item">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
               <span>위생적인 풀 스테인리스 분사 노즐 &amp; 자동 살균</span>
@@ -480,7 +578,11 @@
             </div>
             <div class="showcase-feature-item">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>산모 전용 개인 좌욕조 적용 (교차 감염 완벽 예방)</span>
+              <span>산모 전용 개인 좌욕조 적용 (교차 감염 완벽 차단)</span>
+            </div>
+            <div class="showcase-feature-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>다중 안전 센서 시스템 (과승방지 / 누전 차단 회로)</span>
             </div>
           </div>
 
