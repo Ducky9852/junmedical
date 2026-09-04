@@ -12,10 +12,10 @@
     .greeting-donga-layout {
       display: grid;
       grid-template-columns: minmax(0, 580px) 310px;
-      gap: 114px; /* 약 3cm (96 DPI 기준 113.4px) 시각적 여백 */
+      gap: 114px; /* 약 3cm (96 DPI 기준 113.4px) 글과 사진 사이 시각적 여백 */
       align-items: start;
       justify-content: start;
-      margin: 28px 0 0 0;
+      margin: 28px 0 0 76px; /* 좌측으로부터 약 2cm (75.6px) 여백을 주어 편안한 시야 확보 */
     }
 
     .greeting-content-col {
@@ -127,10 +127,18 @@
       flex-shrink: 0;
     }
 
+    @media (max-width: 1140px) {
+      .greeting-donga-layout {
+        margin-left: 24px;
+        gap: 60px;
+      }
+    }
     @media (max-width: 960px) {
       .greeting-donga-layout {
         grid-template-columns: 1fr;
         gap: 40px;
+        margin: 24px auto 0;
+        max-width: 600px;
       }
       .greeting-profile-col {
         position: static;
