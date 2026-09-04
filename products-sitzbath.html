@@ -118,67 +118,62 @@
       line-height: 1.7;
     }
 
-    /* 3. 제품 라인업 3대 그리드 */
-    .lineup-3-grid {
+    /* 3. 단일 제품 쇼케이스 */
+    .single-product-showcase {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 28px;
-      margin-top: 36px;
-    }
-    .lineup-card {
+      grid-template-columns: 420px 1fr;
       background: var(--white);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
       box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
+      margin-top: 36px;
       transition: all 0.3s ease;
     }
-    .lineup-card:hover {
+    .single-product-showcase:hover {
       border-color: var(--sky);
       box-shadow: var(--shadow-hover);
-      transform: translateY(-4px);
     }
-    .lineup-card-img {
-      height: 240px;
+    .showcase-img-box {
       background: #f8fafc;
-      overflow: hidden;
-      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 24px;
       position: relative;
+      border-right: 1px solid var(--border);
     }
-    .lineup-card-img img {
+    .showcase-img-box img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;
+      max-height: 480px;
+      object-fit: contain;
+      border-radius: 8px;
       transition: transform 0.4s ease;
     }
-    .lineup-card:hover .lineup-card-img img {
-      transform: scale(1.04);
+    .single-product-showcase:hover .showcase-img-box img {
+      transform: scale(1.02);
     }
-    .lineup-badge-top {
+    .showcase-badge-top {
       position: absolute;
-      top: 14px;
-      left: 14px;
-      background: rgba(15, 39, 74, 0.85);
+      top: 16px;
+      left: 16px;
+      background: rgba(15, 39, 74, 0.9);
       backdrop-filter: blur(4px);
       color: #ffffff;
-      font-size: 11.5px;
+      font-size: 12px;
       font-weight: 700;
-      padding: 4px 12px;
+      padding: 5px 14px;
       border-radius: var(--radius-full);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.02em;
     }
-    .lineup-card-body {
-      padding: 26px 24px;
+    .showcase-info-box {
+      padding: 36px 40px;
       display: flex;
       flex-direction: column;
-      flex: 1;
+      justify-content: center;
     }
-    .lineup-step-tag {
+    .showcase-tag {
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -188,50 +183,77 @@
       border-radius: var(--radius-full);
       margin-bottom: 12px;
       width: fit-content;
+      background: #e0f2fe;
+      color: #0369a1;
       font-family: 'Inter', sans-serif;
     }
-    .tag-model-1 { background: #e0f2fe; color: #0369a1; }
-    .tag-model-2 { background: #f0fdf4; color: #15803d; }
-    .tag-model-3 { background: #faf5ff; color: #7e22ce; }
-
-    .lineup-card-body h3 {
-      font-size: 20px;
+    .showcase-info-box h3 {
+      font-size: 24px;
       font-weight: 800;
       color: var(--navy);
       margin-bottom: 4px;
+      letter-spacing: -0.02em;
     }
-    .lineup-card-body .lineup-sub {
-      font-size: 13px;
+    .showcase-info-box .showcase-sub {
+      font-size: 13.5px;
       color: var(--steel);
-      font-weight: 500;
-      margin-bottom: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
       font-family: 'Inter', sans-serif;
     }
-    .lineup-card-body p {
-      font-size: 14px;
+    .showcase-desc {
+      font-size: 14.5px;
       color: var(--sub);
-      line-height: 1.7;
-      margin-bottom: 18px;
-      flex: 1;
+      line-height: 1.75;
+      margin-bottom: 22px;
     }
-    .lineup-feature-list {
-      list-style: none;
-      padding: 14px 16px;
+    .showcase-feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .showcase-feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
       background: var(--bg);
       border-radius: var(--radius-sm);
       font-size: 13px;
-      color: var(--text);
+      color: var(--navy);
+      font-weight: 600;
+      line-height: 1.45;
     }
-    .lineup-feature-list li {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 0;
-    }
-    .lineup-feature-list li::before {
-      content: "✓";
+    .showcase-feature-item svg {
+      width: 16px;
+      height: 16px;
       color: var(--sky);
-      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .showcase-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 992px) {
+      .single-product-showcase {
+        grid-template-columns: 1fr;
+      }
+      .showcase-img-box {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 24px;
+      }
+      .showcase-info-box {
+        padding: 28px 20px;
+      }
+      .showcase-feature-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* 4. 스펙 테이블 */
@@ -384,7 +406,7 @@
         <!-- 기능 1 -->
         <div class="sitz-feature-card reveal">
           <div class="sitz-feature-img">
-            <img src="images/bowon-sitz-02.jpg" alt="공기방울 온수좌욕 기능" onerror="this.src='images/bowon-sitz-01.jpg';">
+            <img src="images/sitz-feature-01.jpg" alt="공기방울 온수좌욕 기능" onerror="this.src='images/bowon-sitz-01.jpg';">
           </div>
           <div class="sitz-feature-body">
             <span class="eng-badge">01. Air Bubble Sitz Bath</span>
@@ -396,7 +418,7 @@
         <!-- 기능 2 -->
         <div class="sitz-feature-card reveal">
           <div class="sitz-feature-img">
-            <img src="images/bowon-sitz-03.jpg" alt="정밀 저자극 온수세정" onerror="this.src='images/bowon-sitz-01.jpg';">
+            <img src="images/sitz-feature-02.jpg" alt="정밀 저자극 온수세정" onerror="this.src='images/bowon-sitz-01.jpg';">
           </div>
           <div class="sitz-feature-body">
             <span class="eng-badge">02. Gentle Warm Bidet</span>
@@ -408,7 +430,7 @@
         <!-- 기능 3 -->
         <div class="sitz-feature-card reveal">
           <div class="sitz-feature-img">
-            <img src="images/bowon-sitz-04.jpg" alt="원적외선 온풍건조" onerror="this.src='images/bowon-sitz-01.jpg';">
+            <img src="images/sitz-feature-03.jpg" alt="원적외선 온풍건조" onerror="this.src='images/bowon-sitz-01.jpg';">
           </div>
           <div class="sitz-feature-body">
             <span class="eng-badge">03. Warm Air &amp; IR Dry</span>
@@ -420,72 +442,55 @@
     </div>
   </section>
 
-  <!-- 2. 주요 제품 라인업 -->
+  <!-- 2. 공식 공급 제품 -->
   <section class="section bg-gray">
     <div class="section-inner">
-      <div class="section-label">Product Lineup</div>
-      <h2 class="section-title">보원테크 제품 라인업</h2>
+      <div class="section-label">Official Product</div>
+      <h2 class="section-title">산모 전용 좌욕·온수세정기</h2>
       <div class="divider"></div>
-      <p class="section-desc">병원 및 산후조리원 환경에 최적화된 고정식, 이동식, 케어식 맞춤형 모델을 제공합니다.</p>
+      <p class="section-desc">전국 400여 개소 이상의 산후조리원 및 산부인과에 공식 공급되는 산모 케어 표준 일체형 좌욕·온수세정기입니다.</p>
 
-      <div class="lineup-3-grid">
-        <!-- 모델 1: 좌욕온수세정기 (고정식) -->
-        <div class="lineup-card reveal">
-          <div class="lineup-card-img">
-            <span class="lineup-badge-top">산부인과 / 조리원 표준</span>
-            <img src="images/bowon-sitz-01.jpg" alt="좌욕온수세정기 일체형" onerror="this.src='images/bowon-sitz-02.jpg';">
-          </div>
-          <div class="lineup-card-body">
-            <span class="lineup-step-tag tag-model-1">고정식 시스템</span>
-            <h3>산모 전용 좌욕·온수세정기</h3>
-            <span class="lineup-sub">Hospital &amp; Care Center Integrated Model</span>
-            <p>산부인과 병실 및 산후조리원 전용 모델로 급배수 배관 직결을 통해 24시간 편리하고 쾌적한 좌욕 치료를 제공합니다.</p>
-            <ul class="lineup-feature-list">
-              <li>공기방울 온수좌욕 + 온수세정 + 온풍건조</li>
-              <li>위생적인 풀 스테인리스 분사 노즐</li>
-              <li>사용 전후 자동 노즐 살균 세척 기능</li>
-            </ul>
-          </div>
+      <!-- 단일 제품 상세 쇼케이스 -->
+      <div class="single-product-showcase reveal">
+        <div class="showcase-img-box">
+          <span class="showcase-badge-top">산부인과 / 산후조리원 공식 표준</span>
+          <img src="images/bowon-sitz-01.jpg" alt="보원테크 산모 전용 좌욕·온수세정기">
         </div>
+        <div class="showcase-info-box">
+          <span class="showcase-tag">일체형 고정식 시스템 · 산모 전용 특화</span>
+          <h3>산모 전용 좌욕·온수세정기</h3>
+          <span class="showcase-sub">Maternal Care Specialized Sitz Bath &amp; Warm Bidet System</span>
+          <p class="showcase-desc">
+            분만 후 산모의 통증 완화 및 빠른 상처 치유를 위해 개발된 전문 의료복지 장비입니다.
+            병원 병실 및 산후조리원 화장실에 일체형으로 직결 설치되어 24시간 안전하고 쾌적한 공기방울 온수좌욕과 저자극 온수세정을 제공합니다.
+          </p>
 
-        <!-- 모델 2: 이동형 좌욕기 -->
-        <div class="lineup-card reveal">
-          <div class="lineup-card-img">
-            <span class="lineup-badge-top">병실 이동 치료 최적화</span>
-            <img src="images/bowon-mobile-01.jpg" alt="이동형 좌욕기" onerror="this.src='images/bowon-sitz-05.jpg';">
+          <div class="showcase-feature-grid">
+            <div class="showcase-feature-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>공기방울 온수좌욕 &amp; 온수세정 &amp; 온풍건조 3-in-1</span>
+            </div>
+            <div class="showcase-feature-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>위생적인 풀 스테인리스 분사 노즐 &amp; 자동 살균</span>
+            </div>
+            <div class="showcase-feature-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>동작 상태 음성 안내 &amp; 에러 자가 진단 LED</span>
+            </div>
+            <div class="showcase-feature-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>산모 전용 개인 좌욕조 적용 (교차 감염 완벽 예방)</span>
+            </div>
           </div>
-          <div class="lineup-card-body">
-            <span class="lineup-step-tag tag-model-2">이동형 시스템</span>
-            <h3>이동형 온수 좌욕기</h3>
-            <span class="lineup-sub">Mobile Patient Sitz Bath System</span>
-            <p>거동이 불편한 중환자 및 수술 환자를 위해 병실 침상 바로 옆까지 이동하여 좌욕 치료가 가능한 바퀴형 모바일 시스템입니다.</p>
-            <ul class="lineup-feature-list">
-              <li>내장형 청수 및 오수 탱크 장착</li>
-              <li>부드러운 저소음 우레탄 바퀴 &amp; 잠금장치</li>
-              <li>직관적인 디지털 컨트롤 패널 탑재</li>
-            </ul>
-          </div>
-        </div>
 
-        <!-- 모델 3: 케어 양변기 비데 -->
-        <div class="lineup-card reveal">
-          <div class="lineup-card-img">
-            <span class="lineup-badge-top">기존 양변기 간편 설치</span>
-            <img src="images/bowon-toilet-01.jpg" alt="케어 비데 시스템" onerror="this.src='images/bowon-sitz-06.jpg';">
-          </div>
-          <div class="lineup-card-body">
-            <span class="lineup-step-tag tag-model-3">비데형 시스템</span>
-            <h3>환자 케어형 온수 비데</h3>
-            <span class="lineup-sub">Specialized Medical Care Bidet</span>
-            <p>기존 양변기에 손쉽게 설치 가능한 의료 케어 특화 비데로 항문외과 및 일반 병동의 위생 관리에 탁월합니다.</p>
-            <ul class="lineup-feature-list">
-              <li>광폭 온수 분사 및 무자극 수류 제어</li>
-              <li>항균 시트 및 방수 등급(IPX) 설계</li>
-              <li>간병인의 보조 편의성 극대화</li>
-            </ul>
+          <div class="showcase-actions">
+            <a href="contact.html" class="btn-primary" style="padding: 12px 28px; font-size: 14.5px;">장비 견적·도입 문의 →</a>
+            <a href="brands.html#bowon" class="btn-secondary" style="padding: 12px 24px; font-size: 14.5px;">보원테크 브랜드 소개</a>
           </div>
         </div>
       </div>
+
     </div>
   </section>
 
@@ -526,28 +531,40 @@
         <table class="spec-table">
           <tbody>
             <tr>
-              <th>정격 전압</th>
+              <th>제품명</th>
+              <td>산모 전용 좌욕·온수세정기 (일체형 고정식 시스템)</td>
+            </tr>
+            <tr>
+              <th>사용 전원</th>
               <td>AC 220V, 60Hz</td>
             </tr>
             <tr>
-              <th>소비 전력</th>
-              <td>최대 1,200W (순간 온수 가열 시)</td>
+              <th>정격 소비전력</th>
+              <td>최대 1,150W (온수 히터 750W / 건조 히터 300W / 시트 히터 30W)</td>
             </tr>
             <tr>
               <th>급수 방식</th>
-              <td>고정식: 수도 직결식 / 이동식: 내장 청수탱크 보충식</td>
+              <td>솔레노이드 직수 공급 방식 (온수탱크 용량 1,200cc)</td>
             </tr>
             <tr>
-              <th>수온 제어</th>
-              <td>32℃ ~ 40℃ (5단계 정밀 조절)</td>
+              <th>온수 제어</th>
+              <td>38℃ ~ 46℃ (온수 좌욕 및 온수 세정)</td>
+            </tr>
+            <tr>
+              <th>건조 / 온열</th>
+              <td>온풍 건조 (~50℃, 1분~5분) / 온열 시트 (상온~50℃)</td>
             </tr>
             <tr>
               <th>주요 기능</th>
-              <td>공기방울 온수좌욕, 온수세정, 비데, 원적외선 온풍건조, 노즐 자동세척, 절전모드</td>
+              <td>공기방울 온수좌욕, 리듬 맛사지, 저자극 온수세정, 온풍건조, 음성 안내, 노즐 자동세척, 에러 디스플레이</td>
+            </tr>
+            <tr>
+              <th>안전 장치</th>
+              <td>과승방지 센서, 온도 퓨즈, 온도 센서, 누전 차단 장치</td>
             </tr>
             <tr>
               <th>적용처</th>
-              <td>산부인과 병의원, 산후조리원, 여성외과클리닉, 대장항문병원, 요양병원, 종합병원 병동</td>
+              <td>산부인과 병의원, 산후조리원, 여성외과클리닉, 대장항문병원</td>
             </tr>
           </tbody>
         </table>
