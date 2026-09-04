@@ -143,13 +143,13 @@
       }
     }
 
-    /* 연혁 (세종헬스케어 스타일 수직 슬라이드 타임라인) */
+    /* 연혁 (History) - 신뢰감 있는 와이드 마일스톤 카드 레이아웃 */
     .history-intro-wrap {
       text-align: center;
-      margin-bottom: 50px;
+      margin-bottom: 44px;
     }
     .history-intro-tit {
-      font-size: 21px;
+      font-size: 20px;
       font-weight: 700;
       color: var(--navy);
       line-height: 1.65;
@@ -158,118 +158,113 @@
     .history-intro-tit span {
       color: var(--sky);
     }
-    .history-timeline-wrap {
-      position: relative;
-      max-width: 860px;
+    .history-container {
+      max-width: 1040px;
       margin: 0 auto;
-      padding-left: 36px;
-    }
-    /* 세로 연결 라인 */
-    .history-timeline-wrap::before {
-      content: '';
-      position: absolute;
-      top: 14px;
-      bottom: 24px;
-      left: 10px;
-      width: 2px;
-      background: linear-gradient(180deg, var(--sky) 0%, #cbd5e1 90%, transparent 100%);
-    }
-    .history-timeline-item {
-      position: relative;
-      margin-bottom: 48px;
-    }
-    .history-timeline-item:last-child {
-      margin-bottom: 0;
-    }
-    /* 타임라인 노드 원형 점 */
-    .history-timeline-item::before {
-      content: '';
-      position: absolute;
-      top: 8px;
-      left: -32px;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--sky);
-      border: 3px solid var(--white);
-      box-shadow: 0 0 0 2px var(--sky), 0 2px 6px rgba(2, 132, 199, 0.4);
-      transition: all 0.3s ease;
-      z-index: 2;
-    }
-    .history-timeline-item:hover::before {
-      transform: scale(1.25);
-      background: var(--blue);
-      box-shadow: 0 0 0 3px var(--sky), 0 4px 10px rgba(2, 132, 199, 0.6);
-    }
-    .history-year-header {
-      font-family: 'Inter', 'Pretendard', sans-serif;
-      font-size: 36px;
-      font-weight: 800;
-      color: var(--navy);
-      line-height: 1.1;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      letter-spacing: -0.02em;
-    }
-    .history-year-header span {
-      font-size: 14.5px;
-      font-weight: 600;
-      color: var(--sky);
-    }
-    .history-events-box {
-      background: var(--white);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
-      padding: 24px 28px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 18px;
+    }
+    .history-milestone-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--sky);
+      border-radius: 14px;
+      padding: 26px 36px;
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      align-items: center;
+      gap: 32px;
+      box-shadow: var(--shadow-sm);
       transition: all 0.25s ease;
     }
-    .history-timeline-item:hover .history-events-box {
-      border-color: #cbd5e1;
+    .history-milestone-card:hover {
+      transform: translateY(-3px);
       box-shadow: var(--shadow);
-      transform: translateX(4px);
+      border-color: #cbd5e1;
+      border-left-color: var(--blue);
+    }
+    /* 현재 연도(2026) 강조 */
+    .history-milestone-card.card-current {
+      border-left-color: #0284c7;
+      background: linear-gradient(to right, #f8fafc 0%, #ffffff 40%);
+    }
+    .history-year-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .history-year-num {
+      font-family: 'Inter', 'Pretendard', sans-serif;
+      font-size: 34px;
+      font-weight: 900;
+      color: var(--navy);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .history-tag {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 11px;
+      border-radius: 20px;
+      letter-spacing: -0.01em;
+    }
+    .tag-corp { background: #e0f2fe; color: #0369a1; }
+    .tag-growth { background: #e0f2fe; color: #0284c7; }
+    .tag-partner { background: #f1f5f9; color: #475569; }
+    .tag-found { background: #e0e7ff; color: #3730a3; }
+
+    .history-events-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
     .history-event-row {
       display: flex;
-      align-items: baseline;
-      gap: 20px;
+      align-items: center;
+      gap: 16px;
     }
-    .history-event-month {
+    .history-event-badge {
       font-family: 'Inter', sans-serif;
-      font-size: 17px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--sky);
+      background: rgba(2, 132, 199, 0.08);
+      padding: 4px 10px;
+      border-radius: 6px;
       flex-shrink: 0;
-      width: 28px;
-      text-align: right;
+      min-width: 40px;
+      text-align: center;
     }
     .history-event-desc {
-      font-size: 16px;
+      font-size: 15.5px;
       color: var(--text);
-      line-height: 1.7;
-      font-weight: 400;
+      line-height: 1.6;
       letter-spacing: -0.015em;
     }
     .history-event-desc strong {
       color: var(--navy);
-      font-weight: 600;
+      font-weight: 700;
     }
 
     @media (max-width: 768px) {
-      .history-intro-tit { font-size: 18px; }
-      .history-timeline-wrap { padding-left: 28px; }
-      .history-timeline-wrap::before { left: 7px; }
-      .history-timeline-item::before { left: -27px; width: 12px; height: 12px; }
-      .history-year-header { font-size: 30px; }
-      .history-events-box { padding: 18px 20px; gap: 12px; }
-      .history-event-row { gap: 14px; }
-      .history-event-month { font-size: 15.5px; width: 22px; }
-      .history-event-desc { font-size: 15px; }
+      .history-milestone-card {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 22px 20px;
+      }
+      .history-year-col {
+        flex-direction: row;
+        align-items: center;
+        gap: 14px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-light);
+      }
+      .history-year-num { font-size: 28px; }
+      .history-event-desc { font-size: 14.5px; }
     }
 
     /* 오시는 길 */
@@ -462,78 +457,82 @@
         </p>
       </div>
 
-      <!-- 수직 슬라이드 타임라인 -->
-      <div class="history-timeline-wrap">
+      <!-- 와이드 마일스톤 카드 컨테이너 -->
+      <div class="history-container">
 
         <!-- 2026년 -->
-        <div class="history-timeline-item reveal">
-          <div class="history-year-header">
-            <strong>2026</strong>
-            <span>Current</span>
+        <div class="history-milestone-card card-current reveal">
+          <div class="history-year-col">
+            <div class="history-year-num">2026</div>
+            <span class="history-tag tag-corp">법인 전환 · 현재</span>
           </div>
-          <div class="history-events-box">
+          <div class="history-events-col">
             <div class="history-event-row">
-              <span class="history-event-month">01</span>
+              <span class="history-event-badge">01.</span>
               <span class="history-event-desc"><strong>준메디칼 주식회사 법인 설립</strong> (법인 전환)</span>
             </div>
           </div>
         </div>
 
         <!-- 2014년 -->
-        <div class="history-timeline-item reveal">
-          <div class="history-year-header">
-            <strong>2014</strong>
+        <div class="history-milestone-card reveal">
+          <div class="history-year-col">
+            <div class="history-year-num">2014</div>
+            <span class="history-tag tag-growth">사명 변경 · 사업 확장</span>
           </div>
-          <div class="history-events-box">
+          <div class="history-events-col">
             <div class="history-event-row">
-              <span class="history-event-month">06</span>
+              <span class="history-event-badge">06.</span>
               <span class="history-event-desc"><strong>'준메디칼(Jun Medical)'</strong> 사명 변경 및 사업 영역 확대</span>
             </div>
           </div>
         </div>
 
         <!-- 2012년 -->
-        <div class="history-timeline-item reveal">
-          <div class="history-year-header">
-            <strong>2012</strong>
+        <div class="history-milestone-card reveal">
+          <div class="history-year-col">
+            <div class="history-year-num">2012</div>
+            <span class="history-tag tag-partner">산모 케어 라인업</span>
           </div>
-          <div class="history-events-box">
+          <div class="history-events-col">
             <div class="history-event-row">
-              <span class="history-event-month"></span>
+              <span class="history-event-badge">•</span>
               <span class="history-event-desc"><strong>보원테크</strong>(산모 전용 좌욕·온수세정기) 대전·충청 공식 대리점 계약 체결</span>
             </div>
           </div>
         </div>
 
         <!-- 2010년 -->
-        <div class="history-timeline-item reveal">
-          <div class="history-year-header">
-            <strong>2010</strong>
+        <div class="history-milestone-card reveal">
+          <div class="history-year-col">
+            <div class="history-year-num">2010</div>
+            <span class="history-tag tag-partner">수술포·멸균포 공급</span>
           </div>
-          <div class="history-events-box">
+          <div class="history-events-col">
             <div class="history-event-row">
-              <span class="history-event-month"></span>
+              <span class="history-event-badge">•</span>
               <span class="history-event-desc"><strong>세종헬스케어</strong> 대전·충청 공식 대리점 계약 체결</span>
             </div>
           </div>
         </div>
 
         <!-- 2008년 -->
-        <div class="history-timeline-item reveal">
-          <div class="history-year-header">
-            <strong>2008</strong>
+        <div class="history-milestone-card reveal">
+          <div class="history-year-col">
+            <div class="history-year-num">2008</div>
+            <span class="history-tag tag-found">탑메디칼 설립 · 파트너십</span>
           </div>
-          <div class="history-events-box">
+          <div class="history-events-col">
             <div class="history-event-row">
-              <span class="history-event-month">01</span>
+              <span class="history-event-badge">01.</span>
               <span class="history-event-desc"><strong>탑메디칼 설립</strong> (외과 및 산부인과 수술 전문 의료기기 공급 개시)</span>
             </div>
             <div class="history-event-row">
-              <span class="history-event-month">01</span>
+              <span class="history-event-badge">01.</span>
               <span class="history-event-desc">독일 <strong>WISAP</strong> 대전·충청 공식 대리점 계약 체결</span>
             </div>
             <div class="history-event-row">
-              <span class="history-event-month">01</span>
+              <span class="history-event-badge">01.</span>
               <span class="history-event-desc">미국 <strong>CooperSurgical</strong> 대전·충청 공식 대리점 계약 체결</span>
             </div>
           </div>
