@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>좌욕온수 세정기 | 준메디칼 주식회사</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ==========================================================================
+       좌욕온수 세정기 페이지 전용 스타일
+       ========================================================================== */
+
+    /* 1. 파트너 브랜드 헤더 배너 */
+    .partner-brand-callout {
+      background: linear-gradient(135deg, #0f274a 0%, #1e3a8a 100%);
+      color: #ffffff;
+      border-radius: 16px;
+      padding: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+    .partner-brand-callout-text h3 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    .partner-brand-callout-text p {
+      font-size: 14px;
+      color: #cbd5e1;
+      line-height: 1.65;
+    }
+    .partner-brand-callout-logo {
+      background: #ffffff;
+      padding: 12px 24px;
+      border-radius: 12px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .partner-brand-callout-logo img {
+      height: 36px;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* 2. 핵심 특징 3대 카드 */
+    .sitz-feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .sitz-feature-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    .sitz-feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--sky);
+    }
+    .sitz-feature-img {
+      height: 220px;
+      background: #f8fafc;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sitz-feature-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .sitz-feature-card:hover .sitz-feature-img img {
+      transform: scale(1.05);
+    }
+    .sitz-feature-body {
+      padding: 24px 22px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .sitz-feature-body h4 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .sitz-feature-body .eng-badge {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--steel);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+      font-family: 'Inter', sans-serif;
+    }
+    .sitz-feature-body p {
+      font-size: 13.5px;
+      color: var(--sub);
+      line-height: 1.7;
+    }
+
+    /* 3. 제품 라인업 3대 그리드 */
+    .lineup-3-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
+      margin-top: 36px;
+    }
+    .lineup-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+    }
+    .lineup-card:hover {
+      border-color: var(--sky);
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-4px);
+    }
+    .lineup-card-img {
+      height: 240px;
+      background: #f8fafc;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .lineup-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .lineup-card:hover .lineup-card-img img {
+      transform: scale(1.04);
+    }
+    .lineup-badge-top {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(15, 39, 74, 0.85);
+      backdrop-filter: blur(4px);
+      color: #ffffff;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.04em;
+    }
+    .lineup-card-body {
+      padding: 26px 24px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .lineup-step-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+      width: fit-content;
+      font-family: 'Inter', sans-serif;
+    }
+    .tag-model-1 { background: #e0f2fe; color: #0369a1; }
+    .tag-model-2 { background: #f0fdf4; color: #15803d; }
+    .tag-model-3 { background: #faf5ff; color: #7e22ce; }
+
+    .lineup-card-body h3 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .lineup-card-body .lineup-sub {
+      font-size: 13px;
+      color: var(--steel);
+      font-weight: 500;
+      margin-bottom: 14px;
+      font-family: 'Inter', sans-serif;
+    }
+    .lineup-card-body p {
+      font-size: 14px;
+      color: var(--sub);
+      line-height: 1.7;
+      margin-bottom: 18px;
+      flex: 1;
+    }
+    .lineup-feature-list {
+      list-style: none;
+      padding: 14px 16px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: var(--text);
+    }
+    .lineup-feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+    }
+    .lineup-feature-list li::before {
+      content: "✓";
+      color: var(--sky);
+      font-weight: 800;
+    }
+
+    /* 4. 스펙 테이블 */
+    .spec-table-wrap {
+      margin-top: 32px;
+      overflow-x: auto;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+    }
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      background: var(--white);
+      text-align: left;
+    }
+    .spec-table th, .spec-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .spec-table th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: var(--navy);
+      width: 22%;
+      white-space: nowrap;
+    }
+    .spec-table td {
+      color: var(--sub);
+    }
+    .spec-table tr:last-child th, .spec-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    @media (max-width: 768px) {
+      .partner-brand-callout {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ★ 공통 헤더 영역 (수정 금지) ★ -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-ko">준 메 디 칼</span>
+      <span class="logo-en">JUN MEDICAL Co., Ltd.</span>
+    </a>
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="메뉴">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="site-nav" id="siteNav">
+      <li>
+        <a href="about.html">회사소개</a>
+        <ul class="dropdown">
+          <li><a href="about.html#greeting">인사말</a></li>
+          <li><a href="about.html#history">연혁</a></li>
+          <li><a href="about.html#location">오시는 길</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="products.html">취급제품</a>
+        <ul class="dropdown">
+          <li><a href="products-laparoscopy.html">복강경 수술기구</a></li>
+          <li><a href="products-drape.html">수술포·멸균포</a></li>
+          <li><a href="products-dvt.html">DVT 예방장비</a></li>
+          <li><a href="products-sitzbath.html">좌욕온수 세정기</a></li>
+          <li><a href="products-etc.html">기타 의료소모품</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="brands.html">파트너 브랜드</a>
+        <ul class="dropdown">
+          <li><a href="brands.html#wisap">WISAP (독일)</a></li>
+          <li><a href="brands.html#coopersurgical">CooperSurgical (미국)</a></li>
+          <li><a href="brands.html#sejong">세종헬스케어</a></li>
+          <li><a href="brands.html#mb2020">MB2020</a></li>
+          <li><a href="brands.html#bowon">보원테크</a></li>
+        </ul>
+      </li>
+      <li><a href="careers.html">인재채용</a></li>
+      <li><a href="contact.html" class="btn-inquiry">견적·문의</a></li>
+      <li>
+        <a href="mall.html" target="_blank" rel="noopener noreferrer" class="btn-shop">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span>온라인몰</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<main>
+
+  <!-- 서브페이지 히어로 영역 -->
+  <section class="hero">
+    <h1>좌욕온수 세정기</h1>
+    <p>보원테크(BOWON TECH)의 산모 및 환자 전용 자동 살균 온수 좌욕·세정 시스템을 공급합니다.</p>
+  </section>
+
+  <!-- 서브 네비게이션 바 -->
+  <div class="sub-nav-bar">
+    <div class="sub-nav-inner">
+      <ul class="sub-depth-tabs">
+        <li><a href="products.html">전체 카테고리</a></li>
+        <li><a href="products-laparoscopy.html">복강경 수술기구</a></li>
+        <li><a href="products-drape.html">수술포·멸균포</a></li>
+        <li><a href="products-dvt.html">DVT 예방장비</a></li>
+        <li class="active"><a href="products-sitzbath.html">좌욕온수 세정기</a></li>
+        <li><a href="products-etc.html">기타 의료소모품</a></li>
+      </ul>
+      <div class="breadcrumbs">
+        <a href="index.html">홈</a>
+        <a href="products.html">취급제품</a>
+        <span>좌욕온수 세정기</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 파트너 브랜드 배너 콜아웃 -->
+  <section class="section" style="padding-bottom: 0;">
+    <div class="section-inner">
+      <div class="partner-brand-callout reveal">
+        <div class="partner-brand-callout-text">
+          <h3>보원테크 (BOWON TECH) 공식 대리점</h3>
+          <p>준메디칼은 2012년부터 보원테크 대전·충청 공식 대리점으로서 산부인과 병의원, 산후조리원, 전문 요양시설에 정품 장비 공급 및 철저한 설치·유지보수를 전담하고 있습니다.</p>
+        </div>
+        <div class="partner-brand-callout-logo">
+          <img src="images/brand-bowon.png" alt="보원테크 로고" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span style="display:none; font-weight:800; color:#0f274a; font-size:16px;">BOWON TECH</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1. 핵심 3대 케어 시스템 -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-label">Core Features</div>
+      <h2 class="section-title">산모와 환자를 위한 3-in-1 메디컬 케어</h2>
+      <div class="divider"></div>
+      <p class="section-desc">온수세정(비데), 공기방울 온수좌욕, 원적외선 온풍건조까지 단 하나의 기기로 완벽한 위생과 회복을 제공합니다.</p>
+
+      <div class="sitz-feature-grid">
+        <!-- 기능 1 -->
+        <div class="sitz-feature-card reveal">
+          <div class="sitz-feature-img">
+            <img src="images/bowon-sitz-02.jpg" alt="공기방울 온수좌욕 기능" onerror="this.src='images/bowon-sitz-01.jpg';">
+          </div>
+          <div class="sitz-feature-body">
+            <span class="eng-badge">01. Air Bubble Sitz Bath</span>
+            <h4>공기방울 온수좌욕</h4>
+            <p>풍부한 미세 공기방울 수류가 환부에 부드러운 자극을 주어 분만 후 회음부 회복 및 항문 혈액순환을 촉진하고 통증을 신속히 완화합니다.</p>
+          </div>
+        </div>
+
+        <!-- 기능 2 -->
+        <div class="sitz-feature-card reveal">
+          <div class="sitz-feature-img">
+            <img src="images/bowon-sitz-03.jpg" alt="정밀 저자극 온수세정" onerror="this.src='images/bowon-sitz-01.jpg';">
+          </div>
+          <div class="sitz-feature-body">
+            <span class="eng-badge">02. Gentle Warm Bidet</span>
+            <h4>정밀 저자극 온수세정</h4>
+            <p>민감한 수술 부위와 산모의 피부를 고려한 수압·수온 정밀 제어 시스템으로 자극 없는 청결 세정을 실현합니다.</p>
+          </div>
+        </div>
+
+        <!-- 기능 3 -->
+        <div class="sitz-feature-card reveal">
+          <div class="sitz-feature-img">
+            <img src="images/bowon-sitz-04.jpg" alt="원적외선 온풍건조" onerror="this.src='images/bowon-sitz-01.jpg';">
+          </div>
+          <div class="sitz-feature-body">
+            <span class="eng-badge">03. Warm Air &amp; IR Dry</span>
+            <h4>원적외선 온풍건조</h4>
+            <p>세정 및 좌욕 후 잔여 습기를 원적외선과 따뜻한 온풍으로 쾌적하게 건조시켜 2차 감염 예방과 빠른 상처 치유를 돕습니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 주요 제품 라인업 -->
+  <section class="section bg-gray">
+    <div class="section-inner">
+      <div class="section-label">Product Lineup</div>
+      <h2 class="section-title">보원테크 제품 라인업</h2>
+      <div class="divider"></div>
+      <p class="section-desc">병원 및 산후조리원 환경에 최적화된 고정식, 이동식, 케어식 맞춤형 모델을 제공합니다.</p>
+
+      <div class="lineup-3-grid">
+        <!-- 모델 1: 좌욕온수세정기 (고정식) -->
+        <div class="lineup-card reveal">
+          <div class="lineup-card-img">
+            <span class="lineup-badge-top">산부인과 / 조리원 표준</span>
+            <img src="images/bowon-sitz-01.jpg" alt="좌욕온수세정기 일체형" onerror="this.src='images/bowon-sitz-02.jpg';">
+          </div>
+          <div class="lineup-card-body">
+            <span class="lineup-step-tag tag-model-1">고정식 시스템</span>
+            <h3>산모 전용 좌욕·온수세정기</h3>
+            <span class="lineup-sub">Hospital &amp; Care Center Integrated Model</span>
+            <p>산부인과 병실 및 산후조리원 전용 모델로 급배수 배관 직결을 통해 24시간 편리하고 쾌적한 좌욕 치료를 제공합니다.</p>
+            <ul class="lineup-feature-list">
+              <li>공기방울 온수좌욕 + 온수세정 + 온풍건조</li>
+              <li>위생적인 풀 스테인리스 분사 노즐</li>
+              <li>사용 전후 자동 노즐 살균 세척 기능</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 모델 2: 이동형 좌욕기 -->
+        <div class="lineup-card reveal">
+          <div class="lineup-card-img">
+            <span class="lineup-badge-top">병실 이동 치료 최적화</span>
+            <img src="images/bowon-mobile-01.jpg" alt="이동형 좌욕기" onerror="this.src='images/bowon-sitz-05.jpg';">
+          </div>
+          <div class="lineup-card-body">
+            <span class="lineup-step-tag tag-model-2">이동형 시스템</span>
+            <h3>이동형 온수 좌욕기</h3>
+            <span class="lineup-sub">Mobile Patient Sitz Bath System</span>
+            <p>거동이 불편한 중환자 및 수술 환자를 위해 병실 침상 바로 옆까지 이동하여 좌욕 치료가 가능한 바퀴형 모바일 시스템입니다.</p>
+            <ul class="lineup-feature-list">
+              <li>내장형 청수 및 오수 탱크 장착</li>
+              <li>부드러운 저소음 우레탄 바퀴 &amp; 잠금장치</li>
+              <li>직관적인 디지털 컨트롤 패널 탑재</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 모델 3: 케어 양변기 비데 -->
+        <div class="lineup-card reveal">
+          <div class="lineup-card-img">
+            <span class="lineup-badge-top">기존 양변기 간편 설치</span>
+            <img src="images/bowon-toilet-01.jpg" alt="케어 비데 시스템" onerror="this.src='images/bowon-sitz-06.jpg';">
+          </div>
+          <div class="lineup-card-body">
+            <span class="lineup-step-tag tag-model-3">비데형 시스템</span>
+            <h3>환자 케어형 온수 비데</h3>
+            <span class="lineup-sub">Specialized Medical Care Bidet</span>
+            <p>기존 양변기에 손쉽게 설치 가능한 의료 케어 특화 비데로 항문외과 및 일반 병동의 위생 관리에 탁월합니다.</p>
+            <ul class="lineup-feature-list">
+              <li>광폭 온수 분사 및 무자극 수류 제어</li>
+              <li>항균 시트 및 방수 등급(IPX) 설계</li>
+              <li>간병인의 보조 편의성 극대화</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 위생 및 안전 시스템 -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-label">Safety &amp; Hygiene</div>
+      <h2 class="section-title">철저한 감염 예방과 위생 설계</h2>
+      <div class="divider"></div>
+      <p class="section-desc">병원 감염 관리 지침을 충족하는 최고 등급의 위생 자재와 다중 안전 설계를 적용했습니다.</p>
+
+      <div class="sitz-feature-grid">
+        <div class="sitz-feature-card reveal">
+          <div class="sitz-feature-body">
+            <span class="eng-badge">Hygiene Feature 01</span>
+            <h4>풀 스테인리스 노즐</h4>
+            <p>이물질 부착과 변색에 강한 풀 스테인리스 노즐을 적용하여 세균 번식을 억제하며 반영구적 위생 상태를 유지합니다.</p>
+          </div>
+        </div>
+        <div class="sitz-feature-card reveal">
+          <div class="sitz-feature-body">
+            <span class="eng-badge">Hygiene Feature 02</span>
+            <h4>사용 전후 자동 세척</h4>
+            <p>사용 전과 후에 노즐 스스로 고압수를 분사하여 노즐 표면과 분사구를 완벽하게 자동 살균 세척합니다.</p>
+          </div>
+        </div>
+        <div class="sitz-feature-card reveal">
+          <div class="sitz-feature-body">
+            <span class="eng-badge">Safety Feature 03</span>
+            <h4>다중 안전 센서 시스템</h4>
+            <p>온도 과승 방지 바이메탈, 누전 감지 자동 차단기, 수위 감지 센서를 탑재하여 24시간 안전한 작동을 보장합니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 사양 테이블 -->
+      <div class="spec-table-wrap reveal">
+        <table class="spec-table">
+          <tbody>
+            <tr>
+              <th>정격 전압</th>
+              <td>AC 220V, 60Hz</td>
+            </tr>
+            <tr>
+              <th>소비 전력</th>
+              <td>최대 1,200W (순간 온수 가열 시)</td>
+            </tr>
+            <tr>
+              <th>급수 방식</th>
+              <td>고정식: 수도 직결식 / 이동식: 내장 청수탱크 보충식</td>
+            </tr>
+            <tr>
+              <th>수온 제어</th>
+              <td>32℃ ~ 40℃ (5단계 정밀 조절)</td>
+            </tr>
+            <tr>
+              <th>주요 기능</th>
+              <td>공기방울 온수좌욕, 온수세정, 비데, 원적외선 온풍건조, 노즐 자동세척, 절전모드</td>
+            </tr>
+            <tr>
+              <th>적용처</th>
+              <td>산부인과 병의원, 산후조리원, 여성외과클리닉, 대장항문병원, 요양병원, 종합병원 병동</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ★ 공통 CTA 배너 영역 (수정 금지) ★ -->
+<section class="cta-banner">
+  <h2>준메디칼의 제품 및 파트너십이 궁금하십니까?</h2>
+  <p>B2B 병원 유통, 대리점 개설 문의 등 궁금하신 사안을 남겨주시면 담당자가 빠른 시일 내에 상세히 답변드리겠습니다.</p>
+  <a href="contact.html" class="btn-primary">견적·문의하기</a>
+</section>
+
+<!-- ★ 공통 푸터 영역 ★ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-layout">
+      <div class="footer-left">
+        <div class="footer-name">준메디칼 주식회사 JUN MEDICAL Co., Ltd.</div>
+        <div class="footer-info">
+          <span>대표 이우진</span>
+          <span>충청남도 천안시 서북구 도원8길 38, 402호(성정동)</span><br>
+          <span>사업자등록번호 869-87-03464</span>
+          <span>의료기기판매업 신고번호 제2026-4490261-00002호</span><br>
+          <span>Tel 041-522-9917</span>
+          <span>Fax 041-522-9918</span>
+          <span>E-mail junmed14@naver.com</span>
+        </div>
+      </div>
+      <div class="footer-right">
+        <a href="index.html" class="footer-logo">
+          <div class="footer-logo-icon">
+            <svg viewBox="0 0 36 36" width="36" height="36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="18" cy="18" r="16" stroke="#0284c7" stroke-width="2.5"/>
+              <path d="M18 9V27M9 18H27" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="footer-logo-text">
+            <span class="footer-logo-ko">준 메 디 칼</span>
+            <span class="footer-logo-en">JUN MEDICAL Co., Ltd.</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 준메디칼 주식회사. All rights reserved.</div>
+  </div>
+</footer>
+
+<!-- 우측 하단 퀵 플로팅 상담/견적 바 -->
+<div class="floating-quick-widget" id="floatingWidget">
+  <div class="floating-quick-popup" id="floatingPopup">
+    <div class="floating-quick-header">
+      빠른 상담 & 견적 안내
+      <span>09:00 ~ 18:00</span>
+    </div>
+    <div class="floating-quick-list">
+      <a href="tel:041-522-9917" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        전화 상담 (041-522-9917)
+      </a>
+      <a href="contact.html" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        온라인 견적 요청서
+      </a>
+      <a href="mailto:junmed14@naver.com" class="floating-quick-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"/></svg>
+        이메일 문의
+      </a>
+    </div>
+  </div>
+  <div class="floating-btn-group">
+    <a href="https://pf.kakao.com/_xfNtxmG/chat" target="_blank" rel="noopener noreferrer" class="floating-kakao-btn" aria-label="카카오톡 1:1 상담" title="카카오톡 1:1 상담">
+      <span class="floating-tooltip">카카오톡 상담</span>
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+        <path d="M12 3c-5.52 0-10 3.58-10 8 0 2.87 1.89 5.38 4.73 6.75l-.96 3.55a.5.5 0 0 0 .73.56l3.81-2.47c.56.07 1.13.11 1.69.11 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
+      </svg>
+    </a>
+    <button type="button" class="floating-quick-btn" onclick="toggleFloatingPopup()" aria-label="빠른 상담 문의" title="빠른 상담 및 견적">
+      <span class="floating-tooltip">빠른 견적·문의</span>
+      <span class="btn-badge"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </button>
+    <button type="button" class="floating-top-btn" id="scrollTopBtn" onclick="scrollToTop()" aria-label="상단으로 이동" title="상단으로">
+      <span class="floating-tooltip">상단으로</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+      <span class="top-text">TOP</span>
+    </button>
+  </div>
+</div>
+
+<script>
+function toggleNav(){document.getElementById('siteNav').classList.toggle('open');}
+function toggleFloatingPopup(){
+  const popup = document.getElementById('floatingPopup');
+  popup.classList.toggle('open');
+}
+function scrollToTop(){
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 스크롤 시 '상단으로' 버튼 표시/숨김 제어
+window.addEventListener('scroll', () => {
+  const topBtn = document.getElementById('scrollTopBtn');
+  if (topBtn) {
+    if (window.scrollY > 200) {
+      topBtn.classList.add('visible');
+    } else {
+      topBtn.classList.remove('visible');
+    }
+  }
+}, { passive: true });
+
+// 빠른 견적·문의 아이콘 마우스 호버 시 팝업 열기/닫기
+document.addEventListener('DOMContentLoaded', () => {
+  const popup = document.getElementById('floatingPopup');
+  const quickBtn = document.querySelector('.floating-quick-btn');
+
+  if (popup && quickBtn) {
+    let hideTimer;
+    const show = () => {
+      clearTimeout(hideTimer);
+      popup.classList.add('show');
+    };
+    const hide = () => {
+      hideTimer = setTimeout(() => {
+        popup.classList.remove('show');
+      }, 150);
+    };
+
+    quickBtn.addEventListener('mouseenter', show);
+    quickBtn.addEventListener('mouseleave', hide);
+    popup.addEventListener('mouseenter', show);
+    popup.addEventListener('mouseleave', hide);
+  }
+
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  reveals.forEach(el => observer.observe(el));
+});
+</script>
+</body>
+</html>
