@@ -1014,7 +1014,7 @@
   <div class="popup-card-group">
 
     <!-- 카드 1: 다크 네이비 테마 (폰트 타이포그래피 강조 — 공식 홈페이지 GRAND OPEN) -->
-    <div class="popup-card popup-card-dark">
+    <div class="popup-card popup-card-dark" id="popupCard1">
       <a href="products.html" style="display: flex; flex-direction: column; text-decoration: none; color: inherit; flex: 1;">
         <div class="popup-card-dark-body">
           <div class="popup-dark-badge">
@@ -1046,11 +1046,10 @@
     </div>
 
     <!-- 카드 2: 브라이트 화이트 테마 (온라인 쇼핑몰 COMING SOON 홍보) -->
-    <div class="popup-card popup-card-light">
+    <div class="popup-card popup-card-light" id="popupCard2">
       <a href="mall.html" style="display: flex; flex-direction: column; text-decoration: none; color: inherit; flex: 1;">
         <div class="popup-card-light-top">
           <img src="images/online-store-banner.jpg" alt="준메디칼 공식 온라인몰 오픈 예정">
-          <div class="popup-card-light-badge">🛒 JUN MEDICAL ONLINE STORE</div>
         </div>
         <div class="popup-card-light-body">
           <div class="popup-card-light-tag">B2B 의료기기 전문 스토어</div>
@@ -1093,17 +1092,62 @@ function scrollToTop(){
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// 메인 팝업 노출 및 닫기 제어
+// 메인 팝업 개별 노출 및 독립 닫기 제어
 function checkShowcasePopup() {
-  const hideDate = localStorage.getItem('junmedical_popup_hide_date');
   const today = new Date().toISOString().slice(0, 10);
-  if (hideDate !== today) {
-    const overlay = document.getElementById('popupShowcaseOverlay');
-    if (overlay) {
-      setTimeout(() => {
-        overlay.classList.add('active');
-      }, 250);
-    }
+  const hide1 = localStorage.getItem('junmedical_popup1_hide') === today;
+  const hide2 = localStorage.getItem('junmedical_popup2_hide') === today;
+
+  const card1 = document.getElementById('popupCard1');
+  const card2 = document.getElementById('popupCard2');
+  const overlay = document.getElementById('popupShowcaseOverlay');
+
+  if (card1 && hide1) card1.style.display = 'none';
+  if (card2 && hide2) card2.style.display = 'none';
+
+  // 둘 다 오늘 하루 닫기 설정된 경우 오버레이 자체를 띄우지 않음
+  if (hide1 && hide2) {
+    return;
+  }
+
+  if (overlay) {
+    setTimeout(() => {
+      overlay.classList.add('active');
+    }, 250);
+  }
+}
+
+function handleClosePopup(cardIndex) {
+  const today = new Date().toISOString().slice(0, 10);
+  const chk = document.getElementById('dontShowPopupChk' + cardIndex);
+  if (chk && chk.checked) {
+    localStorage.setItem('junmedical_popup' + cardIndex + '_hide', today);
+  }
+
+  const targetCard = document.getElementById('popupCard' + cardIndex);
+  if (targetCard) {
+    targetCard.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+    targetCard.style.opacity = '0';
+    targetCard.style.transform = 'scale(0.92)';
+    setTimeout(() => {
+      targetCard.style.display = 'none';
+      checkAllPopupsClosed();
+    }, 220);
+  } else {
+    checkAllPopupsClosed();
+  }
+}
+
+function checkAllPopupsClosed() {
+  const card1 = document.getElementById('popupCard1');
+  const card2 = document.getElementById('popupCard2');
+  const overlay = document.getElementById('popupShowcaseOverlay');
+
+  const isCard1Hidden = !card1 || card1.style.display === 'none';
+  const isCard2Hidden = !card2 || card2.style.display === 'none';
+
+  if (isCard1Hidden && isCard2Hidden && overlay) {
+    overlay.classList.remove('active');
   }
 }
 
@@ -1112,15 +1156,6 @@ function closeShowcasePopup() {
   if (overlay) {
     overlay.classList.remove('active');
   }
-}
-
-function handleClosePopup(cardIndex) {
-  const chk = document.getElementById('dontShowPopupChk' + cardIndex) || document.getElementById('dontShowPopupChk1') || document.getElementById('dontShowPopupChk2');
-  if (chk && chk.checked) {
-    const today = new Date().toISOString().slice(0, 10);
-    localStorage.setItem('junmedical_popup_hide_date', today);
-  }
-  closeShowcasePopup();
 }
 
 // 모달 바깥 배경 클릭 시 닫기
