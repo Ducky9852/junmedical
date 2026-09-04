@@ -11,18 +11,18 @@
     /* ── 동아제약 스타일 인사말 레이아웃 ── */
     .greeting-donga-layout {
       display: grid;
-      grid-template-columns: minmax(0, 560px) 310px;
-      gap: 46px;
+      grid-template-columns: minmax(0, 580px) 310px;
+      gap: 114px; /* 약 3cm (96 DPI 기준 113.4px) 시각적 여백 */
       align-items: start;
-      justify-content: center;
-      max-width: 960px;
-      margin: 28px auto 0;
+      justify-content: start;
+      margin: 28px 0 0 0;
     }
 
     .greeting-content-col {
       display: flex;
       flex-direction: column;
-      max-width: 560px;
+      max-width: 580px;
+      text-align: left;
     }
 
     .greeting-main-headline {
@@ -32,6 +32,7 @@
       line-height: 1.38;
       letter-spacing: -0.03em;
       margin-bottom: 24px;
+      text-align: left;
     }
 
     .greeting-main-headline strong {
@@ -42,9 +43,8 @@
     .greeting-desc-wrap p {
       font-size: 15px;
       color: #334155;
-      line-height: 1.88;
-      text-align: justify;
-      text-justify: inter-word;
+      line-height: 1.9;
+      text-align: left;
       word-break: keep-all;
       margin-bottom: 16px;
     }
