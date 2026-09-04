@@ -1555,6 +1555,8 @@ async function deleteCurrentDeal() {
   recalcGlobalStats();
   selectHospital(hosp);
   renderProductPipeline(selectedProductId);
+  renderASControlCenter();
+  renderDemoTracker();
   closeEditModal();
 
   // 4. Delete from Supabase Cloud DB
@@ -1657,6 +1659,8 @@ async function saveModalChanges() {
   initHeaderMetrics();
   selectHospital(targetDeal.hospital);
   renderProductPipeline(selectedProductId);
+  renderASControlCenter();
+  renderDemoTracker();
   
   persistSalesDB();
   closeEditModal();
@@ -2021,11 +2025,9 @@ function renderASControlCenter() {
   const query = (document.getElementById('as-search-input')?.value || '').trim().toLowerCase();
   const pipe = (window.SALES_DB && window.SALES_DB.pipeline) ? window.SALES_DB.pipeline : [];
   
-  // Find only legitimate A/S related equipment deals
+  // Find only legitimate A/S related equipment deals (including resolved/completed ones in stage 5)
   const asDeals = pipe.filter(d => {
-    // Only genuine AS status or explicit active AS info
-    const hasActiveAS = (d.status === 'A/S접수·처리') || 
-                        (d.as_info && d.as_info.status && d.status !== '도입완료·납품' && d.status !== '영업실패·보류');
+    const hasActiveAS = (d.status === 'A/S접수·처리') || (d.as_info && d.as_info.status);
     if (!hasActiveAS) return false;
 
     if (query) {
@@ -2089,18 +2091,18 @@ function renderASControlCenter() {
     // 1. Strict priority to explicit as_info status
     const asStatus = (d.as_info && d.as_info.status) ? d.as_info.status.toLowerCase() : '';
     
-    if (asStatus.includes('접수')) {
-      stage = '접수완료';
-    } else if (asStatus.includes('전달') || asStatus.includes('발송') || asStatus.includes('본사') || asStatus.includes('외부')) {
-      stage = '외부전달';
-    } else if (asStatus.includes('진행') || asStatus.includes('수리중') || asStatus.includes('점검')) {
-      stage = '수리진행중';
+    if (asStatus.includes('완료') || asStatus.includes('출고') || asStatus.includes('해결')) {
+      stage = '수리완료';
     } else if (asStatus.includes('견적') || asStatus.includes('협의') || asStatus.includes('컨펌')) {
       stage = '견적협의';
-    } else if (asStatus.includes('완료') || asStatus.includes('출고') || asStatus.includes('해결')) {
-      stage = '수리완료';
+    } else if (asStatus.includes('진행') || asStatus.includes('수리중') || asStatus.includes('점검')) {
+      stage = '수리진행중';
+    } else if (asStatus.includes('전달') || asStatus.includes('발송') || asStatus.includes('본사') || asStatus.includes('외부')) {
+      stage = '외부전달';
+    } else if (asStatus.includes('접수')) {
+      stage = '접수완료';
     } else {
-      // 2. Fallback: inspect latest action and note, but NEVER treat '도입완료·납품' as A/S completed
+      // 2. Fallback: inspect latest action and note
       const noteTxt = (d.latest_note || '').toLowerCase();
       if (d.status === 'A/S접수·처리' || d.latest_action === 'A/S·클레임') {
         if (noteTxt.includes('출고') || noteTxt.includes('수리완료') || noteTxt.includes('조치완료')) {
@@ -2149,7 +2151,7 @@ function renderASControlCenter() {
       };
       card.ondragend = () => {
         card.classList.remove('dragging');
-        draggedASDeal = null;
+        setTimeout(() => { draggedASDeal = null; }, 100);
       };
       card.onclick = () => openEditModal(d);
 
@@ -2184,29 +2186,43 @@ function handleASDragLeave(e) {
 async function handleASDrop(e, targetStage) {
   e.preventDefault();
   if (e.currentTarget) e.currentTarget.classList.remove('drag-over');
-  if (!draggedASDeal) return;
+  
+  let targetDeal = draggedASDeal;
+  if (!targetDeal) {
+    try {
+      const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+      if (data && data.hosp) {
+        const pipe = (window.SALES_DB && window.SALES_DB.pipeline) ? window.SALES_DB.pipeline : [];
+        targetDeal = pipe.find(d => d.hospital === data.hosp && d.product_id === data.prodId);
+      }
+    } catch(err) {}
+  }
+  if (!targetDeal) return;
 
-  if (!draggedASDeal.as_info) {
-    draggedASDeal.as_info = { date: new Date().toISOString().slice(0, 10).replace(/-/g, '/'), note: draggedASDeal.latest_note || '', status: targetStage };
+  const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+
+  if (!targetDeal.as_info) {
+    targetDeal.as_info = { date: todayStr, note: targetDeal.latest_note || '', status: targetStage };
   } else {
-    draggedASDeal.as_info.status = targetStage;
+    targetDeal.as_info.status = targetStage;
   }
 
   if (targetStage === '수리완료') {
-    draggedASDeal.status = '도입완료·납품';
+    targetDeal.status = '도입완료·납품';
+    targetDeal.as_info.resolved_date = todayStr;
   } else {
-    draggedASDeal.status = 'A/S접수·처리';
+    targetDeal.status = 'A/S접수·처리';
   }
-  draggedASDeal.last_date = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+  targetDeal.last_date = todayStr;
 
   persistSalesDB();
   recalcGlobalStats();
   initHeaderMetrics();
   renderASControlCenter();
-  showToast(`✨ [${draggedASDeal.hospital}] A/S 진행상태가 '${targetStage}'(으)로 변경되었습니다.`);
+  showToast(`✨ [${targetDeal.hospital}] A/S 진행상태가 '${targetStage}'(으)로 변경되었습니다.`);
 
   // Supabase Cloud Sync
-  await syncPipelineDealToCloud(draggedASDeal);
+  await syncPipelineDealToCloud(targetDeal);
 }
 
 function openNewASModal() {
@@ -2293,6 +2309,9 @@ function renderDemoTracker() {
     const d = item.deal;
     const card = document.createElement('div');
     card.className = `demo-card-box type-${item.purpose}`;
+    card.style.cursor = 'pointer';
+    card.title = '클릭하여 장비 데모 정보 수정 및 삭제';
+    card.onclick = () => openEditModal(d);
     
     card.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
@@ -2310,8 +2329,8 @@ function renderDemoTracker() {
       <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.73rem; color:var(--text-muted); border-top:1px dashed rgba(255,255,255,0.1); padding-top:8px;">
         <span>전달일: ${d.demo_info ? d.demo_info.date : d.last_date || '-'}</span>
         <div style="display:flex; gap:6px;">
-          <button class="mini-badge" style="background:#10b981; color:#fff; cursor:pointer; padding:3px 8px; border:none; border-radius:4px;" onclick="convertDemoToSale('${d.hospital}', '${d.product_id}')">🏆 정식구매 전환</button>
-          <button class="mini-badge" style="background:rgba(255,255,255,0.15); color:#fff; cursor:pointer; padding:3px 8px; border:none; border-radius:4px;" onclick="returnDemoItem('${d.hospital}', '${d.product_id}')">🔄 회수 완료</button>
+          <button class="mini-badge" style="background:#10b981; color:#fff; cursor:pointer; padding:3px 8px; border:none; border-radius:4px;" onclick="event.stopPropagation(); convertDemoToSale('${d.hospital}', '${d.product_id}')">🏆 정식구매 전환</button>
+          <button class="mini-badge" style="background:rgba(255,255,255,0.15); color:#fff; cursor:pointer; padding:3px 8px; border:none; border-radius:4px;" onclick="event.stopPropagation(); returnDemoItem('${d.hospital}', '${d.product_id}')">🔄 회수 완료</button>
         </div>
       </div>
     `;

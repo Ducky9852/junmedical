@@ -1,5 +1,5 @@
 // Service Worker for Junmedical MEDI-SALES 360° PWA
-const CACHE_NAME = 'medi-sales-cache-jun-V1-017';
+const CACHE_NAME = 'medi-sales-cache-jun-V1-018';
 const ASSETS_TO_CACHE = [
   './sales.html',
   './index.html',
