@@ -648,16 +648,57 @@ img {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   6. 카드 그리드 & 제품 카드 (Sleek & Airy)
+   6. 카드 그리드 & 제품 카테고리 그리드 (1줄 5칸 레이아웃)
    ───────────────────────────────────────────────────────────── */
-.card-grid,
-.category-grid {
+.card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 24px;
 }
 
-.category-card,
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1140px) {
+  .category-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.category-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 20px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  overflow: hidden;
+}
+
 .card {
   background: var(--card-bg);
   border-radius: var(--radius);
@@ -675,20 +716,37 @@ img {
 
 .category-card:hover,
 .card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-6px);
   border-color: var(--sky);
-  box-shadow: 0 16px 30px -6px rgba(15, 39, 74, 0.12), 0 0 0 1.5px rgba(2, 132, 199, 0.35);
+  box-shadow: 0 14px 26px -6px rgba(15, 39, 74, 0.12), 0 0 0 1.5px rgba(2, 132, 199, 0.35);
   text-decoration: none;
+}
+
+.category-card .category-img-wrap,
+.category-card .product-card-img {
+  width: calc(100% + 32px);
+  margin: -20px -16px 14px -16px;
+  height: 140px;
+  overflow: hidden;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--sky-subtle);
+  border-bottom: 1px solid var(--border);
+  display: block;
 }
 
 .category-card .category-img-wrap img,
 .category-card .product-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .category-card:hover .category-img-wrap img,
 .category-card:hover .product-card-img img {
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
 .card-icon-wrap,
@@ -720,7 +778,15 @@ img {
   stroke-width: 1.8;
 }
 
-.category-card h3,
+.category-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 6px;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
+
 .card h3 {
   font-size: 17px;
   font-weight: 700;
@@ -729,7 +795,14 @@ img {
   line-height: 1.35;
 }
 
-.category-card p,
+.category-card p {
+  font-size: 13px;
+  color: var(--sub);
+  line-height: 1.55;
+  flex: 1;
+  word-break: keep-all;
+}
+
 .card p {
   font-size: 14px;
   color: var(--sub);
@@ -737,13 +810,19 @@ img {
   flex: 1;
 }
 
+.category-card .section-label {
+  font-size: 11px;
+  margin-bottom: 3px;
+  letter-spacing: 0.04em;
+}
+
 .category-link {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  margin-top: 20px;
-  font-size: 13.5px;
-  font-weight: 600;
+  margin-top: 14px;
+  font-size: 12.5px;
+  font-weight: 700;
   color: var(--sky);
   transition: gap 0.2s ease, color 0.2s ease;
 }
@@ -751,7 +830,7 @@ img {
 .category-card:hover .category-link,
 .category-link:hover {
   color: #026494;
-  gap: 8px;
+  gap: 7px;
 }
 
 /* 브랜드 로고 스트립 */
