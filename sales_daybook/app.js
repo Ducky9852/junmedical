@@ -1,14 +1,32 @@
-// Application State & Security
+const APP_VERSION = "jun-V1-016";
+window.APP_VERSION = APP_VERSION;
+console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
+
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V4_RECOVERED";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V19_JUN_V1_016";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
-// Purge legacy storage versions containing corrupted remappings or discontinued items
+// Purge legacy storage versions containing corrupted remappings, stale pipeline snapshots or discontinued items
 try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V1");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V2");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V3_CLEAN");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V4_RECOVERED");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V5_JUN_V1_002");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V6_JUN_V1_003");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V7_JUN_V1_004");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V8_JUN_V1_005");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V9_JUN_V1_006");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V10_JUN_V1_007");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V11_JUN_V1_008");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V12_JUN_V1_009");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V13_JUN_V1_010");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V14_JUN_V1_011");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V15_JUN_V1_012");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V16_JUN_V1_013");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V17_JUN_V1_014");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V18_JUN_V1_015");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -60,19 +78,23 @@ async function sendSalesLogToSlack(logData) {
 }
 
 let supabaseClient = null;
-try {
-  if (window.supabase && typeof window.supabase.createClient === 'function') {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    console.log('⚡ Supabase Cloud Realtime DB Client Initialized!');
+function getSupabaseClient() {
+  if (!supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
+    try {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      console.log('⚡ Supabase Cloud Realtime DB Client Initialized!');
+    } catch(e) {
+      console.warn('Supabase initialization warning:', e);
+    }
   }
-} catch(e) {
-  console.warn('Supabase initialization warning:', e);
+  return supabaseClient;
 }
+getSupabaseClient();
 
 let currentTab = 'hospital';
 let selectedHospitalName = '';
 let selectedRegion = '전체';
-let selectedProductId = 'ST-ANG-PR03';
+let selectedProductId = 'ALL';
 let currentParsedData = null;
 
 // Persistent Local DB Sync Helper
@@ -95,35 +117,47 @@ function getCanonicalHospitalKey(name) {
   if (clean.includes('모태안')) return '모태안여성병원';
   if (clean.includes('연세하임')) return '연세하임산부인과의원';
   if (clean.includes('청주한국병원') || (clean.includes('한국병원') && clean.includes('청주'))) return '청주한국병원';
+  if (clean.includes('대전한국병원') || (clean.includes('한국병원') && clean.includes('대전'))) return '대전한국병원';
   if (clean.includes('광제산부인과') || clean.includes('광제')) return '광제산부인과';
   if (clean.includes('앙즈로')) return '앙즈로여성병원';
   if (clean.includes('순천향') && clean.includes('천안')) return '순천향대학교천안병원';
   if (clean.includes('단국대') && clean.includes('천안')) return '단국대학교병원';
-  if (clean.includes('유성선병원') || clean.includes('선병원')) return '유성선병원';
+  if (clean.includes('대전선병원') || (clean.includes('대전') && clean.includes('선병원'))) return '대전선병원';
+  if (clean.includes('유성선병원') || (clean.includes('유성') && clean.includes('선병원'))) return '유성선병원';
   if (clean.includes('소방병원') || clean.includes('국립소방')) return '국립소방병원';
+  if (clean.includes('대항외과') || clean.includes('담대항') || clean.includes('참대항')) return '청주 담대항외과';
+  if (clean.includes('제일병원') && clean.includes('진천')) return '진천 중앙제일병원';
   return clean;
 }
 
 function normalizeHospitalName(name) {
   if (!name) return '';
-  const canonKey = getCanonicalHospitalKey(name);
-  if (canonKey === '베스티안병원') return '베스티안병원';
-  if (canonKey === '모태안여성병원') return '모태안여성병원';
-  if (canonKey === '연세하임산부인과의원') return '연세하임산부인과의원';
-  if (canonKey === '청주한국병원') return '청주한국병원';
-  if (canonKey === '광제산부인과') return '광제산부인과';
-  if (canonKey === '앙즈로여성병원') return '앙즈로여성병원';
-  if (canonKey === '순천향대학교천안병원') return '순천향대학교천안병원';
-  if (canonKey === '단국대학교병원') return '단국대학교병원';
-  if (canonKey === '유성선병원') return '유성선병원';
-  if (canonKey === '국립소방병원') return '국립소방병원';
+  const clean = String(name).trim();
+  const cleanNoSpace = clean.replace(/\s+/g, '');
+
+  if (cleanNoSpace.includes('베스티안') || cleanNoSpace.includes('베스트안')) return '베스티안병원';
+  if (cleanNoSpace.includes('모태안')) return '모태안여성병원';
+  if (cleanNoSpace.includes('연세하임')) return '연세하임산부인과의원';
+  if (cleanNoSpace.includes('청주한국병원') || (cleanNoSpace.includes('한국병원') && cleanNoSpace.includes('청주'))) return '청주한국병원';
+  if (cleanNoSpace.includes('대전한국병원') || (cleanNoSpace.includes('한국병원') && cleanNoSpace.includes('대전'))) return '대전한국병원';
+  if (cleanNoSpace.includes('광제산부인과') || cleanNoSpace.includes('광제')) return '광제산부인과';
+  if (cleanNoSpace.includes('앙즈로')) return '앙즈로여성병원';
+  if (cleanNoSpace.includes('순천향') && cleanNoSpace.includes('천안')) return '순천향대학교천안병원';
+  if (cleanNoSpace.includes('단국대') && cleanNoSpace.includes('천안')) return '단국대학교병원';
+  if (cleanNoSpace.includes('대전선병원') || (cleanNoSpace.includes('대전') && cleanNoSpace.includes('선병원'))) return '대전선병원';
+  if (cleanNoSpace.includes('유성선병원') || (cleanNoSpace.includes('유성') && cleanNoSpace.includes('선병원'))) return '유성선병원';
+  if (cleanNoSpace === '선병원') return '선병원';
+  if (cleanNoSpace.includes('소방병원') || cleanNoSpace.includes('국립소방')) return '국립소방병원';
+  if (cleanNoSpace.includes('대항외과') || cleanNoSpace.includes('담대항') || cleanNoSpace.includes('참대항')) return '청주 담대항외과';
+  if (cleanNoSpace.includes('제일병원') && cleanNoSpace.includes('진천')) return '진천 중앙제일병원';
 
   // Try matching existing hospital in DB
   if (window.SALES_DB && window.SALES_DB.hospitals) {
+    const canonKey = getCanonicalHospitalKey(name);
     const found = window.SALES_DB.hospitals.find(h => getCanonicalHospitalKey(h.name) === canonKey);
     if (found) return found.name;
   }
-  return String(name).trim();
+  return clean;
 }
 
 // Check if a product is an Equipment/Hardware (Demo with return management) vs Disposable Consumable (Sample evaluation)
@@ -157,6 +191,24 @@ function isEquipmentProduct(prodName = '', prodId = '', note = '') {
 // Automatically ensure every hospital in activity_logs exists in hospitals master table and deduplicate
 function syncHospitalsFromLogs() {
   if (!window.SALES_DB || !window.SALES_DB.activity_logs) return;
+
+  // Historical data fix for specific hospital mis-merges
+  (window.SALES_DB.activity_logs || []).forEach(log => {
+    if (!log) return;
+    const noteText = (log.note || '') + ' ' + (log.title || '');
+    if (noteText.includes('대전선병원') && (log.hospital.includes('유성선병원') || log.hospital === '선병원')) {
+      log.hospital = '대전선병원';
+      log.region = '대전논산';
+    }
+  });
+  (window.SALES_DB.pipeline || []).forEach(deal => {
+    if (!deal) return;
+    const noteText = (deal.latest_note || '') + ' ' + (deal.title || '');
+    if (noteText.includes('대전선병원') && (deal.hospital.includes('유성선병원') || deal.hospital === '선병원')) {
+      deal.hospital = '대전선병원';
+      deal.region = '대전논산';
+    }
+  });
 
   function inferRegion(hospName) {
     if (!hospName) return '세종충북';
@@ -228,7 +280,7 @@ function syncHospitalsFromLogs() {
     }
   });
 
-  // 3. Deduplicate Pipeline Deals Array & Normalize Legacy Demo/Sample Status
+  // 3. Deduplicate Pipeline Deals Array & Normalize to 6 Standard Sales Stages
   const uniqueDealMap = new Map();
   (window.SALES_DB.pipeline || []).forEach(d => {
     if (!d || !d.hospital) return;
@@ -238,10 +290,16 @@ function syncHospitalsFromLogs() {
     const prodKey = (d.product_id || d.product_name || 'PROD_GENERAL').replace(/\s+/g, '');
     const dealKey = `${canonHospKey}__${prodKey}`;
 
-    // Auto-migrate legacy '데모·샘플평가' to independent '의료장비 데모' vs '소모품 샘플'
-    if (d.status === '데모·샘플평가') {
-      const isEquip = isEquipmentProduct(d.product_name, d.product_id, d.latest_note);
-      d.status = isEquip ? '의료장비 데모' : '소모품 샘플';
+    // Auto-migrate legacy statuses to standard 6 stages
+    if (d.status === '데모·샘플평가' || d.status === '소모품 샘플' || d.status === '의료장비 데모') {
+      if (!d.demo_info && (d.status === '의료장비 데모' || d.status === '데모·샘플평가')) {
+        d.demo_info = { date: d.last_date || '', note: d.latest_note || '데모 평가', status: '평가진행중' };
+      }
+      d.status = '샘플·임상평가';
+    } else if (d.status === '견적·의사결정' || d.status === '견적서제출·협의') {
+      d.status = '견적·도입협의';
+    } else if (d.status === '관계관리·접촉' || d.status === '접촉·니즈파악') {
+      d.status = '신규접촉·타겟발굴';
     }
 
     if (!uniqueDealMap.has(dealKey)) {
@@ -259,6 +317,62 @@ function syncHospitalsFromLogs() {
       }
     }
   });
+
+  // 3-1. Ensure all A/S logs in activity_logs are represented as active A/S deals in pipeline & A/S Control Center
+  (window.SALES_DB.activity_logs || []).forEach(log => {
+    if (!log || !log.hospital) return;
+    const isASLog = (log.action_type === 'A/S·클레임') || 
+                    ((log.title || '').includes('A/S')) || 
+                    ((log.note || '').includes('[긴급 A/S 접수]')) || 
+                    ((log.note || '').includes('A/S 요청'));
+    if (!isASLog) return;
+
+    const stdName = normalizeHospitalName(log.hospital);
+    const prodName = (log.products && log.products[0]) || log.product_name || log.title || '의료장비 A/S';
+    let prodCode = log.product_code || 'PROD_GENERAL';
+    if (prodCode === 'PROD_GENERAL') {
+      if (prodName.includes('253-804-030') || (log.note || '').includes('253-804-030')) prodCode = '253-804-030';
+      else if (prodName.includes('93473') || (log.note || '').includes('93473')) prodCode = '93473';
+      else if (prodName.includes('201.023') || (log.note || '').includes('201.023')) prodCode = '201.023';
+    }
+
+    const canonHospKey = getCanonicalHospitalKey(stdName);
+    const prodKey = prodCode.replace(/\s+/g, '');
+    const dealKey = `${canonHospKey}__${prodKey}`;
+
+    let deal = uniqueDealMap.get(dealKey);
+    if (!deal) {
+      deal = {
+        hospital: stdName,
+        region: log.region || inferRegion(stdName),
+        sales_rep: log.sales_rep || '영업담당',
+        product_id: prodCode,
+        product_name: prodName,
+        status: 'A/S접수·처리',
+        last_date: log.date || '',
+        latest_action: 'A/S·클레임',
+        latest_note: log.note || 'A/S 접수',
+        demo_info: null,
+        as_info: {
+          date: log.date || '',
+          note: log.note || 'A/S 접수',
+          status: '접수완료'
+        },
+        fail_reasons: []
+      };
+      uniqueDealMap.set(dealKey, deal);
+    } else {
+      if (!deal.as_info) {
+        deal.as_info = {
+          date: log.date || deal.last_date || '',
+          note: log.note || deal.latest_note || 'A/S 접수',
+          status: '접수완료'
+        };
+        deal.status = 'A/S접수·처리';
+      }
+    }
+  });
+
   window.SALES_DB.pipeline = Array.from(uniqueDealMap.values());
 
   // Normalize legacy action_types in activity logs
@@ -319,24 +433,28 @@ function syncHospitalsFromLogs() {
 }
 
 // Cloud Async Fetcher from Supabase
-async function fetchLatestFromSupabase() {
-  if (!supabaseClient) return;
+async function fetchLatestFromSupabase(showToastOnManual = false) {
+  const client = getSupabaseClient();
+  if (!client) {
+    console.warn('Supabase client not ready or network offline.');
+    return;
+  }
   try {
     console.log('🔄 Fetching real-time updates from Supabase Cloud...');
     
     // Fetch logs (descending by id/date)
-    const { data: logsData, error: logsErr } = await supabaseClient
+    const { data: logsData, error: logsErr } = await client
       .from('activity_logs')
       .select('*')
       .order('id', { ascending: false });
 
     // Fetch hospitals
-    const { data: hospData, error: hospErr } = await supabaseClient
+    const { data: hospData, error: hospErr } = await client
       .from('hospitals')
       .select('*');
 
     // Fetch pipeline
-    const { data: pipeData, error: pipeErr } = await supabaseClient
+    const { data: pipeData, error: pipeErr } = await client
       .from('pipeline')
       .select('*');
 
@@ -359,6 +477,7 @@ async function fetchLatestFromSupabase() {
     persistSalesDB();
     initHeaderMetrics();
     renderHospitalList();
+    initProductPipelineView();
     if (selectedHospitalName) {
       renderHospitalDetails(selectedHospitalName);
     }
@@ -366,6 +485,9 @@ async function fetchLatestFromSupabase() {
       renderExcelLogsTable();
     }
     console.log(`✅ Supabase Cloud Synced: ${logsData?.length || 0} logs, ${window.SALES_DB.hospitals.length} hospitals, ${pipeData?.length || 0} pipelines.`);
+    if (showToastOnManual) {
+      showToast(`☁️ 클라우드 실시간 동기화 완료 (${logsData?.length || 0}개 일지 수신)`);
+    }
   } catch(err) {
     console.warn('Supabase fetch error, using local/server fallback:', err);
   }
@@ -417,8 +539,11 @@ window.addEventListener('DOMContentLoaded', () => {
     selectHospital(defaultHosp.name);
   }
 
-  // Real-time Cloud Sync with Supabase
+  // Real-time Cloud Sync with Supabase (Immediate on load + background polling every 20 seconds)
   fetchLatestFromSupabase();
+  setInterval(() => {
+    fetchLatestFromSupabase(false);
+  }, 20000);
 });
 
 // ----------------------------------------------------
@@ -890,7 +1015,6 @@ function renderProductMatrixSection(type, items) {
   container.innerHTML = '';
   uniqueItems.forEach(d => {
     const row = document.createElement('div');
-    row.className = 'product-row product-matrix-card';
     row.draggable = true;
     row.title = '마우스로 드래그하여 다른 상태로 이동하거나 클릭하여 수정';
     
@@ -904,17 +1028,29 @@ function renderProductMatrixSection(type, items) {
       }
     };
     
+    // Compact representation for Failed / Lost items
+    if (type === 'lost') {
+      row.className = 'product-row product-matrix-card lost-compact';
+      row.innerHTML = `
+        <div class="product-row-top" style="margin-bottom:0; align-items:center; justify-content:space-between; gap:6px;">
+          <span style="font-size:0.75rem; font-weight:600; color:var(--text-secondary); display:flex; align-items:center; gap:4px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+            <span style="font-size:0.7rem; opacity:0.7; flex-shrink:0;">✕</span>
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(d.product_name)}">${escapeHtml(d.product_name)}</span>
+          </span>
+          <span class="product-date-txt" style="font-size:0.65rem; color:var(--text-muted); flex-shrink:0;">${d.last_date || ''}</span>
+        </div>
+        ${(d.fail_reasons && d.fail_reasons.length > 0) ? `<div style="font-size:0.68rem; color:#fda4af; opacity:0.85; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">사유: ${d.fail_reasons.join(', ')}</div>` : ''}
+      `;
+      container.appendChild(row);
+      return;
+    }
+
+    row.className = 'product-row product-matrix-card';
     let subContent = '';
     if (type === 'demo' && d.demo_info) {
       subContent = `<div class="product-note-txt" style="color:#fcd34d;">🔬 [장비데모] ${d.demo_info.date} 전달 (회수추적): ${escapeHtml(d.demo_info.note || d.latest_note || '')}</div>`;
     } else if (type === 'sample' && d.demo_info) {
       subContent = `<div class="product-note-txt" style="color:#7dd3fc;">🧪 [소모품샘플] ${d.demo_info.date} 전달 (피드백추적): ${escapeHtml(d.demo_info.note || d.latest_note || '')}</div>`;
-    } else if (type === 'lost') {
-      const reasons = (d.fail_reasons || []).map(r => `<span class="reason-tag">⚠️ ${escapeHtml(r)}</span>`).join(' ');
-      subContent = `
-        <div class="product-note-txt">${escapeHtml(d.latest_note || '')}</div>
-        <div style="margin-top:4px;">${reasons}</div>
-      `;
     } else {
       subContent = `<div class="product-note-txt">${escapeHtml(d.latest_note || '')}</div>`;
     }
@@ -946,11 +1082,57 @@ function renderProductMatrixSection(type, items) {
   });
 }
 
+// Cloud Pipeline Sync Helper
+async function syncPipelineDealToCloud(deal) {
+  if (!deal) return;
+  const client = getSupabaseClient();
+  if (!client) return;
+
+  try {
+    const payload = {
+      hospital: deal.hospital,
+      region: deal.region || '세종충북',
+      sales_rep: deal.sales_rep || '미배정',
+      product_id: deal.product_id,
+      product_name: deal.product_name,
+      status: deal.status,
+      last_date: deal.last_date || new Date().toISOString().slice(0, 10).replace(/-/g, '/'),
+      latest_action: deal.latest_action || deal.status,
+      latest_note: deal.latest_note || '',
+      demo_info: deal.demo_info || null,
+      as_info: deal.as_info || null,
+      fail_reasons: deal.fail_reasons || []
+    };
+
+    if (deal.id) {
+      const { error } = await client
+        .from('pipeline')
+        .update(payload)
+        .eq('id', deal.id);
+      if (error) {
+        console.warn('Supabase pipeline update error by id:', error);
+      } else {
+        console.log(`☁️ Supabase pipeline updated: [${deal.hospital}] ${deal.product_name} -> ${deal.status}`);
+      }
+    } else {
+      const { error } = await client
+        .from('pipeline')
+        .upsert([payload]);
+      if (error) {
+        console.warn('Supabase pipeline upsert error:', error);
+      }
+    }
+  } catch(err) {
+    console.warn('Supabase pipeline sync exception:', err);
+  }
+}
+
 // Drag and drop handlers for Hospital Product Matrix (5 Status Cards)
 let draggedDealInfo = null;
 
 function handleDragStart(e, hospital, productId) {
   draggedDealInfo = { hospital, productId };
+  currentDraggedDeal = { hospital, productId };
   if (e.dataTransfer) {
     e.dataTransfer.setData('text/plain', JSON.stringify(draggedDealInfo));
   }
@@ -960,6 +1142,7 @@ function handleDragStart(e, hospital, productId) {
 function handleDragEnd(e) {
   if (e.currentTarget) e.currentTarget.classList.remove('dragging');
   draggedDealInfo = null;
+  currentDraggedDeal = null;
 }
 
 function handleDragOver(e) {
@@ -978,31 +1161,49 @@ async function handleDropToHospitalStatus(e, targetStatus) {
   const card = e.currentTarget;
   if (card) card.classList.remove('drag-over');
 
-  if (!draggedDealInfo) return;
-  const { hospital, productId } = draggedDealInfo;
+  let dragData = draggedDealInfo || currentDraggedDeal;
+  if (!dragData) {
+    try {
+      dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+    } catch(err) {}
+  }
+  if (!dragData) return;
+  const { hospital, productId } = dragData;
   
   const cleanHosp = (hospital || '').replace(/\s+/g, '');
   const deal = window.SALES_DB.pipeline.find(d => (d.hospital || '').replace(/\s+/g, '') === cleanHosp && (d.product_id === productId || d.product_name === productId));
   if (!deal) return;
 
+  if (deal.status === targetStatus) return;
+
   deal.status = targetStatus;
   deal.last_date = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
   
-  // Recalculate stats
+  if (targetStatus === '의료장비 데모' || targetStatus === '소모품 샘플' || targetStatus === '데모·샘플평가') {
+    deal.demo_info = { date: deal.last_date, note: `칸반에서 [${targetStatus}] 평가로 이동`, status: '평가진행중' };
+    deal.fail_reasons = [];
+  } else if (targetStatus === '도입완료·납품') {
+    if (deal.demo_info) deal.demo_info.status = '도입완료';
+    deal.fail_reasons = [];
+  } else if (targetStatus === '영업실패·보류') {
+    if (deal.demo_info) deal.demo_info.status = '회수/종료';
+    if (!deal.fail_reasons || deal.fail_reasons.length === 0) {
+      deal.fail_reasons = ['의료진 피드백/보류'];
+    }
+  } else if (targetStatus === 'A/S접수·처리') {
+    deal.as_info = { date: deal.last_date, note: '칸반에서 A/S 접수로 이동', status: '접수/진행중' };
+  }
+
+  // Recalculate stats & re-render
+  recalcGlobalStats();
   syncHospitalsFromLogs();
   persistSalesDB();
   initHeaderMetrics();
   selectHospital(hospital);
   showToast(`✨ [${hospital}] '${deal.product_name}' 상태가 '${targetStatus}'(으)로 이동되었습니다!`);
 
-  // Supabase Sync
-  if (supabaseClient) {
-    try {
-      await supabaseClient.from('pipeline').upsert([deal]);
-    } catch(err) {
-      console.warn('Supabase deal status update error:', err);
-    }
-  }
+  // Supabase Cloud Sync
+  await syncPipelineDealToCloud(deal);
 }
 
 // Deal Editing Modal State
@@ -1013,6 +1214,11 @@ function openEditModal(deal) {
   const modal = document.getElementById('edit-deal-modal');
   
   document.getElementById('modal-hosp-name').value = deal.hospital;
+  const newHospInput = document.getElementById('modal-deal-new-hospital');
+  if (newHospInput) newHospInput.value = '';
+  const hospSearchBox = document.getElementById('deal-hospital-search-box');
+  if (hospSearchBox) hospSearchBox.style.display = 'none';
+
   document.getElementById('modal-prod-name').value = `${deal.product_name} (${deal.product_id})`;
   document.getElementById('modal-deal-new-product-id').value = deal.product_id;
   document.getElementById('modal-status-select').value = deal.status;
@@ -1135,6 +1341,90 @@ function normalizeFullWidthToHalfWidth(str) {
             .replace(/\u3000/g, ' ');
 }
 
+function toggleDealHospitalSearchBox() {
+  const box = document.getElementById('deal-hospital-search-box');
+  if (!box) return;
+  const isHidden = (box.style.display === 'none' || !box.style.display);
+  box.style.display = isHidden ? 'block' : 'none';
+  if (isHidden) {
+    const input = document.getElementById('deal-hospital-search-input');
+    if (input) {
+      input.value = '';
+      input.focus();
+      searchHospitalsForDeal('');
+    }
+  }
+}
+
+function searchHospitalsForDeal(query) {
+  const container = document.getElementById('deal-hospital-search-results');
+  if (!container) return;
+
+  const normQ = (query || '').trim().toLowerCase().replace(/\s+/g, '');
+
+  const dbHospitals = (window.SALES_DB && window.SALES_DB.hospitals) ? window.SALES_DB.hospitals : [];
+  const erpCustomers = window.ERP_CUSTOMERS_MASTER || [];
+
+  const candidateMap = new Map();
+  for (const h of dbHospitals) {
+    if (!h || !h.name) continue;
+    const key = (h.name || '').replace(/\s+/g, '');
+    candidateMap.set(key, { name: h.name, region: h.region || '세종충북', source: 'db' });
+  }
+  for (const c of erpCustomers) {
+    if (!c || !c.name) continue;
+    const cClean = (c.clean_name || c.name).replace(/\s+/g, '');
+    if (!candidateMap.has(cClean)) {
+      candidateMap.set(cClean, { name: c.clean_name || c.name, region: c.region || '기타', code: c.code, source: 'erp', rawName: c.name });
+    }
+  }
+
+  const allCandidates = Array.from(candidateMap.values());
+  let matches = allCandidates;
+
+  if (normQ) {
+    matches = allCandidates.filter(c => {
+      const cName = (c.name || '').toLowerCase().replace(/\s+/g, '');
+      const cRaw = (c.rawName || '').toLowerCase().replace(/\s+/g, '');
+      const cRegion = (c.region || '').toLowerCase();
+      return cName.includes(normQ) || cRaw.includes(normQ) || cRegion.includes(normQ);
+    });
+  }
+
+  container.innerHTML = '';
+  const top25 = matches.slice(0, 25);
+
+  if (top25.length === 0) {
+    container.innerHTML = `<div style="color:var(--text-muted); font-size:0.75rem; padding:12px; text-align:center;">일치하는 거래처(병원)가 없습니다.</div>`;
+    return;
+  }
+
+  top25.forEach(h => {
+    const item = document.createElement('div');
+    item.style.cssText = 'padding:8px 10px; background:rgba(255,255,255,0.05); border:1px solid var(--border-glass); border-radius:6px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; transition:background 0.15s; margin-bottom:2px;';
+    item.onmouseover = () => item.style.background = 'rgba(16,185,129,0.15)';
+    item.onmouseout = () => item.style.background = 'rgba(255,255,255,0.05)';
+    const tagSource = h.source === 'erp' ? 'ERP 정규' : '활동 거래처';
+    item.innerHTML = `
+      <div style="flex:1; min-width:0; padding-right:8px;">
+        <div style="font-weight:700; color:#fff; word-break:break-all;">🏥 ${escapeHtml(h.name)}</div>
+        <div style="font-size:0.68rem; color:var(--accent-emerald); margin-top:2px;">
+          권역: <strong>${escapeHtml(h.region || '기타')}</strong> | [${tagSource}]
+        </div>
+      </div>
+      <button type="button" class="mini-badge" style="background:var(--accent-emerald); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-weight:700; flex-shrink:0;">이동 선택</button>
+    `;
+    item.onclick = () => {
+      const newHospInput = document.getElementById('modal-deal-new-hospital');
+      if (newHospInput) newHospInput.value = h.name;
+      document.getElementById('modal-hosp-name').value = h.name;
+      document.getElementById('deal-hospital-search-box').style.display = 'none';
+      showToast(`🏢 거래처가 '${h.name}'(으)로 변경되었습니다. [변경사항 저장]을 누르면 이동됩니다.`);
+    };
+    container.appendChild(item);
+  });
+}
+
 function toggleDealProductSearchBox() {
   const box = document.getElementById('deal-product-search-box');
   const isHidden = (box.style.display === 'none' || !box.style.display);
@@ -1238,45 +1528,52 @@ function onModalStatusChange() {
 
 async function deleteCurrentDeal() {
   if (!currentEditingDeal) return;
-  const hosp = currentEditingDeal.hospital;
-  const prodName = currentEditingDeal.product_name;
-  const prodId = currentEditingDeal.product_id;
+  const targetDeal = currentEditingDeal;
+  const hosp = targetDeal.hospital;
+  const prodName = targetDeal.product_name;
+  const prodId = targetDeal.product_id;
+  const dealId = targetDeal.id;
 
   if (!confirm(`정말로 [${hosp}]의 '${prodName}' 품목을 파이프라인에서 삭제하시겠습니까?`)) {
     return;
   }
 
   // 1. Remove from in-memory pipeline
-  const idx = window.SALES_DB.pipeline.findIndex(d => d.hospital === hosp && (d.product_id === prodId || d.product_name === prodName));
+  const idx = window.SALES_DB.pipeline.findIndex(d => (d.id && d.id === dealId) || ((d.hospital || '').replace(/\s+/g, '') === (hosp || '').replace(/\s+/g, '') && (d.product_id === prodId || d.product_name === prodName)));
   if (idx !== -1) {
     window.SALES_DB.pipeline.splice(idx, 1);
   }
 
   // 2. Remove from hospital's products_active if present
-  const hospObj = window.SALES_DB.hospitals.find(h => h.name === hosp);
+  const hospObj = window.SALES_DB.hospitals.find(h => (h.name || '').replace(/\s+/g, '') === (hosp || '').replace(/\s+/g, ''));
   if (hospObj && hospObj.products_active) {
     hospObj.products_active = hospObj.products_active.filter(p => p !== prodName && p !== prodId);
   }
 
-  // 3. Persist local cache
+  // 3. Persist local cache & re-render
   persistSalesDB();
   recalcGlobalStats();
   selectHospital(hosp);
   renderProductPipeline(selectedProductId);
+  renderASControlCenter();
+  renderDemoTracker();
   closeEditModal();
 
   // 4. Delete from Supabase Cloud DB
-  if (supabaseClient) {
+  const client = getSupabaseClient();
+  if (client) {
     try {
-      const { error } = await supabaseClient
-        .from('pipeline')
-        .delete()
-        .eq('hospital', hosp)
-        .eq('product_id', prodId);
+      let query = client.from('pipeline').delete();
+      if (dealId) {
+        query = query.eq('id', dealId);
+      } else {
+        query = query.eq('hospital', hosp).eq('product_id', prodId);
+      }
+      const { error } = await query;
       if (error) {
         console.warn('Supabase delete error:', error);
       } else {
-        console.log(`⚡ Deleted [${hosp}] ${prodId} from Supabase pipeline successfully.`);
+        console.log(`⚡ Deleted [${hosp}] ${prodId} (id: ${dealId}) from Supabase pipeline successfully.`);
       }
     } catch(err) {
       console.warn('Supabase cloud delete error:', err);
@@ -1288,37 +1585,69 @@ async function deleteCurrentDeal() {
 
 async function saveModalChanges() {
   if (!currentEditingDeal) return;
+  const targetDeal = currentEditingDeal;
 
   const newStatus = document.getElementById('modal-status-select').value;
   const newNote = document.getElementById('modal-note-input').value.trim();
   const newProductId = document.getElementById('modal-deal-new-product-id').value;
+  const newHospital = document.getElementById('modal-deal-new-hospital')?.value;
   
   const selectedReasons = [];
   document.querySelectorAll('input[name="modal_reason"]:checked').forEach(cb => {
     selectedReasons.push(cb.value);
   });
 
+  // If hospital changed
+  const prevHosp = targetDeal.hospital;
+  let isHospMoved = false;
+  if (newHospital && newHospital !== prevHosp) {
+    targetDeal.hospital = newHospital;
+    const erpH = (window.ERP_CUSTOMERS_MASTER || []).find(c => (c.clean_name || c.name) === newHospital);
+    const dbH = (window.SALES_DB.hospitals || []).find(h => h.name === newHospital);
+    targetDeal.region = erpH ? erpH.region : (dbH ? dbH.region : targetDeal.region);
+    isHospMoved = true;
+
+    // If newHospital is not in SALES_DB.hospitals, add it
+    if (!dbH) {
+      window.SALES_DB.hospitals.push({
+        name: newHospital,
+        region: targetDeal.region || '세종충북',
+        sales_reps: [targetDeal.sales_rep || '영업담당'],
+        contacts: ['원장/실무진'],
+        status: '활동병원',
+        last_activity_date: new Date().toISOString().slice(0, 10).replace(/-/g, '/'),
+        total_logs: 1,
+        demo_count: (newStatus.includes('데모') || newStatus.includes('샘플')) ? 1 : 0,
+        won_count: newStatus === '도입완료·납품' ? 1 : 0,
+        as_count: newStatus === 'A/S접수·처리' ? 1 : 0,
+        fail_count: newStatus === '영업실패·보류' ? 1 : 0,
+        products_active: [targetDeal.product_name]
+      });
+      window.SALES_DB.hospitals.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+    }
+  }
+
   // If product changed
-  const prevProdId = currentEditingDeal.product_id;
+  const prevProdId = targetDeal.product_id;
   if (newProductId && newProductId !== prevProdId) {
     const master = (window.ERP_PRODUCTS_MASTER || []).concat(window.SALES_DB ? window.SALES_DB.products : []);
     const targetProd = master.find(p => (p.code === newProductId || p.id === newProductId));
     if (targetProd) {
-      currentEditingDeal.product_id = targetProd.code || targetProd.id;
-      currentEditingDeal.product_name = targetProd.name;
+      targetDeal.product_id = targetProd.code || targetProd.id;
+      targetDeal.product_name = targetProd.name;
     }
   }
 
   // Update in-memory deal
-  currentEditingDeal.status = newStatus;
-  currentEditingDeal.latest_note = newNote;
-  currentEditingDeal.fail_reasons = (newStatus === '영업실패·보류') ? selectedReasons : [];
-  currentEditingDeal.last_date = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+  targetDeal.status = newStatus;
+  targetDeal.latest_note = newNote;
+  targetDeal.fail_reasons = (newStatus === '영업실패·보류') ? selectedReasons : [];
+  targetDeal.last_date = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
 
   if (newStatus === '의료장비 데모' || newStatus === '소모품 샘플' || newStatus === '데모·샘플평가') {
-    if (!currentEditingDeal.demo_info) {
-      currentEditingDeal.demo_info = {
-        date: currentEditingDeal.last_date,
+    if (!targetDeal.demo_info) {
+      targetDeal.demo_info = {
+        date: targetDeal.last_date,
         note: newNote || `${newStatus} 평가 진행`,
         status: '평가진행중'
       };
@@ -1328,39 +1657,22 @@ async function saveModalChanges() {
   // Re-render
   recalcGlobalStats();
   initHeaderMetrics();
-  selectHospital(currentEditingDeal.hospital);
+  selectHospital(targetDeal.hospital);
   renderProductPipeline(selectedProductId);
+  renderASControlCenter();
+  renderDemoTracker();
   
   persistSalesDB();
   closeEditModal();
 
   // Sync to Supabase Cloud
-  if (supabaseClient) {
-    try {
-      const { error } = await supabaseClient
-        .from('pipeline')
-        .upsert([{
-          hospital: currentEditingDeal.hospital,
-          region: currentEditingDeal.region || '세종충북',
-          sales_rep: currentEditingDeal.sales_rep || '이재덕',
-          product_id: currentEditingDeal.product_id,
-          product_name: currentEditingDeal.product_name,
-          status: currentEditingDeal.status,
-          last_date: currentEditingDeal.last_date || new Date().toISOString().slice(0, 10).replace(/-/g, '/'),
-          latest_action: currentEditingDeal.latest_action || '정보수정',
-          latest_note: currentEditingDeal.latest_note,
-          demo_info: currentEditingDeal.demo_info,
-          as_info: currentEditingDeal.as_info,
-          fail_reasons: currentEditingDeal.fail_reasons || []
-        }]);
-      if (error) console.warn('Supabase pipeline upsert error:', error);
-      else console.log('⚡ Supabase pipeline deal updated in cloud!');
-    } catch(err) {
-      console.warn('Supabase pipeline save error:', err);
-    }
-  }
+  await syncPipelineDealToCloud(targetDeal);
 
-  showToast(`✅ [${currentEditingDeal.hospital}] 품목 상태 및 정보가 성공적으로 수정되었습니다!`);
+  if (isHospMoved) {
+    showToast(`🏢 [${targetDeal.product_name}] 품목이 '${prevHosp}'에서 '${targetDeal.hospital}'(으)로 성공적으로 이동되었습니다!`);
+  } else {
+    showToast(`✅ [${targetDeal.hospital}] 품목 상태 및 정보가 성공적으로 수정되었습니다!`);
+  }
 }
 
 // ----------------------------------------------------
@@ -1713,11 +2025,9 @@ function renderASControlCenter() {
   const query = (document.getElementById('as-search-input')?.value || '').trim().toLowerCase();
   const pipe = (window.SALES_DB && window.SALES_DB.pipeline) ? window.SALES_DB.pipeline : [];
   
-  // Find only legitimate A/S related equipment deals
+  // Find only legitimate A/S related equipment deals (including resolved/completed ones in stage 5)
   const asDeals = pipe.filter(d => {
-    // Only genuine AS status or explicit active AS info
-    const hasActiveAS = (d.status === 'A/S접수·처리') || 
-                        (d.as_info && d.as_info.status && d.status !== '도입완료·납품' && d.status !== '영업실패·보류');
+    const hasActiveAS = (d.status === 'A/S접수·처리') || (d.as_info && d.as_info.status);
     if (!hasActiveAS) return false;
 
     if (query) {
@@ -1781,18 +2091,18 @@ function renderASControlCenter() {
     // 1. Strict priority to explicit as_info status
     const asStatus = (d.as_info && d.as_info.status) ? d.as_info.status.toLowerCase() : '';
     
-    if (asStatus.includes('접수')) {
-      stage = '접수완료';
-    } else if (asStatus.includes('전달') || asStatus.includes('발송') || asStatus.includes('본사') || asStatus.includes('외부')) {
-      stage = '외부전달';
-    } else if (asStatus.includes('진행') || asStatus.includes('수리중') || asStatus.includes('점검')) {
-      stage = '수리진행중';
+    if (asStatus.includes('완료') || asStatus.includes('출고') || asStatus.includes('해결')) {
+      stage = '수리완료';
     } else if (asStatus.includes('견적') || asStatus.includes('협의') || asStatus.includes('컨펌')) {
       stage = '견적협의';
-    } else if (asStatus.includes('완료') || asStatus.includes('출고') || asStatus.includes('해결')) {
-      stage = '수리완료';
+    } else if (asStatus.includes('진행') || asStatus.includes('수리중') || asStatus.includes('점검')) {
+      stage = '수리진행중';
+    } else if (asStatus.includes('전달') || asStatus.includes('발송') || asStatus.includes('본사') || asStatus.includes('외부')) {
+      stage = '외부전달';
+    } else if (asStatus.includes('접수')) {
+      stage = '접수완료';
     } else {
-      // 2. Fallback: inspect latest action and note, but NEVER treat '도입완료·납품' as A/S completed
+      // 2. Fallback: inspect latest action and note
       const noteTxt = (d.latest_note || '').toLowerCase();
       if (d.status === 'A/S접수·처리' || d.latest_action === 'A/S·클레임') {
         if (noteTxt.includes('출고') || noteTxt.includes('수리완료') || noteTxt.includes('조치완료')) {
@@ -1841,7 +2151,7 @@ function renderASControlCenter() {
       };
       card.ondragend = () => {
         card.classList.remove('dragging');
-        draggedASDeal = null;
+        setTimeout(() => { draggedASDeal = null; }, 100);
       };
       card.onclick = () => openEditModal(d);
 
@@ -1876,34 +2186,43 @@ function handleASDragLeave(e) {
 async function handleASDrop(e, targetStage) {
   e.preventDefault();
   if (e.currentTarget) e.currentTarget.classList.remove('drag-over');
-  if (!draggedASDeal) return;
+  
+  let targetDeal = draggedASDeal;
+  if (!targetDeal) {
+    try {
+      const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+      if (data && data.hosp) {
+        const pipe = (window.SALES_DB && window.SALES_DB.pipeline) ? window.SALES_DB.pipeline : [];
+        targetDeal = pipe.find(d => d.hospital === data.hosp && d.product_id === data.prodId);
+      }
+    } catch(err) {}
+  }
+  if (!targetDeal) return;
 
-  if (!draggedASDeal.as_info) {
-    draggedASDeal.as_info = { date: new Date().toISOString().slice(0, 10).replace(/-/g, '/'), note: draggedASDeal.latest_note || '', status: targetStage };
+  const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+
+  if (!targetDeal.as_info) {
+    targetDeal.as_info = { date: todayStr, note: targetDeal.latest_note || '', status: targetStage };
   } else {
-    draggedASDeal.as_info.status = targetStage;
+    targetDeal.as_info.status = targetStage;
   }
 
   if (targetStage === '수리완료') {
-    draggedASDeal.status = '도입완료·납품';
+    targetDeal.status = '도입완료·납품';
+    targetDeal.as_info.resolved_date = todayStr;
   } else {
-    draggedASDeal.status = 'A/S접수·처리';
+    targetDeal.status = 'A/S접수·처리';
   }
-  draggedASDeal.last_date = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+  targetDeal.last_date = todayStr;
 
   persistSalesDB();
   recalcGlobalStats();
   initHeaderMetrics();
   renderASControlCenter();
-  showToast(`✨ [${draggedASDeal.hospital}] A/S 진행상태가 '${targetStage}'(으)로 변경되었습니다.`);
+  showToast(`✨ [${targetDeal.hospital}] A/S 진행상태가 '${targetStage}'(으)로 변경되었습니다.`);
 
-  if (supabaseClient) {
-    try {
-      await supabaseClient.from('pipeline').upsert([draggedASDeal]);
-    } catch(err) {
-      console.warn('Supabase AS status error:', err);
-    }
-  }
+  // Supabase Cloud Sync
+  await syncPipelineDealToCloud(targetDeal);
 }
 
 function openNewASModal() {
@@ -1990,6 +2309,9 @@ function renderDemoTracker() {
     const d = item.deal;
     const card = document.createElement('div');
     card.className = `demo-card-box type-${item.purpose}`;
+    card.style.cursor = 'pointer';
+    card.title = '클릭하여 장비 데모 정보 수정 및 삭제';
+    card.onclick = () => openEditModal(d);
     
     card.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
@@ -2007,8 +2329,8 @@ function renderDemoTracker() {
       <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.73rem; color:var(--text-muted); border-top:1px dashed rgba(255,255,255,0.1); padding-top:8px;">
         <span>전달일: ${d.demo_info ? d.demo_info.date : d.last_date || '-'}</span>
         <div style="display:flex; gap:6px;">
-          <button class="mini-badge" style="background:#10b981; color:#fff; cursor:pointer; padding:3px 8px; border:none; border-radius:4px;" onclick="convertDemoToSale('${d.hospital}', '${d.product_id}')">🏆 정식구매 전환</button>
-          <button class="mini-badge" style="background:rgba(255,255,255,0.15); color:#fff; cursor:pointer; padding:3px 8px; border:none; border-radius:4px;" onclick="returnDemoItem('${d.hospital}', '${d.product_id}')">🔄 회수 완료</button>
+          <button class="mini-badge" style="background:#10b981; color:#fff; cursor:pointer; padding:3px 8px; border:none; border-radius:4px;" onclick="event.stopPropagation(); convertDemoToSale('${d.hospital}', '${d.product_id}')">🏆 정식구매 전환</button>
+          <button class="mini-badge" style="background:rgba(255,255,255,0.15); color:#fff; cursor:pointer; padding:3px 8px; border:none; border-radius:4px;" onclick="event.stopPropagation(); returnDemoItem('${d.hospital}', '${d.product_id}')">🔄 회수 완료</button>
         </div>
       </div>
     `;
@@ -2264,18 +2586,6 @@ let kanbanHospitalSearchQuery = '';
 let pendingErpProducts = [];
 
 function initProductPipelineView() {
-  if (window.SALES_DB && window.SALES_DB.pipeline && window.SALES_DB.pipeline.length > 0) {
-    const productDealCountMap = {};
-    window.SALES_DB.pipeline.forEach(d => {
-      productDealCountMap[d.product_id] = (productDealCountMap[d.product_id] || 0) + 1;
-    });
-    const sortedProds = [...(window.SALES_DB.products || [])].sort((a, b) => {
-      return (productDealCountMap[b.id] || 0) - (productDealCountMap[a.id] || 0);
-    });
-    if (sortedProds.length > 0 && (productDealCountMap[sortedProds[0].id] || 0) > 0) {
-      selectedProductId = sortedProds[0].id;
-    }
-  }
   renderProductPills();
   renderProductPipeline(selectedProductId);
 }
@@ -2287,10 +2597,29 @@ function filterProductList() {
 
 function renderProductPills() {
   const selectorBar = document.getElementById('product-selector-bar');
+  if (!selectorBar) return;
   selectorBar.innerHTML = '';
 
-  const totalCount = window.SALES_DB.products.length;
-  let filtered = [...window.SALES_DB.products];
+  const totalCount = (window.SALES_DB.products || []).length;
+  const totalAllDealsCount = (window.SALES_DB.pipeline || []).length;
+
+  // 1. Always Prepend [ 🌐 전체 품목 통합보기 (총 222건) ] button
+  const allBtn = document.createElement('button');
+  allBtn.className = `product-pill all-products-pill ${selectedProductId === 'ALL' ? 'active' : ''}`;
+  allBtn.innerHTML = `
+    <span style="font-size:0.95rem;">🌐</span> 
+    <strong style="font-size:0.83rem;">전체 품목 통합보기</strong>
+    <span style="font-size:0.68rem; background:linear-gradient(135deg, #ec4899, #8b5cf6); color:#fff; padding:2px 8px; border-radius:10px; font-weight:800; box-shadow:0 2px 6px rgba(236,72,153,0.4);">${totalAllDealsCount}건</span>
+  `;
+  allBtn.onclick = () => {
+    selectedProductId = 'ALL';
+    document.querySelectorAll('.product-pill').forEach(b => b.classList.remove('active'));
+    allBtn.classList.add('active');
+    renderProductPipeline('ALL');
+  };
+  selectorBar.appendChild(allBtn);
+
+  let filtered = [...(window.SALES_DB.products || [])];
 
   if (productSearchQuery) {
     filtered = filtered.filter(p => {
@@ -2304,7 +2633,7 @@ function renderProductPills() {
 
   // Calculate deal count for each product and sort DESC (most hospitals first)
   const productDealCountMap = {};
-  window.SALES_DB.pipeline.forEach(d => {
+  (window.SALES_DB.pipeline || []).forEach(d => {
     productDealCountMap[d.product_id] = (productDealCountMap[d.product_id] || 0) + 1;
   });
 
@@ -2317,22 +2646,23 @@ function renderProductPills() {
     return a.name.localeCompare(b.name, 'ko');
   });
 
-  document.getElementById('product-count-display').textContent = productSearchQuery 
-    ? `검색 결과 ${filtered.length}건 / 전체 ERP ${totalCount}개 품목 (거래처 많은순 정렬)`
-    : `전체 ERP ${totalCount}개 품목 (거래처 많은순 정렬)`;
+  const countDisplayEl = document.getElementById('product-count-display');
+  if (countDisplayEl) {
+    countDisplayEl.textContent = productSearchQuery 
+      ? `검색 결과 ${filtered.length}건 / 전체 ERP ${totalCount}개 품목 (거래처 많은순 정렬)`
+      : `전체 ERP ${totalCount}개 품목 (거래처 많은순 정렬)`;
+  }
 
   if (filtered.length === 0) {
-    selectorBar.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; padding:12px;">'${escapeHtml(productSearchQuery)}' 일치하는 ERP 품목이 없습니다.</div>`;
+    const noMatch = document.createElement('div');
+    noMatch.style.cssText = 'color:var(--text-muted); font-size:0.8rem; padding:12px;';
+    noMatch.textContent = `'${escapeHtml(productSearchQuery)}' 일치하는 ERP 품목이 없습니다.`;
+    selectorBar.appendChild(noMatch);
     return;
   }
 
   // Display top 40 items for ultra-fast rendering performance
   const displayItems = filtered.slice(0, 40);
-
-  // If currently selected product is not in displayed list and not found, auto-select first (top active) one
-  if (!filtered.some(p => p.id === selectedProductId) && filtered.length > 0) {
-    selectedProductId = filtered[0].id;
-  }
 
   displayItems.forEach(p => {
     const btn = document.createElement('button');
@@ -2369,62 +2699,111 @@ function filterKanbanCards() {
 }
 
 function renderProductPipeline(prodId) {
-  const prod = window.SALES_DB.products.find(p => p.id === prodId);
-  if (!prod) return;
-
-  document.getElementById('pipeline-product-title').textContent = prod.name;
-  document.getElementById('pipeline-product-erp-code').textContent = `품목코드: ${prod.id}`;
-  
-  const ediEl = document.getElementById('pipeline-product-edi-code');
-  if (prod.edi) {
-    ediEl.textContent = `보험코드: ${prod.edi}`;
-    ediEl.style.display = 'inline-block';
-  } else {
-    ediEl.textContent = `보험코드: 비급여`;
-    ediEl.style.display = 'inline-block';
+  const isAll = (prodId === 'ALL');
+  let prod = null;
+  if (!isAll) {
+    prod = window.SALES_DB.products.find(p => p.id === prodId);
+    if (!prod) {
+      prodId = 'ALL';
+    }
   }
 
-  document.getElementById('pipeline-product-cat').textContent = `공급처/분류: ${prod.vendor || prod.category || '일반'}`;
+  const titleEl = document.getElementById('pipeline-product-title');
+  const codeEl = document.getElementById('pipeline-product-erp-code');
+  const ediEl = document.getElementById('pipeline-product-edi-code');
+  const catEl = document.getElementById('pipeline-product-cat');
 
-  // Filter deals for this product and by internal search
-  const deals = window.SALES_DB.pipeline.filter(d => {
-    if (d.product_id !== prodId) return false;
+  if (prodId === 'ALL') {
+    if (titleEl) titleEl.textContent = '🌐 전체 품목 통합 파이프라인';
+    if (codeEl) codeEl.textContent = '전체 40여 종 제품군 통합 현황';
+    if (ediEl) {
+      ediEl.textContent = '급여 / 비급여 전체 품목';
+      ediEl.style.display = 'inline-block';
+    }
+    if (catEl) catEl.textContent = '공급처/분류: 준메디칼 전체 공급사 및 취급 품목 마스터 통합 현황';
+  } else if (prod) {
+    if (titleEl) titleEl.textContent = prod.name;
+    if (codeEl) codeEl.textContent = `품목코드: ${prod.id}`;
+    if (ediEl) {
+      if (prod.edi) {
+        ediEl.textContent = `보험코드: ${prod.edi}`;
+        ediEl.style.display = 'inline-block';
+      } else {
+        ediEl.textContent = `보험코드: 비급여`;
+        ediEl.style.display = 'inline-block';
+      }
+    }
+    if (catEl) catEl.textContent = `공급처/분류: ${prod.vendor || prod.category || '일반'}`;
+  }
+
+  // Filter deals (either for specific product or ALL) and by internal search query
+  const deals = (window.SALES_DB.pipeline || []).filter(d => {
+    if (prodId !== 'ALL' && d.product_id !== prodId) return false;
     if (!kanbanHospitalSearchQuery) return true;
-    return d.hospital.toLowerCase().includes(kanbanHospitalSearchQuery) ||
+    return (d.hospital && d.hospital.toLowerCase().includes(kanbanHospitalSearchQuery)) ||
+           (d.product_name && d.product_name.toLowerCase().includes(kanbanHospitalSearchQuery)) ||
+           (d.product_id && d.product_id.toLowerCase().includes(kanbanHospitalSearchQuery)) ||
            (d.region && d.region.toLowerCase().includes(kanbanHospitalSearchQuery)) ||
            (d.sales_rep && d.sales_rep.toLowerCase().includes(kanbanHospitalSearchQuery)) ||
            (d.latest_note && d.latest_note.toLowerCase().includes(kanbanHospitalSearchQuery));
   });
   
-  const wonDeals = deals.filter(d => d.status === '도입완료·납품');
-  const demoDeals = deals.filter(d => d.status === '의료장비 데모' || (d.status === '데모·샘플평가' && isEquipmentProduct(d.product_name, d.product_id, d.latest_note)));
-  const sampleDeals = deals.filter(d => d.status === '소모품 샘플' || (d.status === '데모·샘플평가' && !isEquipmentProduct(d.product_name, d.product_id, d.latest_note)));
-  const activeDeals = deals.filter(d => d.status.includes('영업중') || d.status.includes('견적') || d.status.includes('관계관리'));
-  const asDeals = deals.filter(d => d.status === 'A/S접수·처리');
-  const lostDeals = deals.filter(d => d.status === '영업실패·보류');
+  // 6-Stage Sales Pipeline Partitioning:
+  // 1. 발굴·신규접촉 (contact)
+  const contactDeals = deals.filter(d => 
+    (d.status.includes('접촉') || d.status.includes('관계관리') || d.status.includes('발굴') || d.status.includes('니즈')) && 
+    !d.status.includes('영업중') && !d.status.includes('소개') && !d.status.includes('샘플') && !d.status.includes('견적')
+  );
 
-  document.getElementById('pipeline-stat-total').textContent = `${deals.length}개 병원`;
+  // 2. 제품제안·영업중 (active)
+  const activeDeals = deals.filter(d => 
+    (d.status.includes('영업중') || d.status.includes('소개') || d.status.includes('제안')) && 
+    !d.status.includes('접촉') && !d.status.includes('견적') && !d.status.includes('샘플')
+  );
+
+  // 3. 샘플·임상평가 (sample)
+  const sampleDeals = deals.filter(d => 
+    d.status.includes('샘플') || d.status.includes('데모') || d.status.includes('평가')
+  );
+
+  // 4. 견적·도입심의 (quote)
+  const quoteDeals = deals.filter(d => 
+    d.status.includes('견적') || d.status.includes('심의') || d.status.includes('협의') || d.status.includes('결정')
+  );
+
+  // 5. 도입완료·납품 (won)
+  const wonDeals = deals.filter(d => 
+    d.status === '도입완료·납품' || d.status.includes('납품') || d.status.includes('수주')
+  );
+
+  // 6. 영업실패·보류 (lost)
+  const lostDeals = deals.filter(d => 
+    d.status === '영업실패·보류' || d.status.includes('실패') || d.status.includes('보류')
+  );
+
+  const distinctHospCount = new Set(deals.map(d => d.hospital)).size;
+  document.getElementById('pipeline-stat-total').textContent = isAll ? `${deals.length}건 (${distinctHospCount}개 병원)` : `${deals.length}개 병원`;
   const rate = deals.length > 0 ? Math.round((wonDeals.length / deals.length) * 100) : 0;
   document.getElementById('pipeline-stat-rate').textContent = `${rate}%`;
 
-  const elCountWon = document.getElementById('kanban-count-won');
-  if (elCountWon) elCountWon.textContent = wonDeals.length;
-  const elCountDemo = document.getElementById('kanban-count-demo');
-  if (elCountDemo) elCountDemo.textContent = demoDeals.length;
-  const elCountSample = document.getElementById('kanban-count-sample');
-  if (elCountSample) elCountSample.textContent = sampleDeals.length;
+  const elCountContact = document.getElementById('kanban-count-contact');
+  if (elCountContact) elCountContact.textContent = contactDeals.length;
   const elCountActive = document.getElementById('kanban-count-active');
   if (elCountActive) elCountActive.textContent = activeDeals.length;
-  const elCountAs = document.getElementById('kanban-count-as');
-  if (elCountAs) elCountAs.textContent = asDeals.length;
+  const elCountSample = document.getElementById('kanban-count-sample');
+  if (elCountSample) elCountSample.textContent = sampleDeals.length;
+  const elCountQuote = document.getElementById('kanban-count-quote');
+  if (elCountQuote) elCountQuote.textContent = quoteDeals.length;
+  const elCountWon = document.getElementById('kanban-count-won');
+  if (elCountWon) elCountWon.textContent = wonDeals.length;
   const elCountLost = document.getElementById('kanban-count-lost');
   if (elCountLost) elCountLost.textContent = lostDeals.length;
 
+  renderKanbanCards('contact', contactDeals);
   renderKanbanCards('active', activeDeals);
-  renderKanbanCards('demo', demoDeals);
   renderKanbanCards('sample', sampleDeals);
+  renderKanbanCards('quote', quoteDeals);
   renderKanbanCards('won', wonDeals);
-  renderKanbanCards('as', asDeals);
   renderKanbanCards('lost', lostDeals);
 }
 
@@ -2440,7 +2819,6 @@ function renderKanbanCards(statusKey, items) {
 
   items.forEach(d => {
     const card = document.createElement('div');
-    card.className = 'kanban-card';
     card.draggable = true;
     card.title = '클릭하여 품목코드/상태 수정 또는 드래그하여 이동';
 
@@ -2452,6 +2830,26 @@ function renderKanbanCards(statusKey, items) {
       }
     };
 
+    const productTagHtml = (selectedProductId === 'ALL')
+      ? `<div style="font-size:0.72rem; color:var(--accent-cyan); font-weight:600; margin:2px 0 4px 0; display:flex; align-items:center; gap:4px;"><span style="font-size:0.7rem; opacity:0.8;">📦</span><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(d.product_name)}</span></div>`
+      : '';
+
+    // Compact representation for Lost / Failed items
+    if (statusKey === 'lost') {
+      card.className = 'kanban-card lost-compact';
+      card.innerHTML = `
+        <div class="kanban-card-header" style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+          <span style="font-size:0.75rem; font-weight:600; color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHtml(d.hospital)}">${escapeHtml(d.hospital)}</span>
+          <span class="product-date-txt" style="font-size:0.65rem; color:var(--text-muted); flex-shrink:0;">${d.last_date || ''}</span>
+        </div>
+        ${(selectedProductId === 'ALL') ? `<div style="font-size:0.68rem; color:var(--accent-cyan); opacity:0.85; margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">📦 ${escapeHtml(d.product_name)}</div>` : ''}
+        ${(d.fail_reasons && d.fail_reasons.length > 0) ? `<div style="font-size:0.68rem; color:#fda4af; opacity:0.85; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">사유: ${d.fail_reasons.join(', ')}</div>` : ''}
+      `;
+      container.appendChild(card);
+      return;
+    }
+
+    card.className = 'kanban-card';
     let subNote = '';
     if (d.latest_note) {
       subNote = `<div class="kanban-card-note" style="font-size:0.75rem; color:var(--text-secondary); margin:6px 0; line-height:1.4; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;">${escapeHtml(d.latest_note)}</div>`;
@@ -2465,6 +2863,7 @@ function renderKanbanCards(statusKey, items) {
         <strong class="kanban-card-hosp" style="font-size:0.85rem; color:#fff;">${escapeHtml(d.hospital)}</strong>
         <span class="hospital-item-region">${escapeHtml(d.region || '기타')}</span>
       </div>
+      ${productTagHtml}
       ${subNote}
       <div style="font-size:0.68rem; color:var(--text-muted); display:flex; justify-content:space-between; margin-top:8px; border-top:1px solid rgba(255,255,255,0.05); padding-top:4px;">
         <span>담당: ${escapeHtml(d.sales_rep || '영업담당')}</span>
@@ -2513,55 +2912,12 @@ function handleDragLeave(e) {
   }
 }
 
-// 1. Hospital 360 View Internal Drop Handler
-function handleDropToHospitalStatus(e, targetStatus) {
+// Product Pipeline Kanban Drop Handler
+async function handleDropToProductKanban(e, targetStatus) {
   e.preventDefault();
   e.currentTarget.classList.remove('drag-over');
   
-  let dragData = currentDraggedDeal;
-  if (!dragData) {
-    try {
-      dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
-    } catch(err) {}
-  }
-  if (!dragData) return;
-
-  const deal = window.SALES_DB.pipeline.find(d => d.hospital === dragData.hospital && d.product_id === dragData.productId);
-  if (!deal) return;
-
-  if (deal.status === targetStatus) return; // Same status
-
-  deal.status = targetStatus;
-  deal.last_date = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
-  
-  if (targetStatus === '데모·샘플평가') {
-    deal.demo_info = { date: deal.last_date, note: '칸반 보드에서 데모 진행으로 이동', status: '평가진행중' };
-    deal.fail_reasons = [];
-  } else if (targetStatus === '도입완료·납품') {
-    if (deal.demo_info) deal.demo_info.status = '도입완료';
-    deal.fail_reasons = [];
-  } else if (targetStatus === '영업실패·보류') {
-    if (deal.demo_info) deal.demo_info.status = '회수/종료';
-    if (!deal.fail_reasons || deal.fail_reasons.length === 0) {
-      deal.fail_reasons = ['의료진 피드백/보류'];
-    }
-  } else if (targetStatus === 'A/S접수·처리') {
-    deal.as_info = { date: deal.last_date, note: '칸반 보드에서 A/S 접수로 이동', status: '접수/진행중' };
-  }
-
-  // Update Stats & Re-render
-  recalcGlobalStats();
-  persistSalesDB();
-  selectHospital(dragData.hospital);
-  showToast(`✨ [${deal.product_name}] 상태가 '${targetStatus}'(으)로 이동되었습니다!`);
-}
-
-// 2. Product Pipeline Kanban Drop Handler
-function handleDropToProductKanban(e, targetStatus) {
-  e.preventDefault();
-  e.currentTarget.classList.remove('drag-over');
-  
-  let dragData = currentDraggedDeal;
+  let dragData = currentDraggedDeal || draggedDealInfo;
   if (!dragData) {
     try {
       dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
@@ -2577,7 +2933,7 @@ function handleDropToProductKanban(e, targetStatus) {
   deal.status = targetStatus;
   deal.last_date = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
 
-  if (targetStatus === '의료장비 데모' || targetStatus === '소모품 샘플' || targetStatus === '데모·샘플평가') {
+  if (targetStatus === '샘플·임상평가' || targetStatus === '의료장비 데모' || targetStatus === '소모품 샘플' || targetStatus === '데모·샘플평가') {
     deal.demo_info = { date: deal.last_date, note: `칸반 보드에서 [${targetStatus}] 진행으로 이동`, status: '평가진행중' };
     deal.fail_reasons = [];
   } else if (targetStatus === '도입완료·납품') {
@@ -2588,6 +2944,8 @@ function handleDropToProductKanban(e, targetStatus) {
     if (!deal.fail_reasons || deal.fail_reasons.length === 0) {
       deal.fail_reasons = ['의료진 피드백/보류'];
     }
+  } else if (targetStatus === '신규접촉·타겟발굴' || targetStatus === '제품소개·영업중' || targetStatus === '견적·도입협의') {
+    deal.fail_reasons = [];
   } else if (targetStatus === 'A/S접수·처리') {
     deal.as_info = { date: deal.last_date, note: '칸반 보드에서 A/S 접수로 이동', status: '접수/진행중' };
   }
@@ -2597,6 +2955,9 @@ function handleDropToProductKanban(e, targetStatus) {
   persistSalesDB();
   renderProductPipeline(selectedProductId);
   showToast(`✨ [${deal.hospital}] 상태가 '${targetStatus}'(으)로 이동되었습니다!`);
+
+  // Supabase Cloud Sync
+  await syncPipelineDealToCloud(deal);
 }
 
 function recalcGlobalStats() {
@@ -2604,70 +2965,12 @@ function recalcGlobalStats() {
   const stats = window.SALES_DB.stats;
 
   stats.won_deals = deals.filter(d => d.status === '도입완료·납품').length;
-  stats.active_demos = deals.filter(d => d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status === '평가진행중')).length;
-  stats.active_as = deals.filter(d => d.status === 'A/S접수·처리' || (d.as_info && d.as_info.status.includes('접수'))).length;
-  stats.progress_deals = deals.filter(d => d.status.includes('영업중') || d.status.includes('견적')).length;
+  stats.active_demos = deals.filter(d => d.status === '의료장비 데모' || d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status === '평가진행중')).length;
+  stats.active_as = deals.filter(d => d.status === 'A/S접수·처리' || (d.as_info && d.as_info.status && d.as_info.status.includes('접수'))).length;
+  stats.progress_deals = deals.filter(d => d.status.includes('영업중') || d.status.includes('견적') || d.status.includes('접촉') || d.status.includes('샘플')).length;
   stats.lost_deals = deals.filter(d => d.status === '영업실패·보류').length;
 
   initHeaderMetrics();
-}
-
-function renderKanbanCards(type, deals) {
-  const container = document.getElementById(`kanban-cards-${type}`);
-  if (!container) return;
-
-  container.innerHTML = '';
-  if (deals.length === 0) {
-    container.innerHTML = `<div style="color:var(--text-muted); font-size:0.75rem; text-align:center; padding:16px; border:1px dashed rgba(255,255,255,0.08); border-radius:8px;">항목 없음 (드래그하여 이동)</div>`;
-    return;
-  }
-
-  deals.forEach(d => {
-    const card = document.createElement('div');
-    card.className = 'kanban-card';
-    card.draggable = true;
-    card.title = '마우스로 드래그하여 다른 단계로 이동하거나 클릭하여 병원 상황실 이동';
-
-    card.ondragstart = (e) => handleDragStart(e, d.hospital, d.product_id);
-    card.ondragend = (e) => handleDragEnd(e);
-    card.onclick = (e) => {
-      if (!card.classList.contains('dragging')) {
-        switchTab('hospital');
-        selectHospital(d.hospital);
-      }
-    };
-
-    let subHtml = '';
-    if (d.demo_info && d.demo_info.status.includes('진행')) {
-      subHtml = `<div class="kanban-card-note">🔬 ${d.demo_info.date}: ${escapeHtml(d.demo_info.note)}</div>`;
-    } else if (d.as_info && d.as_info.status.includes('접수')) {
-      subHtml = `<div class="kanban-card-note" style="color:var(--accent-rose);">🚨 ${d.as_info.date}: ${escapeHtml(d.as_info.note)}</div>`;
-    } else if (d.fail_reasons && d.fail_reasons.length > 0) {
-      const tags = d.fail_reasons.map(r => `<span class="reason-tag">⚠️ ${escapeHtml(r)}</span>`).join(' ');
-      subHtml = `<div style="margin-top:4px;">${tags}</div>`;
-    } else if (d.latest_note) {
-      subHtml = `<div class="kanban-card-note">${escapeHtml(d.latest_note)}</div>`;
-    }
-
-    card.innerHTML = `
-      <div class="kanban-card-header">
-        <span class="kanban-hosp-name" style="display:flex; align-items:center; gap:5px;">
-          <span style="font-size:0.8rem; cursor:grab;">🖐️</span>
-          <strong>${escapeHtml(d.hospital)}</strong>
-        </span>
-        <span class="kanban-card-region">${escapeHtml(d.region || '충청')}</span>
-      </div>
-      <div style="font-size:0.72rem; color:var(--text-muted); display:flex; justify-content:space-between; margin-top:4px;">
-        <span>담당: ${escapeHtml(d.sales_rep || '영업담당')}</span>
-        <span>최근: ${escapeHtml(d.last_date || '-')}</span>
-      </div>
-      ${subHtml}
-      <div class="drag-hint-badge">
-        <span>↔️ 드래그하여 단계 변경</span>
-      </div>
-    `;
-    container.appendChild(card);
-  });
 }
 
 // ----------------------------------------------------
@@ -2758,312 +3061,6 @@ function applyErpMasterToDB() {
   renderProductPills();
   renderProductPipeline(selectedProductId);
   showToast(`🎉 Ecount ERP 품목 마스터 ${pendingErpProducts.length}건이 성공적으로 등록/동기화되었습니다!`);
-}
-
-function renderKanbanCards(stage, deals) {
-  const container = document.getElementById(`kanban-cards-${stage}`);
-  container.innerHTML = '';
-
-  if (deals.length === 0) {
-    container.innerHTML = `<div style="color:var(--text-muted); font-size:0.75rem; text-align:center; padding:16px;">해당 병원 없음</div>`;
-    return;
-  }
-
-  deals.forEach(d => {
-    const card = document.createElement('div');
-    card.className = 'kanban-card';
-    card.onclick = () => {
-      // Switch to hospital view and open this hospital!
-      switchTab('hospital');
-      selectHospital(d.hospital);
-      showToast(`🏥 ${d.hospital} 병원 360° 뷰로 이동했습니다.`);
-    };
-
-    let footerExtra = '';
-    if (stage === 'lost' && d.fail_reasons && d.fail_reasons.length) {
-      footerExtra = `<div>${d.fail_reasons.map(r => `<span class="reason-tag">⚠️ ${escapeHtml(r)}</span>`).join(' ')}</div>`;
-    }
-
-    card.innerHTML = `
-      <div class="kanban-card-title">
-        <span>${escapeHtml(d.hospital)}</span>
-        <span class="kanban-card-region">${escapeHtml(d.region)}</span>
-      </div>
-      <div class="kanban-card-note">${escapeHtml(d.latest_note || '진행 메모 없음')}</div>
-      ${footerExtra}
-      <div class="kanban-card-footer" style="margin-top:6px;">
-        <span>담당: ${escapeHtml(d.sales_rep || '미정')}</span>
-        <span>${d.last_date || ''}</span>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-}
-
-// ----------------------------------------------------
-// 4. AI Natural Language Sales Assistant
-// ----------------------------------------------------
-const SAMPLE_TEXTS = {
-  1: "오늘 서산중앙병원 심뇌혈관팀장 만나서 엔지오키트 시술용04제품 샘플을 전달했습니다. 다음 주에 써보고 피드백 받기로 하였습니다.",
-  2: "미래산부인과 방문함. Oxy9wave 장비 1대 에러나서 수리 의뢰 접수함. 한결메디칼 통해서 다음 주 화요일까지 조치 예정.",
-  3: "옥천성모병원에 힙조인트 및 트로카 소개했으나 과장님이 기존 타사 제품 고집하며 가격도 비싸다고 거절하심. 당분간 보류.",
-  4: "천안우리병원 수술실 수선생님 미팅 완료. 이지큐본드(EG-Q BOND) 정기 납품 확정되어 다음 달 1차 발주 넣기로 합의함."
-};
-
-function loadExample(num) {
-  const txt = SAMPLE_TEXTS[num];
-  if (txt) {
-    document.getElementById('ai-input-text').value = txt;
-    parseSalesText();
-  }
-}
-
-function parseSalesText() {
-  const text = (document.getElementById('ai-input-text')?.value || '').trim();
-  if (!text) {
-    showToast('⚠️ 분석할 영업 내용을 입력해주세요.');
-    return;
-  }
-
-  // 1. Hospital Matching
-  let matchedHospital = '기타 거래처';
-  let matchedRegion = '충청권';
-  for (const h of window.SALES_DB.hospitals) {
-    const cleanHosp = h.name.replace(/병원|의원/g, '').trim();
-    if (text.includes(h.name) || (cleanHosp.length >= 2 && text.includes(cleanHosp))) {
-      matchedHospital = h.name;
-      matchedRegion = h.region;
-      break;
-    }
-  }
-
-  // 2. Product Matching
-  let matchedProduct = null;
-  for (const prod of window.SALES_DB.products) {
-    for (const kw of prod.keywords) {
-      if (new RegExp(kw, 'i').test(text)) {
-        matchedProduct = prod;
-        break;
-      }
-    }
-    if (matchedProduct) break;
-  }
-  if (!matchedProduct) {
-    matchedProduct = { id: "PROD_GENERAL", name: "일반 제안 품목 / 소모품", category: "일반" };
-  }
-
-  // 3. Contact Title extraction
-  const contactMatch = text.match(/(원장|과장|팀장|수선생님|간호사|사무장|이사|선생|구매과장|구매과|실장)/);
-  const matchedContact = contactMatch ? contactMatch[0] : '실무진';
-
-  // 4. Action Type & Pipeline Stage
-  let actionType = '관계관리';
-  let stage = '제안·영업중';
-  let failReasons = [];
-
-  if (/A\/S|AS|에이에스|수리|고장|불량|클레임|에러/.test(text)) {
-    actionType = 'A/S·클레임';
-    stage = 'A/S접수·처리';
-  } else if (/샘플|데모|demo|sample|전달|써보고|테스트/.test(text)) {
-    actionType = '샘플·데모';
-    stage = '데모·샘플평가';
-  } else if (/납품|발주|확정|계약|도입/.test(text)) {
-    actionType = '납품·설치';
-    stage = '도입완료·납품';
-  } else if (/거절|실패|안함|보류|비싸|고집|거부/.test(text)) {
-    actionType = '제품설명·소개';
-    stage = '영업실패·보류';
-    if (/가격|비싸|단가/.test(text)) failReasons.push('단가/가격 부담');
-    if (/기존|타사|고집/.test(text)) failReasons.push('기존 거래처/제품 선호');
-    if (failReasons.length === 0) failReasons.push('의료진 거절');
-  }
-
-  // 5. Next Action Schedule
-  let nextSchedule = '익월 정기 방문';
-  if (/다음\s*주|담주/.test(text)) nextSchedule = '다음 주 내 피드백 및 방문 확인';
-  if (/화요일|수요일|목요일|금요일/.test(text)) nextSchedule = '지정 요일 조치 및 피드백 점검';
-
-  currentParsedData = {
-    hospital: matchedHospital,
-    region: matchedRegion,
-    contact: matchedContact,
-    product: matchedProduct,
-    actionType: actionType,
-    stage: stage,
-    failReasons: failReasons,
-    nextSchedule: nextSchedule,
-    rawText: text,
-    date: new Date().toISOString().slice(0, 10).replace(/-/g, '/')
-  };
-
-  // Populate Preview
-  document.getElementById('parse-res-hospital').textContent = currentParsedData.hospital;
-  document.getElementById('parse-res-contact').textContent = currentParsedData.contact;
-  document.getElementById('parse-res-product').textContent = currentParsedData.product.name;
-  document.getElementById('parse-res-action').textContent = currentParsedData.actionType;
-  document.getElementById('parse-res-stage').textContent = currentParsedData.stage;
-  document.getElementById('parse-res-reason').textContent = currentParsedData.failReasons.length ? currentParsedData.failReasons.join(', ') : '없음';
-  document.getElementById('parse-res-next').textContent = currentParsedData.nextSchedule;
-
-  document.getElementById('btn-save-ai-log').style.display = 'flex';
-  showToast('✨ AI가 영업일지를 100% 구조화하여 분류했습니다!');
-}
-
-function saveParsedLogToDB() {
-  if (!currentParsedData) return;
-
-  // Read actual UI inputs (allows user corrections)
-  const repVal = document.getElementById('parse-edit-sales-rep')?.value || currentParsedData.salesRep || selectedRep || '최진용';
-  const dateVal = document.getElementById('parse-edit-date')?.value || currentParsedData.date || new Date().toISOString().slice(0, 10).replace(/-/g, '/');
-  const hospVal = (document.getElementById('parse-edit-hospital')?.value || currentParsedData.hospital || '').trim();
-  const contactVal = (document.getElementById('parse-edit-contact')?.value || currentParsedData.contact || '').trim();
-  const prodNameVal = document.getElementById('parse-edit-product-name')?.value || currentParsedData.product?.name || '일반 품목';
-  const prodCodeVal = document.getElementById('parse-edit-product-code')?.value || currentParsedData.product?.id || 'PROD_GENERAL';
-  const actionTypeVal = document.getElementById('parse-edit-action-type')?.value || currentParsedData.actionType || '방문상담';
-  const salesStatusVal = document.getElementById('parse-edit-sales-status')?.value || currentParsedData.stage || '접촉·니즈파악';
-  const failReasonVal = document.getElementById('parse-edit-fail-reason')?.value || (currentParsedData.failReasons?.length ? currentParsedData.failReasons.join(', ') : '');
-  const nextActionVal = document.getElementById('parse-edit-next-action')?.value || currentParsedData.nextSchedule || '';
-  const rawNoteText = currentParsedData.rawText || `${hospVal} ${prodNameVal} ${actionTypeVal}`;
-
-  if (!hospVal) {
-    showToast('⚠️ 병원명을 입력해주세요.');
-    return;
-  }
-
-  const cleanHosp = normalizeHospitalName(hospVal);
-  const isASAction = (actionTypeVal === 'A/S·클레임' || salesStatusVal === 'A/S접수·처리' || salesStatusVal.includes('A/S'));
-  const isDemoAction = (actionTypeVal === '샘플·데모' || actionTypeVal === '의료장비 데모' || actionTypeVal === '소모품 샘플' || salesStatusVal === '의료장비 데모' || salesStatusVal === '소모품 샘플' || salesStatusVal === '데모·샘플평가');
-
-  // 1. Add to activity logs
-  const newLog = {
-    id: `LOG_${Date.now()}`,
-    date: dateVal,
-    hospital: cleanHosp,
-    region: currentParsedData.region || '세종충북',
-    sales_rep: repVal,
-    contact: contactVal,
-    action_type: actionTypeVal,
-    deal_status: salesStatusVal,
-    products: [prodNameVal],
-    product_code: prodCodeVal,
-    product_name: prodNameVal,
-    title: `${cleanHosp} ${prodNameVal} ${actionTypeVal}`,
-    note: nextActionVal ? `${rawNoteText}\n[차기 일정/할 일]: ${nextActionVal}` : rawNoteText,
-    fail_reasons: failReasonVal && failReasonVal !== '-' ? [failReasonVal] : []
-  };
-  window.SALES_DB.activity_logs.unshift(newLog);
-
-  // 2. Update/Add Pipeline Deal
-  let deal = window.SALES_DB.pipeline.find(d => 
-    (normalizeHospitalName(d.hospital) === cleanHosp) && 
-    (d.product_id === prodCodeVal || d.product_name === prodNameVal)
-  );
-
-  const asInfoObj = isASAction ? {
-    date: dateVal,
-    note: rawNoteText,
-    status: '접수완료',
-    stage: '1. A/S 접수',
-    rep: repVal
-  } : null;
-
-  const demoInfoObj = isDemoAction ? {
-    date: dateVal,
-    note: rawNoteText,
-    status: '평가진행중',
-    rep: repVal
-  } : null;
-
-  if (!deal) {
-    deal = {
-      hospital: cleanHosp,
-      product_id: prodCodeVal,
-      product_name: prodNameVal,
-      product_category: currentParsedData.product?.category || '일반의료기기',
-      region: currentParsedData.region || '세종충북',
-      sales_rep: repVal,
-      status: salesStatusVal,
-      last_date: dateVal,
-      latest_action: actionTypeVal,
-      latest_note: rawNoteText,
-      fail_reasons: failReasonVal && failReasonVal !== '-' ? [failReasonVal] : [],
-      demo_info: demoInfoObj,
-      as_info: asInfoObj,
-      history_count: 1
-    };
-    window.SALES_DB.pipeline.push(deal);
-  } else {
-    deal.status = salesStatusVal;
-    deal.last_date = dateVal;
-    deal.sales_rep = repVal;
-    deal.latest_action = actionTypeVal;
-    deal.latest_note = rawNoteText;
-    if (failReasonVal && failReasonVal !== '-') deal.fail_reasons = [failReasonVal];
-    if (isASAction) deal.as_info = asInfoObj;
-    if (isDemoAction) deal.demo_info = demoInfoObj;
-  }
-
-  // 3. Update Hospital Master stats
-  let hosp = window.SALES_DB.hospitals.find(h => normalizeHospitalName(h.name) === cleanHosp);
-  if (!hosp) {
-    hosp = {
-      name: cleanHosp,
-      region: currentParsedData.region || '세종충북',
-      sales_reps: [repVal],
-      contacts: contactVal ? [contactVal] : ['원장/실무진'],
-      status: '활동병원',
-      last_activity_date: dateVal,
-      total_logs: 1,
-      demo_count: isDemoAction ? 1 : 0,
-      won_count: salesStatusVal === '도입완료·납품' ? 1 : 0,
-      as_count: isASAction ? 1 : 0,
-      fail_count: salesStatusVal === '영업실패·보류' ? 1 : 0,
-      products_active: [prodNameVal]
-    };
-    window.SALES_DB.hospitals.push(hosp);
-  } else {
-    hosp.last_activity_date = dateVal;
-    hosp.total_logs = (hosp.total_logs || 0) + 1;
-    if (repVal && (!hosp.sales_reps || !hosp.sales_reps.includes(repVal))) {
-      hosp.sales_reps = (hosp.sales_reps || []).concat([repVal]);
-    }
-    if (contactVal && (!hosp.contacts || !hosp.contacts.includes(contactVal))) {
-      hosp.contacts = (hosp.contacts || []).concat([contactVal]);
-    }
-    if (isASAction) hosp.as_count = (hosp.as_count || 0) + 1;
-    if (isDemoAction) hosp.demo_count = (hosp.demo_count || 0) + 1;
-    if (!hosp.products_active) hosp.products_active = [];
-    if (!hosp.products_active.includes(prodNameVal)) hosp.products_active.push(prodNameVal);
-  }
-
-  // Persist Local DB & Supabase Cloud
-  persistSalesDB();
-  if (supabaseClient) {
-    try {
-      supabaseClient.from('activity_logs').insert([newLog]).then(() => console.log('⚡ Supabase AI log saved'));
-      supabaseClient.from('pipeline').upsert([deal]).then(() => console.log('⚡ Supabase deal synced'));
-    } catch(e) {}
-  }
-
-  // 4. Automatically Post to Slack #영업일지 channel
-  sendSalesLogToSlack(newLog);
-
-  // Re-calculate stats
-  window.SALES_DB.stats.total_logs++;
-  initHeaderMetrics();
-
-  showToast(`🎉 [${cleanHosp}] '${repVal}' 담당자의 일지 저장 & 슬랙(#영업일지) 자동 전송 완료!`);
-
-  // Switch to appropriate view (A/S면 A/S 관제 센터로, 아니면 병원 360도로 이동)
-  setTimeout(() => {
-    if (isASAction) {
-      switchTab('as');
-      renderAsControlCenter();
-    } else {
-      switchTab('hospital');
-      selectHospital(cleanHosp);
-    }
-  }, 900);
 }
 
 // ----------------------------------------------------
@@ -3569,8 +3566,9 @@ function saveEditedActivityLog() {
     window.SALES_DB.activity_logs[index] = logData;
     showToast(`✅ [${hosp}] 영업일지가 성공적으로 수정되었습니다.`);
 
-    if (supabaseClient) {
-      supabaseClient.from('activity_logs').upsert([logData]).then(({ error }) => {
+    const client = getSupabaseClient();
+    if (client) {
+      client.from('activity_logs').upsert([logData]).then(({ error }) => {
         if (error) console.warn('Supabase upsert error:', error);
         else console.log('⚡ Supabase log updated successfully');
       });
@@ -3580,10 +3578,14 @@ function saveEditedActivityLog() {
     window.SALES_DB.stats.total_logs = window.SALES_DB.activity_logs.length;
     showToast(`✅ [${hosp}] 신규 영업일지가 성공적으로 등록되었습니다.`);
 
-    if (supabaseClient) {
-      supabaseClient.from('activity_logs').insert([logData]).then(({ error }) => {
+    const client = getSupabaseClient();
+    if (client) {
+      client.from('activity_logs').insert([logData]).select().then(({ data, error }) => {
         if (error) console.warn('Supabase insert error:', error);
-        else console.log('⚡ Supabase log inserted successfully');
+        else {
+          if (data && data[0]) logData.id = data[0].id;
+          console.log('⚡ Supabase log inserted successfully');
+        }
       });
     }
   }
@@ -3592,11 +3594,20 @@ function saveEditedActivityLog() {
   if (prevHospName && prevHospName !== hosp) {
     const prevHospObj = window.SALES_DB.hospitals.find(h => h.name === prevHospName);
     if (prevHospObj && prevHospObj.total_logs > 0) prevHospObj.total_logs--;
+
+    // Update any pipeline deals created for this note or log
+    (window.SALES_DB.pipeline || []).forEach(d => {
+      if (d.hospital === prevHospName && (d.latest_note === note || (d.product_name === prodName && d.sales_rep === rep))) {
+        d.hospital = hosp;
+        d.region = logData.region;
+      }
+    });
   }
   const newHospObj = window.SALES_DB.hospitals.find(h => h.name === hosp);
   if (newHospObj) {
-    newHospObj.total_logs = (newHospObj.total_logs || 0) + 1;
+    newHospObj.total_logs = (newHospObj.total_logs || 0) + (prevHospName !== hosp ? 1 : 0);
     newHospObj.last_activity_date = date;
+    if (!newHospObj.products_active) newHospObj.products_active = [];
     if (!newHospObj.products_active.includes(prodName)) newHospObj.products_active.push(prodName);
   }
 
@@ -3609,12 +3620,10 @@ function saveEditedActivityLog() {
   renderHospitalList();
   renderExcelLogsTable();
   
-  // Refresh active hospital details immediately
-  if (selectedHospitalName) {
-    selectHospital(selectedHospitalName);
-  }
-
   closeEditActivityLogModal();
+
+  // Refresh active hospital details immediately to the updated hospital
+  selectHospital(hosp);
 }
 
 async function deleteActivityLog() {
@@ -3628,9 +3637,10 @@ async function deleteActivityLog() {
   }
 
   // 1. Delete from Supabase Cloud DB
-  if (supabaseClient) {
+  const client = getSupabaseClient();
+  if (client) {
     try {
-      let delQuery = supabaseClient.from('activity_logs').delete();
+      let delQuery = client.from('activity_logs').delete();
       if (log.id) {
         delQuery = delQuery.eq('id', log.id);
       } else {
@@ -3885,6 +3895,7 @@ async function callGeminiAPI(text) {
 7. sales_status: 위 파이프라인 진행 상태 중 가장 알맞은 1개. 단순 인사/첫 방문은 "제품소개·영업중".
 8. fail_reason: 특이사항 또는 실패 사유 (없으면 "-")
 9. next_action: 다음 할 일 또는 후속 일정 요약 문장
+10. note: 영업활동 상세 내용 및 상담/임상 피드백 요약
 
 [영업 메모]:
 ${text}
@@ -3899,7 +3910,8 @@ ${text}
   "action_type": "...",
   "sales_status": "...",
   "fail_reason": "...",
-  "next_action": "..."
+  "next_action": "...",
+  "note": "..."
 }`;
 
   const payload = {
@@ -3941,6 +3953,358 @@ ${text}
   }
 }
 
+// ----------------------------------------------------
+// 9-2. Intelligent Hangul Hospital Matching & Verification Engine
+// ----------------------------------------------------
+const HANGUL_CHO_LIST = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const HANGUL_JUNG_LIST = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
+const HANGUL_JONG_LIST = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+
+function decomposeHangul(str) {
+  if (!str) return '';
+  let result = '';
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i);
+    if (code >= 0xAC00 && code <= 0xD7A3) {
+      const offset = code - 0xAC00;
+      result += HANGUL_CHO_LIST[Math.floor(offset / 588)] + HANGUL_JUNG_LIST[Math.floor((offset % 588) / 28)] + (HANGUL_JONG_LIST[offset % 28] || '');
+    } else {
+      result += str[i];
+    }
+  }
+  return result;
+}
+
+function extractHangulCho(str) {
+  if (!str) return '';
+  let result = '';
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i);
+    if (code >= 0xAC00 && code <= 0xD7A3) {
+      result += HANGUL_CHO_LIST[Math.floor((code - 0xAC00) / 588)];
+    } else if (/[a-zA-Z0-9]/.test(str[i])) {
+      result += str[i].toLowerCase();
+    }
+  }
+  return result;
+}
+
+function calculateLevenshteinDistance(a, b) {
+  if (!a || !b) return (a || b || '').length;
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+    }
+  }
+  return dp[m][n];
+}
+
+const REGION_PREFIX_KEYWORDS = ['서울', '경기', '천안', '아산', '평택', '안성', '세종', '충북', '청주', '진천', '음성', '충주', '제천', '괴산', '단양', '보은', '영동', '옥천', '증평', '대전', '논산', '공주', '보령', '부여', '서천', '금산', '계룡', '서산', '당진', '홍성', '예산', '태안'];
+const GENERIC_HOSP_SUFFIXES = ['종합병원', '대학교병원', '대학병원', '산부인과의원', '정형외과의원', '마취통증의학과', '마취통증의원', '여성병원', '산부인과', '정형외과', '신경외과', '성형외과', '이비인후과', '비뇨기과', '소아청소년과', '소아과', '안과의원', '치과의원', '한의원', '병원', '의원', '의료원', '보건소', '센터', '클리닉', '외과', '내과', '안과', '치과'];
+
+function extractRegionPrefix(name) {
+  if (!name) return '';
+  const clean = String(name).trim().replace(/\s+/g, '');
+  for (const reg of REGION_PREFIX_KEYWORDS) {
+    if (clean.startsWith(reg) || clean.includes(reg)) return reg;
+  }
+  return '';
+}
+
+function extractCoreHospitalName(name) {
+  if (!name) return '';
+  let clean = String(name).trim().replace(/\s+/g, '');
+  for (const reg of REGION_PREFIX_KEYWORDS) {
+    if (clean.startsWith(reg)) {
+      clean = clean.substring(reg.length);
+      break;
+    }
+  }
+  for (const suf of GENERIC_HOSP_SUFFIXES) {
+    if (clean.endsWith(suf) && clean.length > suf.length) {
+      clean = clean.substring(0, clean.length - suf.length);
+      break;
+    }
+  }
+  return clean.trim();
+}
+
+function calculateHospitalSimilarity(inputName, candidateName, candidateRegion = '') {
+  if (!inputName || !candidateName) return 0;
+  const s1 = String(inputName).trim().replace(/\s+/g, '');
+  const s2 = String(candidateName).trim().replace(/\s+/g, '');
+  if (s1 === s2) return 1.0;
+
+  const core1 = extractCoreHospitalName(s1);
+  const core2 = extractCoreHospitalName(s2);
+  const reg1 = extractRegionPrefix(s1);
+  const reg2 = extractRegionPrefix(s2);
+
+  let coreScore = 0;
+  if (core1 && core2) {
+    if (core1 === core2) {
+      coreScore = 0.90;
+    } else {
+      const coreJamo1 = decomposeHangul(core1);
+      const coreJamo2 = decomposeHangul(core2);
+      const coreDist = calculateLevenshteinDistance(coreJamo1, coreJamo2);
+      const maxCoreLen = Math.max(coreJamo1.length, coreJamo2.length);
+      const coreJamoSim = maxCoreLen > 0 ? (1 - coreDist / maxCoreLen) : 0;
+      if (coreJamoSim >= 0.6) coreScore = 0.75 * coreJamoSim;
+    }
+  }
+
+  // Full Jamo & Cho distance
+  const jamo1 = decomposeHangul(s1);
+  const jamo2 = decomposeHangul(s2);
+  const dist = calculateLevenshteinDistance(jamo1, jamo2);
+  const maxJamoLen = Math.max(jamo1.length, jamo2.length);
+  const jamoSim = maxJamoLen > 0 ? (1 - dist / maxJamoLen) : 0;
+
+  const cho1 = extractHangulCho(s1);
+  const cho2 = extractHangulCho(s2);
+  const choDist = calculateLevenshteinDistance(cho1, cho2);
+  const maxChoLen = Math.max(cho1.length, cho2.length);
+  const choSim = maxChoLen > 0 ? (1 - choDist / maxChoLen) : 0;
+
+  let baseScore = 0.7 * jamoSim + 0.3 * choSim;
+  let finalScore = Math.max(baseScore, coreScore);
+
+  if (s1.includes(s2) || s2.includes(s1)) {
+    finalScore = Math.max(finalScore, 0.86);
+  }
+
+  // Region match bonus
+  if (reg1 && (reg1 === reg2 || (candidateRegion && candidateRegion.includes(reg1)))) {
+    finalScore += 0.10;
+  }
+
+  return Math.min(finalScore, 0.99);
+}
+
+function findSimilarHospitals(inputName) {
+  if (!inputName || inputName === '기타 거래처') return { exact: null, suggestions: [], isNew: false };
+  const cleanInput = inputName.trim().replace(/\s+/g, '');
+  
+  const dbHospitals = (window.SALES_DB && window.SALES_DB.hospitals) ? window.SALES_DB.hospitals : [];
+  const erpCustomers = window.ERP_CUSTOMERS_MASTER || [];
+
+  const candidateMap = new Map();
+
+  for (const h of dbHospitals) {
+    if (!h || !h.name) continue;
+    const key = (h.name || '').replace(/\s+/g, '');
+    candidateMap.set(key, { name: h.name, region: h.region || '세종충북', source: 'db', raw: h });
+  }
+
+  for (const c of erpCustomers) {
+    if (!c || !c.name) continue;
+    const cClean = (c.clean_name || c.name).replace(/\s+/g, '');
+    if (!candidateMap.has(cClean)) {
+      candidateMap.set(cClean, { name: c.clean_name || c.name, region: c.region || '기타', code: c.code, source: 'erp', rawName: c.name });
+    }
+  }
+
+  const allCandidates = Array.from(candidateMap.values());
+  const exact = allCandidates.find(c => c.name.replace(/\s+/g, '') === cleanInput);
+  if (exact) {
+    return { exact, suggestions: [], isNew: false };
+  }
+
+  const scored = [];
+  const seenNames = new Set();
+  for (const cand of allCandidates) {
+    if (seenNames.has(cand.name)) continue;
+    const sim = calculateHospitalSimilarity(inputName, cand.name, cand.region);
+    if (sim >= 0.68) {
+      seenNames.add(cand.name);
+      scored.push({ hospital: cand, score: sim });
+    }
+  }
+
+  scored.sort((a, b) => b.score - a.score);
+  return {
+    exact: null,
+    suggestions: scored.slice(0, 3),
+    isNew: scored.length === 0
+  };
+}
+
+function renderHospitalVerificationBox(hospitalName) {
+  const container = document.getElementById('ai-hospital-verification-box');
+  if (!container) return;
+
+  const rawName = (hospitalName || '').trim();
+  if (!rawName || rawName === '기타 거래처') {
+    container.style.display = 'none';
+    container.innerHTML = '';
+    return;
+  }
+
+  const res = findSimilarHospitals(rawName);
+
+  if (res.exact) {
+    container.className = 'ai-match-badge exact';
+    const sourceLabel = res.exact.source === 'erp' ? '이카운트 ERP 정규 거래처' : '등록 거래처';
+    container.innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span>🟢 <strong>${sourceLabel} 확인:</strong> ${escapeHtml(res.exact.name)} (${res.exact.region || '기타'})</span>
+        <span style="font-size:0.7rem; opacity:0.8;">정규 등록 거래처</span>
+      </div>
+    `;
+    container.style.display = 'block';
+  } else if (res.suggestions.length > 0) {
+    container.className = 'ai-match-badge suggest';
+    const chipsHtml = res.suggestions.map(s => {
+      const hName = s.hospital.name;
+      const hRegion = s.hospital.region || '';
+      const scorePct = Math.round(s.score * 100);
+      const safeName = (hName || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      return `<button type="button" class="ai-hosp-chip" onclick="selectSuggestedHospital('${safeName}')">🏥 ${escapeHtml(hName)} <span style="opacity:0.75; font-size:0.68rem;">(${hRegion} · ${scorePct}%)</span></button>`;
+    }).join(' ');
+
+    container.innerHTML = `
+      <div style="display:flex; align-items:center; gap:6px; font-weight:700;">
+        <span>💡</span>
+        <span>등록된 거래처와 유사합니다. 아래 병원이 맞으신가요?</span>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:2px;">
+        ${chipsHtml}
+      </div>
+    `;
+    container.style.display = 'block';
+  } else {
+    container.className = 'ai-match-badge new';
+    container.innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+        <span>🆕 <strong>미등록 신규 거래처:</strong> '${escapeHtml(rawName)}'</span>
+        <span style="font-size:0.7rem; opacity:0.85;">저장 시 신규 병원으로 등록됩니다</span>
+      </div>
+    `;
+    container.style.display = 'block';
+  }
+}
+
+function onAiHospitalInputChange(value) {
+  renderHospitalVerificationBox(value);
+}
+
+function selectSuggestedHospital(hospitalName) {
+  const input = document.getElementById('parse-edit-hospital');
+  if (input) {
+    input.value = hospitalName;
+    renderHospitalVerificationBox(hospitalName);
+    showToast(`🏥 거래처가 '${hospitalName}'(으)로 선택되었습니다.`);
+  }
+}
+
+// ----------------------------------------------------
+// 9-3. Intelligent ERP 4,054 Products Suggestion Engine
+// ----------------------------------------------------
+function getTopErpProductSuggestions(text, currentMatchedCode = '') {
+  const master = (window.ERP_PRODUCTS_MASTER || []).concat(window.SALES_DB ? (window.SALES_DB.products || []) : []);
+  if (!text || master.length === 0) return [];
+
+  const tLower = text.toLowerCase();
+  const scored = [];
+  const seenCodes = new Set();
+
+  const keywords = [
+    { key: '트로카', terms: ['trocar', '트로카', '원포트', '121-51855', '마인드레이'] },
+    { key: '하이겐트', terms: ['hygent', '하이겐트', '수액세트', '유착방지'] },
+    { key: '소공포', terms: ['소공포', '드레이프', 'sheet', '멸균', '세종'] },
+    { key: '서지소드', terms: ['서지소드', 'surgi sword', '펜코', '메스', 'knife'] },
+    { key: '바이옵시', terms: ['biopsy', '바이옵시', '펀치'] },
+    { key: '크로믹', terms: ['chromic', '크로믹', 'catgut', '봉합사'] },
+    { key: '산소포화도', terms: ['oxy9', '산소포화도', 'pulse oximeter'] },
+    { key: '태아심음', terms: ['bt350', 'bt-350', '태아심음', 'fetal doppler'] },
+    { key: '내시경', terms: ['올림푸스', 'olympus', '내시경', '광원'] },
+    { key: '모슬레이디', terms: ['201.023', 'motor handle', '모슬레이디', '모터'] },
+    { key: '엔지오', terms: ['angio', '엔지오', 'st-ang-pr03'] },
+    { key: 'c라인', terms: ['c-line', 'c라인', 'cvc', 'st-cvc'] },
+    { key: '큐어폼', terms: ['cureform', '큐어폼', '드레싱'] },
+    { key: '좌욕기', terms: ['좌욕기', 'zwayok', '필터'] },
+    { key: '튤립', terms: ['tulip', '튤립', '카테터'] }
+  ];
+
+  for (const p of master) {
+    if (!p) continue;
+    const pCode = p.code || p.id || '';
+    if (seenCodes.has(pCode)) continue;
+    seenCodes.add(pCode);
+
+    const pName = p.name || '';
+    const pNameLower = pName.toLowerCase();
+    let score = 0;
+
+    if (pCode && tLower.includes(pCode.toLowerCase())) score += 100;
+    if (pName && tLower.includes(pNameLower)) score += 80;
+
+    for (const kw of keywords) {
+      const textHasKey = kw.terms.some(t => tLower.includes(t));
+      const prodHasKey = kw.terms.some(t => pNameLower.includes(t) || pCode.toLowerCase().includes(t));
+      if (textHasKey && prodHasKey) score += 50;
+    }
+
+    if (pCode === currentMatchedCode) score += 40;
+
+    if (score > 0) {
+      scored.push({ product: p, score, pCode, pName });
+    }
+  }
+
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, 4).map(s => s.product);
+}
+
+function renderProductSuggestionsBox(text, currentMatchedCode = '') {
+  const box = document.getElementById('ai-product-suggestions-box');
+  const chipsContainer = document.getElementById('ai-product-suggestions-chips');
+  if (!box || !chipsContainer) return;
+
+  const suggestions = getTopErpProductSuggestions(text, currentMatchedCode);
+  if (!suggestions || suggestions.length === 0) {
+    box.style.display = 'none';
+    chipsContainer.innerHTML = '';
+    return;
+  }
+
+  chipsContainer.innerHTML = suggestions.map((p, idx) => {
+    const pCode = p.code || p.id || '';
+    const pName = p.name || '';
+    const isActive = (pCode === currentMatchedCode) ? 'active' : '';
+    const safeCode = (pCode || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    const safeName = (pName || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    return `
+      <button type="button" class="ai-prod-chip ${isActive}" onclick="selectSuggestedProduct('${safeCode}', '${safeName}')">
+        <span>📦 ${idx + 1}.</span> <strong>${escapeHtml(pName)}</strong>
+        <span style="opacity:0.75; font-size:0.68rem; margin-left:2px;">[${escapeHtml(pCode)}]</span>
+      </button>
+    `;
+  }).join('');
+
+  box.style.display = 'block';
+}
+
+function selectSuggestedProduct(prodCode, prodName) {
+  const nameInput = document.getElementById('parse-edit-product-name');
+  const codeInput = document.getElementById('parse-edit-product-code');
+  if (nameInput) nameInput.value = prodName;
+  if (codeInput) codeInput.value = prodCode;
+
+  document.querySelectorAll('.ai-prod-chip').forEach(chip => {
+    if (chip.textContent.includes(prodCode)) chip.classList.add('active');
+    else chip.classList.remove('active');
+  });
+
+  showToast(`📦 ERP 품목이 '${prodName}' [${prodCode}](으)로 매핑되었습니다.`);
+}
+
 function applyParsedResultToUI(data, rawText, isFromGemini = false) {
   const setVal = (id, val) => {
     const el = document.getElementById(id);
@@ -3970,6 +4334,11 @@ function applyParsedResultToUI(data, rawText, isFromGemini = false) {
   setVal('parse-edit-sales-status', data.sales_status || '제품소개·영업중');
   setVal('parse-edit-fail-reason', data.fail_reason || '-');
   setVal('parse-edit-next-action', data.next_action || '다음 방문 일정 확인 및 후속 조치');
+  setVal('parse-edit-note', data.note || rawText || '');
+
+  // Render smart hospital verification box and ERP product suggestion chips
+  renderHospitalVerificationBox(data.hospital || '기타 거래처');
+  renderProductSuggestionsBox(rawText || data.note || '', data.product_code || 'PROD_GENERAL');
 
   const saveBtn = document.getElementById('btn-save-ai-log');
   if (saveBtn) {
@@ -3978,9 +4347,9 @@ function applyParsedResultToUI(data, rawText, isFromGemini = false) {
   }
 
   if (isFromGemini) {
-    showToast(`✨ Google Gemini AI 정밀 분석 완료! 검토 후 [즉시 등록]을 누르세요.`);
+    showToast(`✨ Google Gemini AI 정밀 분석 완료! 검토 후 [영업일지 저장]을 누르세요.`);
   } else {
-    showToast(`⚡ 고속 NLP 분석 완료! 검토 후 [즉시 등록]을 누르세요.`);
+    showToast(`⚡ 고속 NLP 분석 완료! 검토 후 [영업일지 저장]을 누르세요.`);
   }
 }
 
@@ -4049,14 +4418,20 @@ function parseSalesTextLocally(text) {
     }
   }
 
-  // Step 1-2: If no exact full name match, extract via Korean medical institution Regex
+  // Step 1-2: If no exact full name match, check similarity / regex
   if (!matchedHosp) {
-    const regMatch = text.match(/([가-힣]{2,14}(?:대학교병원|대학병원|산부인과|정형외과|외과|내과|병원|의원|의료원|보건소|센터))/);
-    if (regMatch) {
-      matchedHosp = regMatch[1];
-      // Check if there is an exact registered hospital containing this name
-      const foundH = hospList.find(h => h.name.includes(matchedHosp) || matchedHosp.includes(h.name));
-      if (foundH) matchedHosp = foundH.name;
+    const simRes = findSimilarHospitals(text);
+    if (simRes.exact) {
+      matchedHosp = simRes.exact.name;
+    } else if (simRes.suggestions && simRes.suggestions.length > 0 && simRes.suggestions[0].score >= 0.82) {
+      matchedHosp = simRes.suggestions[0].hospital.name;
+    } else {
+      const regMatch = text.match(/([가-힣]{2,14}(?:대학교병원|대학병원|산부인과|정형외과|외과|내과|병원|의원|의료원|보건소|센터))/);
+      if (regMatch) {
+        matchedHosp = regMatch[1];
+        const foundH = hospList.find(h => h.name.includes(matchedHosp) || matchedHosp.includes(h.name));
+        if (foundH) matchedHosp = foundH.name;
+      }
     }
   }
 
@@ -4067,14 +4442,23 @@ function parseSalesTextLocally(text) {
   // 2. Contact Person & Title extraction (본문에 없을 경우 절대 임의값 넣지 않고 빈칸 유지!)
   let matchedContact = "";
   const contactPatterns = [
-    /([가-힣]{2,4})\s*(선생님|원장(?:님)?|과장(?:님)?|교수(?:님)?|실장(?:님)?|팀장(?:님)?|부장(?:님)?|수간호사(?:님)?|간호사(?:님)?|영상의학실장(?:님)?|진료부원장(?:님)?|의무원장(?:님)?|간호부장(?:님)?|수술실장(?:님)?|행정부장(?:님)?|산부인과장(?:님)?|신경외과장(?:님)?|사무장(?:님)?)/,
+    /([가-힣]{1,4})\s*(선생님|원장(?:님)?|과장(?:님)?|교수(?:님)?|실장(?:님)?|팀장(?:님)?|부장(?:님)?|수간호사(?:님)?|간호사(?:님)?|영상의학실장(?:님)?|진료부원장(?:님)?|의무원장(?:님)?|간호부장(?:님)?|수술실장(?:님)?|행정부장(?:님)?|산부인과장(?:님)?|신경외과장(?:님)?|사무장(?:님)?)/,
     /(선생님|영상의학실장|진료부원장|의무원장|간호부장|수술실장|행정부장|산부인과장|신경외과장|원장|과장|팀장|실장|부장|교수|간호사|사무장)/
   ];
   for (const pat of contactPatterns) {
     const cm = text.match(pat);
     if (cm) {
-      if (cm[2]) matchedContact = `${cm[1]} ${cm[2].replace(/님$/, '')}`;
-      else matchedContact = cm[1].replace(/님$/, '');
+      if (cm[2]) {
+        let prefix = cm[1].trim();
+        // Exclude facility/hospital suffixes from person prefix
+        if (prefix.endsWith('병원') || prefix.endsWith('의원') || prefix.endsWith('센터') || prefix.endsWith('의료원') || prefix.endsWith('보건소') || prefix.endsWith('약국') || prefix.endsWith('학교') || prefix.endsWith('대학')) {
+          matchedContact = cm[2].replace(/님$/, '');
+        } else {
+          matchedContact = `${prefix} ${cm[2].replace(/님$/, '')}`;
+        }
+      } else {
+        matchedContact = cm[1].replace(/님$/, '');
+      }
       break;
     }
   }
@@ -4197,29 +4581,86 @@ function parseSalesTextLocally(text) {
     action_type: actionType,
     sales_status: pipelineStage,
     fail_reason: failReason,
-    next_action: nextAction
+    next_action: nextAction,
+    note: text
   }, text, false);
 }
 
 async function saveParsedLogToDB() {
   // Read current values directly from Editable Form
-  const userRep = document.getElementById('parse-edit-sales-rep').value || currentAiSelectedRep;
-  const dateStr = document.getElementById('parse-edit-date').value.trim() || new Date().toISOString().slice(0, 10).replace(/-/g, '/');
-  const rawHospName = document.getElementById('parse-edit-hospital').value.trim();
-  const hospName = normalizeHospitalName(rawHospName);
-  const cleanHospName = (hospName || '').replace(/\s+/g, '');
-  const contactName = document.getElementById('parse-edit-contact').value.trim();
-  const prodName = document.getElementById('parse-edit-product-name').value.trim();
-  const prodCode = document.getElementById('parse-edit-product-code').value.trim() || "PROD_GENERAL";
-  const actionType = document.getElementById('parse-edit-action-type').value;
-  const salesStatus = document.getElementById('parse-edit-sales-status').value;
-  const failReason = document.getElementById('parse-edit-fail-reason').value.trim();
-  const nextAction = document.getElementById('parse-edit-next-action').value.trim();
-  const rawNote = document.getElementById('ai-input-text').value.trim() || `${hospName} ${contactName} 면담. ${actionType} 진행.`;
-
-  if (!hospName) {
-    alert("거래처(병원명)를 입력해주세요.");
+  const userRep = document.getElementById('parse-edit-sales-rep')?.value || currentAiSelectedRep;
+  const dateStr = document.getElementById('parse-edit-date')?.value.trim() || new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+  const rawHospName = (document.getElementById('parse-edit-hospital')?.value || '').trim();
+  
+  if (!rawHospName || rawHospName === '기타 거래처') {
+    alert("거래처(병원명)를 올바르게 입력해주세요.");
+    document.getElementById('parse-edit-hospital')?.focus();
     return;
+  }
+
+  // 0. Hospital Verification & Strict Safety Guard (Option A)
+  let hospName = normalizeHospitalName(rawHospName);
+  let cleanHospName = (hospName || '').replace(/\s+/g, '');
+  
+  const existingHosp = window.SALES_DB.hospitals.find(h => (h.name || '').replace(/\s+/g, '') === cleanHospName);
+  const erpMatch = (window.ERP_CUSTOMERS_MASTER || []).find(c => (c.clean_name || c.name).replace(/\s+/g, '') === cleanHospName || (c.name || '').replace(/\s+/g, '') === cleanHospName);
+
+  if (!existingHosp && !erpMatch) {
+    const simRes = findSimilarHospitals(rawHospName);
+    if (simRes.suggestions && simRes.suggestions.length > 0) {
+      const topSug = simRes.suggestions[0].hospital.name;
+      const topPct = Math.round(simRes.suggestions[0].score * 100);
+      const confirmChoice = confirm(
+        `⚠️ [거래처 확인 안내]\n\n'${rawHospName}'은(는) 미등록 거래처입니다.\n등록된 거래처 중 '${topSug}' (${topPct}% 일치)이(가) 있습니다.\n\n` +
+        `• [확인] : '${topSug}'(으)로 표준화하여 저장\n` +
+        `• [취소] : 입력창으로 돌아가 거래처명 다시 확인`
+      );
+      if (confirmChoice) {
+        hospName = topSug;
+        cleanHospName = (hospName || '').replace(/\s+/g, '');
+        const input = document.getElementById('parse-edit-hospital');
+        if (input) input.value = topSug;
+      } else {
+        document.getElementById('parse-edit-hospital')?.focus();
+        return;
+      }
+    } else {
+      if (!confirm(`🆕 '${rawHospName}'은(는) 시스템에 등록되지 않은 신규 거래처입니다.\n\n정말로 신규 거래처로 신규 등록하시겠습니까?`)) {
+        document.getElementById('parse-edit-hospital')?.focus();
+        return;
+      }
+    }
+  }
+
+  const contactName = document.getElementById('parse-edit-contact')?.value.trim() || '';
+  const rawProdName = document.getElementById('parse-edit-product-name')?.value.trim() || '일반 의료소모품/장비';
+  const rawProdCode = document.getElementById('parse-edit-product-code')?.value.trim() || "PROD_GENERAL";
+  const actionType = document.getElementById('parse-edit-action-type')?.value || '제품설명·소개';
+  const salesStatus = document.getElementById('parse-edit-sales-status')?.value || '제품소개·영업중';
+  const failReason = document.getElementById('parse-edit-fail-reason')?.value.trim() || '-';
+  const nextAction = document.getElementById('parse-edit-next-action')?.value.trim() || '';
+  const editedNote = (document.getElementById('parse-edit-note')?.value || '').trim();
+  const rawInput = (document.getElementById('ai-input-text')?.value || '').trim();
+  const noteVal = editedNote || rawInput || `${hospName} ${contactName} 면담. ${actionType} 진행.`;
+
+  // Option A Product Pipeline Normalization:
+  // Standardize product code and avoid cluttering pipeline with non-deal greetings
+  let finalProdCode = rawProdCode;
+  let finalProdName = rawProdName;
+
+  const isGreetingOrNoDeal = (
+    actionType === '관계관리' || 
+    actionType === '신규접촉' || 
+    actionType === '수금·결제' || 
+    rawProdName.includes('단순') || 
+    rawProdName.includes('인사') || 
+    rawProdName.includes('품목 미정') ||
+    rawProdName.includes('원장님 부재') ||
+    rawProdName.includes('면담 불발')
+  );
+
+  if (finalProdCode === 'PROD_GENERAL' && !isGreetingOrNoDeal) {
+    finalProdName = '일반 의료소모품/장비 (PROD_GENERAL)';
   }
 
   // 1. Create Activity Log Entry
@@ -4228,12 +4669,12 @@ async function saveParsedLogToDB() {
     date: dateStr,
     sales_rep: userRep,
     action_type: actionType,
-    title: `[${actionType}] ${prodName}`,
-    note: rawNote,
-    products: [prodName],
-    product_code: prodCode,
+    title: `[${actionType}] ${finalProdName}`,
+    note: noteVal,
+    products: [finalProdName],
+    product_code: finalProdCode,
     next_action: nextAction,
-    region: "세종충북",
+    region: erpMatch ? erpMatch.region : (existingHosp ? existingHosp.region : "세종충북"),
     contact: contactName
   };
 
@@ -4241,51 +4682,59 @@ async function saveParsedLogToDB() {
   window.SALES_DB.activity_logs.unshift(logEntry);
   window.SALES_DB.stats.total_logs = window.SALES_DB.activity_logs.length;
 
-  // 2. Update/Add Pipeline Deal (Clean matching)
+  // 2. Update/Add Pipeline Deal (Option A: Only create pipeline deal if it's a real sales product deal, not a mere greeting)
+  let deal = null;
   const isDemoAction = (actionType === '샘플·데모' || actionType === '의료장비 데모' || actionType === '소모품 샘플' || salesStatus === '의료장비 데모' || salesStatus === '소모품 샘플' || salesStatus === '데모·샘플평가');
-  
-  let deal = window.SALES_DB.pipeline.find(d => (d.hospital || '').replace(/\s+/g, '') === cleanHospName && (d.product_id === prodCode || d.product_name === prodName));
-  if (!deal) {
-    deal = {
-      hospital: hospName,
-      region: "세종충북",
-      sales_rep: userRep,
-      product_id: prodCode,
-      product_name: prodName,
-      status: salesStatus,
-      last_date: dateStr,
-      latest_action: actionType,
-      latest_note: rawNote,
-      demo_info: isDemoAction ? { date: dateStr, note: rawNote, status: '평가진행중' } : null,
-      as_info: actionType === 'A/S·클레임' ? { date: dateStr, note: rawNote, status: '접수완료' } : null,
-      fail_reasons: (failReason && failReason !== '-') ? [failReason] : []
-    };
-    window.SALES_DB.pipeline.unshift(deal);
-  } else {
-    deal.sales_rep = userRep;
-    deal.status = salesStatus;
-    deal.last_date = dateStr;
-    deal.latest_action = actionType;
-    deal.latest_note = rawNote;
-    if (isDemoAction) {
-      deal.demo_info = { date: dateStr, note: rawNote, status: '평가진행중' };
-    }
-    if (actionType === 'A/S·클레임') {
-      deal.as_info = { date: dateStr, note: rawNote, status: '접수완료' };
-      deal.status = 'A/S접수·처리';
-    }
-    if (failReason && failReason !== '-' && !deal.fail_reasons.includes(failReason)) {
-      deal.fail_reasons.push(failReason);
+
+  if (!isGreetingOrNoDeal) {
+    deal = window.SALES_DB.pipeline.find(d => (d.hospital || '').replace(/\s+/g, '') === cleanHospName && (d.product_id === finalProdCode || d.product_name === finalProdName));
+    if (!deal) {
+      deal = {
+        hospital: hospName,
+        region: erpMatch ? erpMatch.region : (existingHosp ? existingHosp.region : "세종충북"),
+        sales_rep: userRep,
+        product_id: finalProdCode,
+        product_name: finalProdName,
+        status: salesStatus,
+        last_date: dateStr,
+        latest_action: actionType,
+        latest_note: noteVal,
+        demo_info: isDemoAction ? { date: dateStr, note: noteVal, status: '평가진행중' } : null,
+        as_info: actionType === 'A/S·클레임' ? { date: dateStr, note: noteVal, status: '접수완료' } : null,
+        fail_reasons: (failReason && failReason !== '-') ? [failReason] : []
+      };
+      window.SALES_DB.pipeline.unshift(deal);
+    } else {
+      deal.sales_rep = userRep;
+      deal.status = salesStatus;
+      deal.last_date = dateStr;
+      deal.latest_action = actionType;
+      deal.latest_note = noteVal;
+      if (isDemoAction) {
+        deal.demo_info = { date: dateStr, note: noteVal, status: '평가진행중' };
+      }
+      if (actionType === 'A/S·클레임') {
+        deal.as_info = { date: dateStr, note: noteVal, status: '접수완료' };
+        deal.status = 'A/S접수·처리';
+      }
+      if (failReason && failReason !== '-' && !deal.fail_reasons.includes(failReason)) {
+        deal.fail_reasons.push(failReason);
+      }
     }
   }
 
-  // Auto-resolve pending A/S deals if this log completes A/S or replaces equipment with new purchase
+  // Auto-resolve pending A/S deals only if this log specifically completes A/S for THIS product or replaces THIS equipment
   let resolvedAsDeals = [];
-  if (salesStatus === '도입완료·납품' || actionType === '납품·설치' || rawNote.includes('A/S 불가') || rawNote.includes('새 제품 판매') || rawNote.includes('수리완료') || rawNote.includes('조치완료')) {
-    resolvedAsDeals = window.SALES_DB.pipeline.filter(d => (d.hospital || '').replace(/\s+/g, '') === cleanHospName && ((d.as_info && d.as_info.status.includes('접수')) || d.status === 'A/S접수·처리'));
+  const isASCompletion = noteVal.includes('A/S 수리완료') || noteVal.includes('A/S 조치완료') || noteVal.includes('수리 완료') || (actionType === 'A/S·클레임' && (salesStatus === '도입완료·납품' || noteVal.includes('출고')));
+  if (isASCompletion) {
+    resolvedAsDeals = window.SALES_DB.pipeline.filter(d => 
+      (d.hospital || '').replace(/\s+/g, '') === cleanHospName && 
+      (d.product_id === finalProdCode || d.product_name === finalProdName || finalProdCode === 'PROD_GENERAL') &&
+      ((d.as_info && d.as_info.status && d.as_info.status.includes('접수')) || d.status === 'A/S접수·처리')
+    );
     resolvedAsDeals.forEach(d => {
       if (d.as_info) {
-        d.as_info.status = 'A/S 조치완료';
+        d.as_info.status = '수리완료';
         d.as_info.resolved_date = dateStr;
       }
       d.status = '도입완료·납품';
@@ -4295,9 +4744,11 @@ async function saveParsedLogToDB() {
   // 3. Update Hospital Master Stats (Create new hospital entry if not exists)
   let hosp = window.SALES_DB.hospitals.find(h => (h.name || '').replace(/\s+/g, '') === cleanHospName);
   if (!hosp) {
-    const region = (hospName.includes('천안') || hospName.includes('아산') || hospName.includes('앙즈로') || hospName.includes('연세하임')) ? '천안아산' : 
+    const region = erpMatch ? (erpMatch.region || '세종충북') : 
+                   (hospName.includes('천안') || hospName.includes('아산') || hospName.includes('앙즈로') || hospName.includes('연세하임')) ? '천안아산' : 
                    (hospName.includes('대전') || hospName.includes('논산')) ? '대전논산' :
-                   (hospName.includes('서산') || hospName.includes('당진')) ? '서산당진' : '세종충북';
+                   (hospName.includes('서산') || hospName.includes('당진')) ? '서산당진' :
+                   (hospName.includes('평택') || hospName.includes('안성') || hospName.includes('수원')) ? '경기' : '세종충북';
     hosp = {
       name: hospName,
       region: region,
@@ -4306,11 +4757,11 @@ async function saveParsedLogToDB() {
       status: '활동병원',
       last_activity_date: dateStr,
       total_logs: 1,
-      demo_count: actionType === '샘플·데모' ? 1 : 0,
-      won_count: actionType === '납품·설치' ? 1 : 0,
+      demo_count: (actionType === '샘플·데모' || isDemoAction) ? 1 : 0,
+      won_count: (actionType === '납품·설치' || salesStatus === '도입완료·납품') ? 1 : 0,
       as_count: actionType === 'A/S·클레임' ? 1 : 0,
       fail_count: salesStatus === '영업실패·보류' ? 1 : 0,
-      products_active: [prodName]
+      products_active: [finalProdName]
     };
     window.SALES_DB.hospitals.push(hosp);
     window.SALES_DB.hospitals.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
@@ -4324,13 +4775,13 @@ async function saveParsedLogToDB() {
     if (contactName && (!hosp.contacts || !hosp.contacts.includes(contactName))) {
       hosp.contacts = (hosp.contacts || []).concat([contactName]);
     }
-    if (actionType === '샘플·데모') hosp.demo_count = (hosp.demo_count || 0) + 1;
-    if (actionType === '납품·설치') hosp.won_count = (hosp.won_count || 0) + 1;
+    if (actionType === '샘플·데모' || isDemoAction) hosp.demo_count = (hosp.demo_count || 0) + 1;
+    if (actionType === '납품·설치' || salesStatus === '도입완료·납품') hosp.won_count = (hosp.won_count || 0) + 1;
     if (actionType === 'A/S·클레임') hosp.as_count = (hosp.as_count || 0) + 1;
     if (salesStatus === '영업실패·보류') hosp.fail_count = (hosp.fail_count || 0) + 1;
     if (!hosp.products_active) hosp.products_active = [];
-    if (!hosp.products_active.includes(prodName)) {
-      hosp.products_active.push(prodName);
+    if (!hosp.products_active.includes(finalProdName)) {
+      hosp.products_active.push(finalProdName);
     }
   }
 
@@ -4343,14 +4794,21 @@ async function saveParsedLogToDB() {
   initHeaderMetrics();
 
   // 4. Sync to Supabase Cloud DB
-  if (supabaseClient) {
+  const client = getSupabaseClient();
+  if (client) {
     try {
-      await supabaseClient.from('activity_logs').insert([logEntry]);
-      await supabaseClient.from('pipeline').upsert([deal]);
+      const { data: insertedLog, error: logErr } = await client.from('activity_logs').insert([logEntry]).select();
+      if (logErr) console.warn('Supabase activity_log insert error:', logErr);
+      else if (insertedLog && insertedLog[0]) logEntry.id = insertedLog[0].id;
+
+      if (deal) await syncPipelineDealToCloud(deal);
       for (const rd of resolvedAsDeals) {
-        await supabaseClient.from('pipeline').upsert([rd]);
+        await syncPipelineDealToCloud(rd);
       }
-      if (hosp) await supabaseClient.from('hospitals').upsert([hosp]);
+      if (hosp) {
+        const { error: hospErr } = await client.from('hospitals').upsert([hosp], { onConflict: 'name' });
+        if (hospErr) console.warn('Supabase hospital upsert error:', hospErr);
+      }
       console.log('⚡ AI Smart Log successfully saved to Supabase cloud!');
     } catch(err) {
       console.warn('Supabase cloud insert error:', err);
@@ -4360,11 +4818,57 @@ async function saveParsedLogToDB() {
   // Automatically Post to Slack #영업일지 channel
   sendSalesLogToSlack(logEntry);
 
-  showToast(`🎉 [${hospName}] '${userRep}' 담당자의 영업일지 등록 & 슬랙(#영업일지) 자동 전송 완료!`);
-  
-  // Switch to hospital view
-  selectHospital(hospName);
-  switchTab('hospital');
+  showToast(`🎉 [${hospName}] 영업일지가 성공적으로 저장되었습니다! 다음 일지를 바로 작성하실 수 있습니다.`, 4000);
+
+  // Cleanly refresh and reset AI input form for seamless continuous logging
+  resetAiSalesForm();
+}
+
+function resetAiSalesForm() {
+  const inputEl = document.getElementById('ai-input-text');
+  if (inputEl) {
+    inputEl.value = '';
+    inputEl.focus();
+  }
+
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  };
+
+  setVal('parse-edit-hospital', '');
+  setVal('parse-edit-contact', '');
+  setVal('parse-edit-product-name', '');
+  setVal('parse-edit-product-code', 'PROD_GENERAL');
+  setVal('parse-edit-action-type', '제품설명·소개');
+  setVal('parse-edit-sales-status', '제품소개·영업중');
+  setVal('parse-edit-fail-reason', '-');
+  setVal('parse-edit-next-action', '');
+  setVal('parse-edit-note', '');
+
+  const hospBox = document.getElementById('ai-hospital-verification-box');
+  if (hospBox) {
+    hospBox.style.display = 'none';
+    hospBox.innerHTML = '';
+  }
+
+  const prodBox = document.getElementById('ai-product-suggestions-box');
+  if (prodBox) {
+    prodBox.style.display = 'none';
+    const chips = document.getElementById('ai-product-suggestions-chips');
+    if (chips) chips.innerHTML = '';
+  }
+
+  const saveBtn = document.getElementById('btn-save-ai-log');
+  if (saveBtn) saveBtn.style.display = 'none';
+
+  const searchBox = document.getElementById('ai-parse-product-search-box');
+  if (searchBox) searchBox.style.display = 'none';
+
+  const aiSection = document.getElementById('tab-ai');
+  if (aiSection) {
+    aiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 // Auto init datalist on load
@@ -4392,6 +4896,8 @@ function openEditHospitalModal() {
 
   document.getElementById('modal-edit-hosp-title').textContent = `[${hosp.name}] 정보 및 핵심 관계자 수정`;
   document.getElementById('modal-edit-hosp-name-hidden').value = hosp.name;
+  const nameInput = document.getElementById('modal-edit-hosp-name-input');
+  if (nameInput) nameInput.value = hosp.name;
 
   // Region
   const regionSelect = document.getElementById('modal-edit-hosp-region');
@@ -4412,6 +4918,9 @@ function openEditHospitalModal() {
   const contactsTextarea = document.getElementById('modal-edit-hosp-contacts');
   if (contactsTextarea) contactsTextarea.value = currentContacts;
 
+  const suggContainer = document.getElementById('modal-edit-hosp-suggestions');
+  if (suggContainer) suggContainer.innerHTML = '';
+
   modal.showModal();
 }
 
@@ -4420,11 +4929,74 @@ function closeEditHospitalModal() {
   if (modal) modal.close();
 }
 
-async function saveEditedHospitalProfile() {
-  const hospName = document.getElementById('modal-edit-hosp-name-hidden').value;
-  if (!hospName) return;
+function onEditHospNameInput(val) {
+  const container = document.getElementById('modal-edit-hosp-suggestions');
+  if (!container) return;
+  const q = (val || '').trim();
+  if (q.length < 2) {
+    container.innerHTML = '';
+    return;
+  }
 
-  const hosp = (window.SALES_DB.hospitals || []).find(h => h.name === hospName);
+  const erpCustomers = window.ERP_CUSTOMERS_MASTER || [];
+  const dbHospitals = (window.SALES_DB && window.SALES_DB.hospitals) ? window.SALES_DB.hospitals : [];
+
+  const candidateMap = new Map();
+  for (const h of dbHospitals) {
+    if (!h || !h.name) continue;
+    candidateMap.set(h.name, { name: h.name, region: h.region || '천안아산' });
+  }
+  for (const c of erpCustomers) {
+    if (!c || !c.name) continue;
+    const name = c.clean_name || c.name;
+    if (!candidateMap.has(name)) {
+      candidateMap.set(name, { name: name, region: c.region || '기타' });
+    }
+  }
+
+  const matches = Array.from(candidateMap.values())
+    .filter(c => c.name.toLowerCase().includes(q.toLowerCase()))
+    .slice(0, 5);
+
+  if (matches.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = matches.map(m => {
+    const safeName = m.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    const safeRegion = (m.region || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    return `<button type="button" class="ai-hosp-chip" onclick="applySuggestedHospToEditModal('${safeName}', '${safeRegion}')">🏥 ${escapeHtml(m.name)} <span style="opacity:0.7; font-size:0.68rem;">(${m.region})</span></button>`;
+  }).join(' ');
+}
+
+function applySuggestedHospToEditModal(hospName, region) {
+  const input = document.getElementById('modal-edit-hosp-name-input');
+  if (input) input.value = hospName;
+  if (region) {
+    const regSelect = document.getElementById('modal-edit-hosp-region');
+    if (regSelect) {
+      for (const opt of regSelect.options) {
+        if (opt.value === region) {
+          regSelect.value = region;
+          break;
+        }
+      }
+    }
+  }
+  const container = document.getElementById('modal-edit-hosp-suggestions');
+  if (container) container.innerHTML = '';
+}
+
+async function saveEditedHospitalProfile() {
+  const oldHospName = document.getElementById('modal-edit-hosp-name-hidden').value;
+  const newHospName = (document.getElementById('modal-edit-hosp-name-input')?.value || oldHospName).trim();
+  if (!oldHospName || !newHospName) {
+    alert("병원명을 올바르게 입력해주세요.");
+    return;
+  }
+
+  const hosp = (window.SALES_DB.hospitals || []).find(h => h.name === oldHospName);
   if (!hosp) return;
 
   const region = document.getElementById('modal-edit-hosp-region').value;
@@ -4443,19 +5015,72 @@ async function saveEditedHospitalProfile() {
     .map(s => s.trim())
     .filter(s => s.length > 0);
 
+  const isRenamed = (oldHospName !== newHospName);
+
   // Apply to in-memory object
+  hosp.name = newHospName;
   hosp.region = region;
   hosp.type = type;
   hosp.sales_reps = selectedReps.length ? selectedReps : ['미배정'];
   hosp.contacts = contacts.length ? contacts : ['원장/실무진'];
   hosp.custom_profile_saved = true;
 
-  // Persist Local
+  if (isRenamed) {
+    // 1. Cascade rename to all activity logs
+    let renamedLogCount = 0;
+    (window.SALES_DB.activity_logs || []).forEach(log => {
+      if (log.hospital === oldHospName) {
+        log.hospital = newHospName;
+        renamedLogCount++;
+      }
+    });
+
+    // 2. Cascade rename to all pipeline deals
+    let renamedDealCount = 0;
+    (window.SALES_DB.pipeline || []).forEach(deal => {
+      if (deal.hospital === oldHospName) {
+        deal.hospital = newHospName;
+        renamedDealCount++;
+      }
+    });
+
+    // 3. If newHospName already exists as another hospital in SALES_DB.hospitals, merge and remove duplicate old object
+    const otherHosp = (window.SALES_DB.hospitals || []).find(h => h.name === newHospName && h !== hosp);
+    if (otherHosp) {
+      otherHosp.sales_reps = Array.from(new Set((otherHosp.sales_reps || []).concat(hosp.sales_reps || [])));
+      otherHosp.contacts = Array.from(new Set((otherHosp.contacts || []).concat(hosp.contacts || [])));
+      otherHosp.total_logs = (otherHosp.total_logs || 0) + (hosp.total_logs || 0);
+      window.SALES_DB.hospitals = window.SALES_DB.hospitals.filter(h => h !== hosp);
+      
+      if (supabaseClient) {
+        try {
+          await supabaseClient.from('hospitals').delete().eq('name', oldHospName);
+        } catch(e) {
+          console.warn('Old hospital delete error on merge:', e);
+        }
+      }
+    }
+
+    console.log(`⚡ Hospital renamed from [${oldHospName}] to [${newHospName}]: ${renamedLogCount} logs, ${renamedDealCount} deals updated.`);
+    selectedHospitalName = newHospName;
+  }
+
+  // Ensure sync & persist
+  syncHospitalsFromLogs();
   persistSalesDB();
+  recalcGlobalStats();
+  initHeaderMetrics();
+  renderHospitalList();
+  renderExcelLogsTable();
+  selectHospital(newHospName);
 
   // Sync to Supabase Cloud
   if (supabaseClient) {
     try {
+      if (isRenamed) {
+        await supabaseClient.from('activity_logs').update({ hospital: newHospName }).eq('hospital', oldHospName);
+        await supabaseClient.from('pipeline').update({ hospital: newHospName }).eq('hospital', oldHospName);
+      }
       await supabaseClient.from('hospitals').upsert([{
         name: hosp.name,
         region: hosp.region,
@@ -4470,9 +5095,70 @@ async function saveEditedHospitalProfile() {
   }
 
   closeEditHospitalModal();
-  selectHospital(hosp.name);
+  showToast(`🎉 [${newHospName}] 병원 정보 및 연관 영업일지(${region})가 성공적으로 저장되었습니다!`);
+}
+
+async function deleteCurrentHospital() {
+  const oldHospName = document.getElementById('modal-edit-hosp-name-hidden')?.value || selectedHospitalName;
+  if (!oldHospName) {
+    alert("삭제할 병원 정보가 없습니다.");
+    return;
+  }
+
+  const logs = (window.SALES_DB.activity_logs || []).filter(l => l.hospital === oldHospName);
+  const deals = (window.SALES_DB.pipeline || []).filter(d => d.hospital === oldHospName);
+
+  let confirmMsg = `정말로 [${oldHospName}] 거래처를 완전히 삭제하시겠습니까?`;
+  if (logs.length > 0 || deals.length > 0) {
+    confirmMsg += `\n\n⚠️ 연결된 데이터 안내:\n- 귀속된 영업일지: ${logs.length}건\n- 귀속된 파이프라인: ${deals.length}건\n\n거래처 삭제 시 연관된 일지와 품목 데이터도 함께 정리됩니다. 계속 진행하시겠습니까?`;
+  }
+
+  if (!confirm(confirmMsg)) {
+    return;
+  }
+
+  // 1. Remove from SALES_DB.hospitals
+  window.SALES_DB.hospitals = (window.SALES_DB.hospitals || []).filter(h => h.name !== oldHospName);
+
+  // 2. Remove related activity logs and pipeline deals
+  window.SALES_DB.activity_logs = (window.SALES_DB.activity_logs || []).filter(l => l.hospital !== oldHospName);
+  window.SALES_DB.pipeline = (window.SALES_DB.pipeline || []).filter(d => d.hospital !== oldHospName);
+
+  // 3. Delete from Supabase Cloud
+  if (supabaseClient) {
+    try {
+      await supabaseClient.from('hospitals').delete().eq('name', oldHospName);
+      if (logs.length > 0) {
+        await supabaseClient.from('activity_logs').delete().eq('hospital', oldHospName);
+      }
+      if (deals.length > 0) {
+        await supabaseClient.from('pipeline').delete().eq('hospital', oldHospName);
+      }
+      console.log(`⚡ Deleted [${oldHospName}] and its associated logs/deals from Supabase Cloud.`);
+    } catch(err) {
+      console.warn('Supabase delete hospital error:', err);
+    }
+  }
+
+  // 4. Update UI & persist
+  persistSalesDB();
+  recalcGlobalStats();
+  initHeaderMetrics();
   renderHospitalList();
-  showToast(`🎉 [${hosp.name}] 병원 권역(${region}) 및 핵심 관계자 정보가 성공적으로 저장되었습니다!`);
+  renderExcelLogsTable();
+  renderProductPipeline(selectedProductId);
+
+  closeEditHospitalModal();
+
+  // Select another hospital if available
+  const remaining = window.SALES_DB.hospitals || [];
+  if (remaining.length > 0) {
+    selectHospital(remaining[0].name);
+  } else {
+    selectedHospitalName = null;
+  }
+
+  showToast(`🗑️ [${oldHospName}] 거래처가 성공적으로 삭제되었습니다.`);
 }
 
 // ----------------------------------------------------
@@ -4527,12 +5213,13 @@ async function resolveCurrentHospitalAS() {
   initHeaderMetrics();
 
   // Supabase Cloud sync
-  if (supabaseClient) {
+  const client = getSupabaseClient();
+  if (client) {
     try {
       for (const d of asDeals) {
-        await supabaseClient.from('pipeline').upsert([d]);
+        await syncPipelineDealToCloud(d);
       }
-      await supabaseClient.from('activity_logs').insert([logEntry]);
+      await client.from('activity_logs').insert([logEntry]);
       console.log('⚡ A/S resolution synced to Supabase Cloud');
     } catch(err) {
       console.warn('Supabase A/S resolve error:', err);

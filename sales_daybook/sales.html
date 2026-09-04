@@ -16,9 +16,11 @@
   <meta name="apple-mobile-web-app-title" content="MEDI-SALES">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   
-  <link rel="stylesheet" href="app.css?v=20260827_1820_pwa_ios">
-  <script src="sales_database.js?v=as_fixed_v25"></script>
-  <script src="app.js?v=as_fixed_v25"></script>
+  <link rel="stylesheet" href="app.css?v=jun-V1-016">
+  <!-- Supabase JS Client (Loaded in Head for Realtime Multi-PC Sync) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="sales_database.js?v=jun-V1-016"></script>
+  <script src="app.js?v=jun-V1-016"></script>
 </head>
 <body>
 
@@ -52,7 +54,11 @@
       <div class="brand-section">
         <div class="brand-icon">🩺</div>
         <div class="brand-text">
-          <h1>MEDI-SALES 360°</h1>
+          <div class="brand-title-wrap">
+            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-018</span>
+            <button type="button" class="btn-cloud-sync" onclick="fetchLatestFromSupabase(true)" title="클라우드 최신 실시간 동기화">🔄</button>
+            <h1>MEDI-SALES 360°</h1>
+          </div>
           <p>의료기기 스마트 영업관리 & 파이프라인 플랫폼</p>
         </div>
       </div>
@@ -540,58 +546,58 @@
           </div>
         </div>
 
-        <!-- 6-Column Kanban Board (Demo & Sample Separated) -->
+        <!-- 6-Stage Sales Pipeline Kanban Board -->
         <div class="kanban-board">
           
-          <!-- Col 1: 제안 및 영업중 -->
+          <!-- Col 1: 타겟발굴 및 신규접촉 -->
+          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '신규접촉·타겟발굴')">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title" style="color:#a78bfa;">📍 1. 발굴·신규접촉</span>
+              <span class="kanban-count" id="kanban-count-contact">0</span>
+            </div>
+            <div class="item-list" id="kanban-cards-contact"></div>
+          </div>
+
+          <!-- Col 2: 제품제안 및 영업중 -->
           <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '제품소개·영업중')">
             <div class="kanban-col-header">
-              <span class="kanban-col-title" style="color:var(--accent-cyan);">🔵 제안·영업중</span>
+              <span class="kanban-col-title" style="color:var(--accent-cyan);">🔵 2. 제안·영업중</span>
               <span class="kanban-count" id="kanban-count-active">0</span>
             </div>
             <div class="item-list" id="kanban-cards-active"></div>
           </div>
 
-          <!-- Col 2: 의료장비 데모 (회수관리) -->
-          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '의료장비 데모')">
+          <!-- Col 3: 샘플 제공 및 임상평가 -->
+          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '샘플·임상평가')">
             <div class="kanban-col-header">
-              <span class="kanban-col-title" style="color:var(--accent-amber);">🔬 장비 데모</span>
-              <span class="kanban-count" id="kanban-count-demo">0</span>
-            </div>
-            <div class="item-list" id="kanban-cards-demo"></div>
-          </div>
-
-          <!-- Col 3: 소모품 샘플 평가 (임상테스트) -->
-          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '소모품 샘플')">
-            <div class="kanban-col-header">
-              <span class="kanban-col-title" style="color:#67e8f9;">🧪 소모품 샘플</span>
+              <span class="kanban-col-title" style="color:#2dd4bf;">🧪 3. 샘플·임상평가</span>
               <span class="kanban-count" id="kanban-count-sample">0</span>
             </div>
             <div class="item-list" id="kanban-cards-sample"></div>
           </div>
 
-          <!-- Col 4: 도입완료 및 납품 -->
+          <!-- Col 4: 견적 제출 및 도입심의 -->
+          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '견적·도입협의')">
+            <div class="kanban-col-header">
+              <span class="kanban-col-title" style="color:var(--accent-amber);">📋 4. 견적·도입심의</span>
+              <span class="kanban-count" id="kanban-count-quote">0</span>
+            </div>
+            <div class="item-list" id="kanban-cards-quote"></div>
+          </div>
+
+          <!-- Col 5: 도입완료 및 납품 -->
           <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '도입완료·납품')">
             <div class="kanban-col-header">
-              <span class="kanban-col-title" style="color:var(--accent-emerald);">🟢 도입완료·납품</span>
+              <span class="kanban-col-title" style="color:var(--accent-emerald);">🟢 5. 도입완료·납품</span>
               <span class="kanban-count" id="kanban-count-won">0</span>
             </div>
             <div class="item-list" id="kanban-cards-won"></div>
           </div>
 
-          <!-- Col 5: A/S 및 클레임 -->
-          <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, 'A/S접수·처리')">
-            <div class="kanban-col-header">
-              <span class="kanban-col-title" style="color:var(--accent-rose);">🔴 A/S·수리진행</span>
-              <span class="kanban-count" id="kanban-count-as">0</span>
-            </div>
-            <div class="item-list" id="kanban-cards-as"></div>
-          </div>
-
           <!-- Col 6: 영업실패 및 보류 -->
           <div class="kanban-col" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToProductKanban(event, '영업실패·보류')">
             <div class="kanban-col-header">
-              <span class="kanban-col-title" style="color:var(--text-secondary);">❌ 영업실패·보류</span>
+              <span class="kanban-col-title" style="color:var(--text-secondary);">❌ 6. 영업실패·보류</span>
               <span class="kanban-count" id="kanban-count-lost">0</span>
             </div>
             <div class="item-list" id="kanban-cards-lost"></div>
@@ -692,8 +698,10 @@
             <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:10px;">
               <div class="parsed-field-group">
                 <label class="parsed-field-lbl">🏥 거래처 (병원명)</label>
-                <input type="text" id="parse-edit-hospital" class="ai-edit-input highlight-blue" list="hospitals-datalist" placeholder="병원명을 입력하세요">
+                <input type="text" id="parse-edit-hospital" class="ai-edit-input highlight-blue" list="hospitals-datalist" placeholder="병원명을 입력하세요" oninput="onAiHospitalInputChange(this.value)">
                 <datalist id="hospitals-datalist"></datalist>
+                <!-- Smart Hospital Match & Verification Box -->
+                <div id="ai-hospital-verification-box" style="display:none; margin-top:6px;"></div>
               </div>
               <div class="parsed-field-group">
                 <label class="parsed-field-lbl">👨‍⚕️ 상대 담당자 (직함)</label>
@@ -701,15 +709,23 @@
               </div>
             </div>
 
-            <!-- 3. 추출 제품명 & ERP 4,069개 품목 교체 버튼 -->
+            <!-- 3. 추출 제품명 & ERP 4,054개 품목 교체 버튼 -->
             <div class="parsed-field-group">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                 <label class="parsed-field-lbl" style="margin-bottom:0;">📦 공식 ERP 제품 매핑</label>
-                <button type="button" class="mini-badge" style="background:rgba(56,189,248,0.2); color:var(--accent-cyan); border:1px solid rgba(56,189,248,0.4); cursor:pointer; font-size:0.7rem; padding:2px 8px; border-radius:4px;" onclick="toggleAiParsedProductSearch()">🔍 4,069개 품목 검색/교체</button>
+                <button type="button" class="mini-badge" style="background:rgba(56,189,248,0.2); color:var(--accent-cyan); border:1px solid rgba(56,189,248,0.4); cursor:pointer; font-size:0.7rem; padding:2px 8px; border-radius:4px;" onclick="toggleAiParsedProductSearch()">🔍 4,054개 품목 검색/교체</button>
               </div>
               <input type="text" id="parse-edit-product-name" class="ai-edit-input highlight-cyan" placeholder="제품명">
               <input type="hidden" id="parse-edit-product-code" value="PROD_GENERAL">
               
+              <!-- Smart ERP Product Suggestions Chips -->
+              <div id="ai-product-suggestions-box" style="display:none; margin-top:6px; padding:8px 12px; background:rgba(30,41,59,0.7); border:1px solid rgba(56,189,248,0.3); border-radius:6px;">
+                <div style="font-size:0.72rem; color:var(--accent-cyan); font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+                  <span>🎯 추천 ERP 정규 품목 (클릭 시 즉시 반영):</span>
+                </div>
+                <div id="ai-product-suggestions-chips" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+              </div>
+
               <!-- Inline Product Search Box -->
               <div id="ai-parse-product-search-box" style="display:none; background:rgba(0,0,0,0.5); border:1px solid var(--accent-blue); border-radius:6px; padding:10px; margin-top:6px;">
                 <input type="text" id="ai-parse-product-search-input" class="ai-edit-input" placeholder="품목명 또는 코드 검색 (예: ST-ANG, PR03, 소공포, 펜코)..." oninput="searchErpProductsForAiParser(this.value)">
@@ -734,15 +750,14 @@
                 </select>
               </div>
               <div class="parsed-field-group">
-                <label class="parsed-field-lbl">📊 파이프라인 진행 상태</label>
+                <label class="parsed-field-lbl">📊 파이프라인 진행 단계 (6단계)</label>
                 <select id="parse-edit-sales-status" class="ai-edit-select highlight-yellow">
-                  <option value="제품소개·영업중">🔵 제품소개·영업중</option>
-                  <option value="의료장비 데모">🔬 의료장비 데모 (회수관리)</option>
-                  <option value="소모품 샘플">🧪 소모품 샘플 (임상피드백)</option>
-                  <option value="도입완료·납품">🟢 도입완료·납품</option>
-                  <option value="견적·의사결정">⚡ 견적·의사결정</option>
-                  <option value="A/S접수·처리">🔴 A/S접수·처리</option>
-                  <option value="영업실패·보류">❌ 영업실패·보류</option>
+                  <option value="신규접촉·타겟발굴">📍 1. 발굴·신규접촉</option>
+                  <option value="제품소개·영업중">🔵 2. 제품제안·영업중</option>
+                  <option value="샘플·임상평가">🧪 3. 샘플·임상평가</option>
+                  <option value="견적·도입협의">📋 4. 견적·도입심의</option>
+                  <option value="도입완료·납품">🟢 5. 도입완료·납품</option>
+                  <option value="영업실패·보류">❌ 6. 영업실패·보류</option>
                 </select>
               </div>
             </div>
@@ -758,10 +773,19 @@
               <label class="parsed-field-lbl">🗓️ 차기 실행 일정 / 다음 할 일</label>
               <input type="text" id="parse-edit-next-action" class="ai-edit-input" placeholder="다음 방문 일정 및 구체적 계획">
             </div>
+
+            <!-- 7. 작성된 영업일지 상세 내용 (직접 수정 가능) -->
+            <div class="parsed-field-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label class="parsed-field-lbl" style="margin-bottom:0;">📝 상세 영업일지 내용 (직접 수정 가능)</label>
+                <span style="font-size:0.68rem; color:var(--accent-cyan); background:rgba(56,189,248,0.1); padding:1px 6px; border-radius:3px;">저장 전 원문/요약 편집</span>
+              </div>
+              <textarea id="parse-edit-note" class="ai-edit-input" style="height:76px; resize:vertical; font-size:0.83rem; line-height:1.45; font-family:inherit; padding:8px 10px;" placeholder="작성된 영업일지 상세 내용 (상담/미팅 메모가 이곳에 표시되며 직접 수정할 수 있습니다)"></textarea>
+            </div>
           </div>
 
           <button class="btn-primary" id="btn-save-ai-log" style="margin-top:16px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); display:none; width:100%; justify-content:center;" onclick="saveParsedLogToDB()">
-            <span>💾 파이프라인 & 병원 360°에 즉시 등록</span>
+            <span>💾 영업일지 저장 & 슬랙 자동 전송</span>
           </button>
         </div>
 
@@ -954,8 +978,23 @@
 
       <div class="modal-body">
         <div class="modal-field">
-          <label class="modal-label">병원명</label>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="modal-label" style="margin-bottom:0;">병원명 (거래처)</label>
+            <button type="button" class="mini-badge" style="background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid rgba(16,185,129,0.4); cursor:pointer;" onclick="toggleDealHospitalSearchBox()">
+              🏢 다른 병원으로 거래처 변경/이동
+            </button>
+          </div>
           <input type="text" id="modal-hosp-name" class="modal-input" readonly>
+          <input type="hidden" id="modal-deal-new-hospital">
+        </div>
+
+        <!-- Inline Hospital Search Box (Hidden by default) -->
+        <div id="deal-hospital-search-box" style="display:none; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:8px; padding:12px; margin-bottom:14px;">
+          <div style="font-size:0.8rem; font-weight:700; color:var(--accent-emerald); margin-bottom:6px;">
+            🏢 1,029개 이카운트 ERP 거래처 & 등록 병원 실시간 검색 및 이동
+          </div>
+          <input type="text" id="deal-hospital-search-input" class="modal-input" placeholder="병원명 또는 조리원명 검색... (예: 지엔, 미즈러브, 백제, 충무)" oninput="searchHospitalsForDeal(this.value)">
+          <div id="deal-hospital-search-results" style="max-height:160px; overflow-y:auto; margin-top:8px; display:flex; flex-direction:column; gap:4px;"></div>
         </div>
 
         <div class="modal-field">
@@ -989,15 +1028,14 @@
         </div>
 
         <div class="modal-field">
-          <label class="modal-label">파이프라인 진행 상태 변경</label>
+          <label class="modal-label">파이프라인 진행 단계 변경 (표준 6단계)</label>
           <select id="modal-status-select" class="modal-select" onchange="onModalStatusChange()">
-            <option value="도입완료·납품">🟢 정규 도입 및 납품 완료</option>
-            <option value="의료장비 데모">🔬 의료장비 데모 (회수관리 대상)</option>
-            <option value="소모품 샘플">🧪 소모품 샘플 평가 (임상 피드백)</option>
-            <option value="제품소개·영업중">🔵 신규 소개 및 영업 제안중</option>
-            <option value="견적·의사결정">⚡ 견적 제출 및 의사결정중</option>
-            <option value="A/S접수·처리">🔴 긴급 A/S 및 수리 접수</option>
-            <option value="영업실패·보류">❌ 영업 실패 및 보류</option>
+            <option value="신규접촉·타겟발굴">📍 1. 발굴·신규접촉</option>
+            <option value="제품소개·영업중">🔵 2. 제품제안·영업중</option>
+            <option value="샘플·임상평가">🧪 3. 샘플·임상평가 (소모품/임상)</option>
+            <option value="견적·도입협의">📋 4. 견적·도입심의 (가격/원내심의)</option>
+            <option value="도입완료·납품">🟢 5. 도입완료·납품 (정규 수주)</option>
+            <option value="영업실패·보류">❌ 6. 영업실패·보류</option>
           </select>
         </div>
 
@@ -1516,8 +1554,8 @@
   </dialog>
 
   <!-- MODAL: Edit Hospital Profile & Key Contacts -->
-  <dialog class="modal-dialog" id="edit-hospital-modal">
-    <div class="modal-content" style="max-width:560px;">
+  <dialog id="edit-hospital-modal" class="custom-modal" style="max-width:580px;">
+    <div class="modal-card">
       <div class="modal-header">
         <h3 style="font-size:1.1rem; color:#fff; display:flex; align-items:center; gap:8px;">
           <span>🏥</span> <span id="modal-edit-hosp-title">병원 정보 및 핵심 관계자 수정</span>
@@ -1528,6 +1566,15 @@
       <div class="modal-body" style="display:flex; flex-direction:column; gap:12px;">
         <input type="hidden" id="modal-edit-hosp-name-hidden">
         
+        <div class="modal-field">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="modal-label" style="margin-bottom:0;">🏥 거래처 (병원명) *</label>
+            <span style="font-size:0.7rem; color:var(--text-muted);">ERP 마스터 자동 연동</span>
+          </div>
+          <input type="text" id="modal-edit-hosp-name-input" class="modal-input" placeholder="병원명을 입력하세요" oninput="onEditHospNameInput(this.value)" required>
+          <div id="modal-edit-hosp-suggestions" style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;"></div>
+        </div>
+
         <div class="modal-grid-2">
           <div class="modal-field flex-1">
             <label class="modal-label">병원 권역 (지역) *</label>
@@ -1592,9 +1639,14 @@
         </div>
       </div>
 
-      <div class="modal-footer">
-        <button class="btn-secondary" onclick="closeEditHospitalModal()">취소</button>
-        <button class="btn-save" onclick="saveEditedHospitalProfile()">💾 병원 정보 저장</button>
+      <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <button type="button" class="btn-danger" onclick="deleteCurrentHospital()" style="background:rgba(239,68,68,0.18); color:#fca5a5; border:1px solid rgba(239,68,68,0.4); padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600; font-size:0.82rem; display:flex; align-items:center; gap:6px;">
+          <span>🗑️</span> <span>거래처(병원) 삭제</span>
+        </button>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn-secondary" onclick="closeEditHospitalModal()">취소</button>
+          <button type="button" class="btn-save" onclick="saveEditedHospitalProfile()">💾 병원 정보 저장</button>
+        </div>
       </div>
     </div>
   </dialog>
@@ -1622,16 +1674,13 @@
     </button>
   </nav>
 
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- App Script -->
-  <script src="app.js?v=20260827_1820_pwa_ios"></script>
-  <!-- PWA Service Worker Registration -->
+  <!-- PWA Service Worker Registration & Cache Flush -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').then(reg => {
-          console.log('⚡ PWA Service Worker Ready:', reg.scope);
+        navigator.serviceWorker.register('sw.js?v=jun-V1-016').then(reg => {
+          reg.update();
+          console.log('⚡ PWA Service Worker Active & Updated:', reg.scope);
         }).catch(err => console.warn('SW register error:', err));
       });
     }

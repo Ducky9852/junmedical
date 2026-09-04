@@ -223,6 +223,58 @@ header {
   box-shadow: var(--shadow-glow);
 }
 
+.brand-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-version-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--accent-cyan, #38bdf8);
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 6px;
+  letter-spacing: 0.4px;
+  line-height: 1.2;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.15);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.app-version-badge:hover {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: rgba(56, 189, 248, 0.6);
+  transform: translateY(-1px);
+}
+
+.btn-cloud-sync {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 0.72rem;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.btn-cloud-sync:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: var(--accent-cyan);
+  color: #fff;
+  transform: rotate(180deg);
+}
+
 .brand-text h1 {
   font-size: 1.25rem;
   font-weight: 700;
@@ -230,12 +282,14 @@ header {
   background: linear-gradient(135deg, #fff 30%, #9ca3af 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  margin: 0;
 }
 
 .brand-text p {
   font-size: 0.78rem;
   color: var(--text-secondary);
   font-weight: 400;
+  margin-top: 2px;
 }
 
 .nav-tabs {
@@ -838,6 +892,21 @@ main {
   border-color: var(--border-glass-hover);
 }
 
+.product-row.lost-compact,
+.kanban-card.lost-compact {
+  padding: 8px 10px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: var(--radius-sm) !important;
+  margin-bottom: 4px;
+}
+
+.product-row.lost-compact:hover,
+.kanban-card.lost-compact:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+}
+
 .product-row-top {
   display: flex;
   justify-content: space-between;
@@ -1151,6 +1220,25 @@ main {
   color: #fff;
   border-color: transparent;
   box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+
+.product-pill.all-products-pill {
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  color: #ddd6fe;
+}
+
+.product-pill.all-products-pill:hover {
+  background: rgba(139, 92, 246, 0.22);
+  border-color: rgba(167, 139, 250, 0.6);
+  color: #fff;
+}
+
+.product-pill.all-products-pill.active {
+  background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 18px rgba(236, 72, 153, 0.45) !important;
 }
 
 .kanban-board {
@@ -2891,4 +2979,76 @@ main {
   .mobile-bottom-nav {
     display: none !important;
   }
+}
+
+/* AI Hospital Verification & Product Suggestion Chips */
+.ai-match-badge {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ai-match-badge.exact {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+.ai-match-badge.suggest {
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+.ai-match-badge.new {
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+.ai-hosp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  border-radius: 4px;
+  color: #93c5fd;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ai-hosp-chip:hover {
+  background: rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+  color: #ffffff;
+}
+.ai-prod-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 4px;
+  color: #e2e8f0;
+  font-size: 0.74rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+.ai-prod-chip:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: var(--accent-cyan);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+.ai-prod-chip.active {
+  background: rgba(56, 189, 248, 0.35);
+  border-color: #38bdf8;
+  color: #ffffff;
+  font-weight: 700;
 }
