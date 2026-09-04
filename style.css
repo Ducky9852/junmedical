@@ -154,7 +154,8 @@ img {
   top: 100%;
   left: 0;
   background: var(--white);
-  min-width: 170px;
+  min-width: 180px;
+  white-space: nowrap;
   border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   border: 1px solid var(--border);
   border-top: 2px solid var(--sky);
