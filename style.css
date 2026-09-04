@@ -1080,7 +1080,7 @@ img {
 .footer-layout {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   gap: 32px;
 }
 
@@ -1110,9 +1110,10 @@ img {
 
 .footer-right {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: flex-end;
   flex-shrink: 0;
+  padding-bottom: 2px;
 }
 
 .footer-logo {
@@ -1247,6 +1248,7 @@ img {
   .footer-right {
     width: 100%;
     justify-content: flex-start;
+    padding-bottom: 0;
   }
 }
 
