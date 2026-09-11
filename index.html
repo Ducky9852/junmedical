@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="naver-site-verification" content="172b3e8fc9901ca862969ce2aa9cf8cab3a00715" />
-  <title>준메디칼 주식회사 | 의료기기 전문 유통</title>
+  <title>준메디칼 주식회사 | 수술실 의료기기 및 소모품 전문 유통</title>
+  <meta name="description" content="산부인과, 외과 수술실(O.R) 복강경 수술장비, 수술포, 봉합사 의료기기 전문 유통 기업 준메디칼입니다.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="style.css">
@@ -1022,7 +1023,7 @@
 </div>
 
 <!-- 메인 홈 오픈 안내 듀얼 플로팅 팝업 (임시 비활성화 상태로 안전하게 보관 — '팝업창 다시 오픈' 요청 시 즉시 노출) -->
-<div class="popup-showcase-overlay" id="popupShowcaseOverlay" style="display: flex;">
+<div class="popup-showcase-overlay" id="popupShowcaseOverlay" style="display: none;">
   <div class="popup-card-group">
 
     <!-- 카드 1: 다크 네이비 테마 (폰트 타이포그래피 강조 — 공식 홈페이지 GRAND OPEN) -->
@@ -1105,7 +1106,7 @@ function scrollToTop(){
 }
 
 // 메인 팝업 노출 스위치 (false: 임시 비활성화 보관 / true: 활성화 - '팝업창 다시 오픈' 요청 시 활성화)
-const POPUP_AUTO_OPEN = true;
+const POPUP_AUTO_OPEN = false;
 
 // 메인 팝업 개별 노출 및 독립 닫기 제어
 function checkShowcasePopup() {
@@ -1237,6 +1238,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   reveals.forEach(el => observer.observe(el));
 });
+</script>
+<script type="text/javascript" src="//wcs.pstatic.net/wcslog.js"></script>
+<script type="text/javascript">
+if(!wcs_add) var wcs_add = {};
+wcs_add["wa"] = "3cd160a8a16168";
+if(window.wcs) {
+  wcs_do();
+}
 </script>
 </body>
 </html>
