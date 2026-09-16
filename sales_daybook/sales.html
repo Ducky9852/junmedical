@@ -55,7 +55,7 @@
         <div class="brand-icon">🩺</div>
         <div class="brand-text">
           <div class="brand-title-wrap">
-            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-018</span>
+            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-019</span>
             <button type="button" class="btn-cloud-sync" onclick="fetchLatestFromSupabase(true)" title="클라우드 최신 실시간 동기화">🔄</button>
             <h1>MEDI-SALES 360°</h1>
           </div>
@@ -372,7 +372,7 @@
         <div class="as-control-header">
           <div class="as-header-title">
             <h2><span>🚨</span> 의료기기 A/S & 클레임 360° 관제센터</h2>
-            <p>접수부터 외부 제조사 전달, 부품 수리, 견적 컨펌, 병원 재인도까지 5단계 원스톱 워크플로우 추적</p>
+            <p>접수부터 자체 점검, 본사/국외 전달, 부품 수리, 견적 컨펌, 출고까지 6단계 원스톱 워크플로우 추적</p>
           </div>
           <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
             <div class="product-search-wrap" style="width:260px;">
@@ -385,7 +385,7 @@
           </div>
         </div>
 
-        <!-- 5-Stage Kanban Grid -->
+        <!-- 6-Stage A/S Kanban Grid -->
         <div class="as-kanban-board">
           <!-- Col 1: Receipt -->
           <div class="as-kanban-col" ondragover="handleASDragOver(event)" ondragleave="handleASDragLeave(event)" ondrop="handleASDrop(event, '접수완료')">
@@ -398,21 +398,10 @@
             </div>
           </div>
 
-          <!-- Col 2: Vendor Forward -->
-          <div class="as-kanban-col" ondragover="handleASDragOver(event)" ondragleave="handleASDragLeave(event)" ondrop="handleASDrop(event, '외부전달')">
-            <div class="as-col-header col-vendor">
-              <span>🚚 2. 외부/본사 전달</span>
-              <span class="mini-badge" id="as-count-vendor" style="background:rgba(245,158,11,0.2); color:#f59e0b;">0건</span>
-            </div>
-            <div class="as-col-body" id="as-list-vendor">
-              <!-- Dynamically populated -->
-            </div>
-          </div>
-
-          <!-- Col 3: In Progress -->
+          <!-- Col 2: In Progress (자체 점검/수리) -->
           <div class="as-kanban-col" ondragover="handleASDragOver(event)" ondragleave="handleASDragLeave(event)" ondrop="handleASDrop(event, '수리진행중')">
             <div class="as-col-header col-progress">
-              <span>⚙️ 3. 수리·점검 진행중</span>
+              <span>⚙️ 2. 수리·점검 진행중</span>
               <span class="mini-badge" id="as-count-progress" style="background:rgba(59,130,246,0.2); color:#93c5fd;">0건</span>
             </div>
             <div class="as-col-body" id="as-list-progress">
@@ -420,10 +409,32 @@
             </div>
           </div>
 
-          <!-- Col 4: Quote & Confirm -->
+          <!-- Col 3: Vendor Forward (본사/외부 전달) -->
+          <div class="as-kanban-col" ondragover="handleASDragOver(event)" ondragleave="handleASDragLeave(event)" ondrop="handleASDrop(event, '외부전달')">
+            <div class="as-col-header col-vendor">
+              <span>🚚 3. 외부/본사 전달</span>
+              <span class="mini-badge" id="as-count-vendor" style="background:rgba(245,158,11,0.2); color:#f59e0b;">0건</span>
+            </div>
+            <div class="as-col-body" id="as-list-vendor">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Col 4: Overseas Repair (국외 수리) -->
+          <div class="as-kanban-col" ondragover="handleASDragOver(event)" ondragleave="handleASDragLeave(event)" ondrop="handleASDrop(event, '국외수리')">
+            <div class="as-col-header col-overseas">
+              <span>✈️ 4. 국외 수리</span>
+              <span class="mini-badge" id="as-count-overseas" style="background:rgba(6,182,212,0.2); color:#67e8f9;">0건</span>
+            </div>
+            <div class="as-col-body" id="as-list-overseas">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Col 5: Quote & Confirm -->
           <div class="as-kanban-col" ondragover="handleASDragOver(event)" ondragleave="handleASDragLeave(event)" ondrop="handleASDrop(event, '견적협의')">
             <div class="as-col-header col-quote">
-              <span>📋 4. 수리 견적·컨펌</span>
+              <span>📋 5. 수리 견적·컨펌</span>
               <span class="mini-badge" id="as-count-quote" style="background:rgba(139,92,246,0.2); color:#c4b5fd;">0건</span>
             </div>
             <div class="as-col-body" id="as-list-quote">
@@ -431,10 +442,10 @@
             </div>
           </div>
 
-          <!-- Col 5: Completed -->
+          <!-- Col 6: Completed (Compact View) -->
           <div class="as-kanban-col" ondragover="handleASDragOver(event)" ondragleave="handleASDragLeave(event)" ondrop="handleASDrop(event, '수리완료')">
             <div class="as-col-header col-done">
-              <span>✅ 5. 수리 완료·출고</span>
+              <span>✅ 6. 수리 완료·출고</span>
               <span class="mini-badge" id="as-count-done" style="background:rgba(16,185,129,0.2); color:#6ee7b7;">0건</span>
             </div>
             <div class="as-col-body" id="as-list-done">

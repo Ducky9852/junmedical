@@ -2469,18 +2469,18 @@ main {
   color: var(--text-secondary);
 }
 
-/* A/S 5-Stage Kanban Board Grid */
+/* A/S 6-Stage Kanban Board Grid */
 .as-kanban-board {
   display: grid;
-  grid-template-columns: repeat(5, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(6, minmax(220px, 1fr));
+  gap: 14px;
   overflow-x: auto;
   padding-bottom: 12px;
 }
 
 @media (max-width: 1400px) {
   .as-kanban-board {
-    grid-template-columns: repeat(5, 300px);
+    grid-template-columns: repeat(6, 260px);
   }
 }
 
@@ -2511,8 +2511,9 @@ main {
 }
 
 .as-col-header.col-receipt { border-top: 4px solid #f43f5e; color: #f43f5e; }
-.as-col-header.col-vendor { border-top: 4px solid #f59e0b; color: #f59e0b; }
 .as-col-header.col-progress { border-top: 4px solid #3b82f6; color: #3b82f6; }
+.as-col-header.col-vendor { border-top: 4px solid #f59e0b; color: #f59e0b; }
+.as-col-header.col-overseas { border-top: 4px solid #06b6d4; color: #06b6d4; }
 .as-col-header.col-quote { border-top: 4px solid #8b5cf6; color: #8b5cf6; }
 .as-col-header.col-done { border-top: 4px solid #10b981; color: #10b981; }
 
@@ -2545,6 +2546,55 @@ main {
 
 .as-item-card.dragging {
   opacity: 0.4;
+}
+
+/* Compact Slim Card for Completed AS */
+.as-card-compact {
+  background: rgba(30, 41, 59, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.as-card-compact:hover {
+  background: rgba(30, 41, 59, 0.75);
+  border-color: rgba(16, 185, 129, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.as-card-compact.dragging {
+  opacity: 0.4;
+}
+
+.as-card-compact .compact-hosp {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.as-card-compact .compact-prod {
+  font-size: 0.72rem;
+  color: var(--accent-emerald);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.as-card-compact .compact-meta {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
 }
 
 .as-card-top {

@@ -2025,7 +2025,7 @@ function renderASControlCenter() {
   const query = (document.getElementById('as-search-input')?.value || '').trim().toLowerCase();
   const pipe = (window.SALES_DB && window.SALES_DB.pipeline) ? window.SALES_DB.pipeline : [];
   
-  // Find only legitimate A/S related equipment deals (including resolved/completed ones in stage 5)
+  // Find only legitimate A/S related equipment deals (including resolved/completed ones in stage 6)
   const asDeals = pipe.filter(d => {
     const hasActiveAS = (d.status === 'A/S접수·처리') || (d.as_info && d.as_info.status);
     if (!hasActiveAS) return false;
@@ -2042,16 +2042,19 @@ function renderASControlCenter() {
     return true;
   });
 
-  // Deduplicate: Ensure only 1 active AS card per hospital + equipment category
-  const seenASHospitalProduct = new Set();
-  const dedupedASDeals = [];
-
-  // Sort so that specific product IDs (like 201.023) take priority over PROD_GENERAL
+  // Sort so that explicit as_info with latest dates take priority
   const sortedASDeals = [...asDeals].sort((a, b) => {
+    const dateA = (a.as_info ? a.as_info.date : a.last_date) || '';
+    const dateB = (b.as_info ? b.as_info.date : b.last_date) || '';
+    if (dateB !== dateA) return dateB.localeCompare(dateA);
     if (a.product_id !== 'PROD_GENERAL' && b.product_id === 'PROD_GENERAL') return -1;
     if (a.product_id === 'PROD_GENERAL' && b.product_id !== 'PROD_GENERAL') return 1;
     return 0;
   });
+
+  // Deduplicate: Ensure only 1 active AS card per hospital + equipment category
+  const seenASHospitalProduct = new Set();
+  const dedupedASDeals = [];
 
   sortedASDeals.forEach(d => {
     const hospKey = (d.hospital || '').replace(/\s+/g, '').toLowerCase();
@@ -2078,13 +2081,14 @@ function renderASControlCenter() {
 
   const columns = {
     '접수완료': { list: document.getElementById('as-list-receipt'), count: document.getElementById('as-count-receipt'), items: [] },
-    '외부전달': { list: document.getElementById('as-list-vendor'), count: document.getElementById('as-count-vendor'), items: [] },
     '수리진행중': { list: document.getElementById('as-list-progress'), count: document.getElementById('as-count-progress'), items: [] },
+    '외부전달': { list: document.getElementById('as-list-vendor'), count: document.getElementById('as-count-vendor'), items: [] },
+    '국외수리': { list: document.getElementById('as-list-overseas'), count: document.getElementById('as-count-overseas'), items: [] },
     '견적협의': { list: document.getElementById('as-list-quote'), count: document.getElementById('as-count-quote'), items: [] },
     '수리완료': { list: document.getElementById('as-list-done'), count: document.getElementById('as-count-done'), items: [] }
   };
 
-  // Classify deals into 5 stages
+  // Classify deals into 6 stages
   dedupedASDeals.forEach(d => {
     let stage = '접수완료';
     
@@ -2095,10 +2099,12 @@ function renderASControlCenter() {
       stage = '수리완료';
     } else if (asStatus.includes('견적') || asStatus.includes('협의') || asStatus.includes('컨펌')) {
       stage = '견적협의';
-    } else if (asStatus.includes('진행') || asStatus.includes('수리중') || asStatus.includes('점검')) {
-      stage = '수리진행중';
+    } else if (asStatus.includes('국외') || asStatus.includes('해외') || asStatus.includes('독일') || asStatus.includes('overseas')) {
+      stage = '국외수리';
     } else if (asStatus.includes('전달') || asStatus.includes('발송') || asStatus.includes('본사') || asStatus.includes('외부')) {
       stage = '외부전달';
+    } else if (asStatus.includes('진행') || asStatus.includes('수리중') || asStatus.includes('점검')) {
+      stage = '수리진행중';
     } else if (asStatus.includes('접수')) {
       stage = '접수완료';
     } else {
@@ -2109,10 +2115,12 @@ function renderASControlCenter() {
           stage = '수리완료';
         } else if (noteTxt.includes('견적') || noteTxt.includes('컨펌')) {
           stage = '견적협의';
-        } else if (noteTxt.includes('수리중') || noteTxt.includes('점검')) {
-          stage = '수리진행중';
+        } else if (noteTxt.includes('국외') || noteTxt.includes('해외') || noteTxt.includes('독일')) {
+          stage = '국외수리';
         } else if (noteTxt.includes('전달') || noteTxt.includes('발송') || noteTxt.includes('본사')) {
           stage = '외부전달';
+        } else if (noteTxt.includes('수리중') || noteTxt.includes('점검') || noteTxt.includes('진행')) {
+          stage = '수리진행중';
         } else {
           stage = '접수완료';
         }
@@ -2137,12 +2145,7 @@ function renderASControlCenter() {
     col.list.innerHTML = '';
     col.items.forEach(d => {
       const card = document.createElement('div');
-      card.className = 'as-item-card';
       card.draggable = true;
-      
-      // Check if loaner (대체기) is provided
-      const noteTxt = `${d.latest_note || ''} ${d.as_info ? d.as_info.note : ''}`;
-      const hasLoaner = noteTxt.includes('데모') || noteTxt.includes('대체') || noteTxt.includes('블루');
 
       card.ondragstart = (e) => {
         draggedASDeal = d;
@@ -2151,24 +2154,48 @@ function renderASControlCenter() {
       };
       card.ondragend = () => {
         card.classList.remove('dragging');
-        setTimeout(() => { draggedASDeal = null; }, 100);
+        setTimeout(() => { draggedASDeal = null; }, 150);
       };
       card.onclick = () => openEditModal(d);
 
-      card.innerHTML = `
-        <div class="as-card-top">
-          <div>
-            <div class="as-card-hosp">${escapeHtml(d.hospital)}</div>
-            <div class="as-card-prod">${escapeHtml(d.product_name)}</div>
+      // Check if loaner (대체기) is provided
+      const noteTxt = `${d.latest_note || ''} ${d.as_info ? d.as_info.note : ''}`;
+      const hasLoaner = noteTxt.includes('데모') || noteTxt.includes('대체') || noteTxt.includes('블루');
+
+      // 6. Compact Slim Card for '수리완료' column
+      if (stage === '수리완료') {
+        card.className = 'as-card-compact';
+        card.title = `${escapeHtml(d.hospital)} - ${escapeHtml(d.product_name)} (클릭하여 수정/삭제)`;
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+            <span class="compact-hosp">${escapeHtml(d.hospital)}</span>
+            <span style="font-size:0.65rem; color:#6ee7b7; font-weight:700; flex-shrink:0;">✅ 완료</span>
           </div>
-          ${hasLoaner ? `<span class="as-loaner-badge" title="A/S 수리 기간 임시 대체기기 지원중">🚨 대체기 지원</span>` : ''}
-        </div>
-        <div class="as-card-note">${escapeHtml(d.as_info ? (d.as_info.note || d.latest_note || '') : d.latest_note || 'A/S 접수 건')}</div>
-        <div class="as-card-meta">
-          <span>담당: ${escapeHtml(d.sales_rep || '미정')}</span>
-          <span>${d.as_info ? d.as_info.date : d.last_date || ''}</span>
-        </div>
-      `;
+          <div class="compact-prod">${escapeHtml(d.product_name)}</div>
+          <div class="compact-meta">
+            <span>담당: ${escapeHtml(d.sales_rep || '미정')}</span>
+            <span>${d.as_info ? (d.as_info.resolved_date || d.as_info.date) : d.last_date || ''}</span>
+          </div>
+        `;
+      } else {
+        card.className = 'as-item-card';
+        card.title = '클릭하여 A/S 정보 수정 및 삭제 또는 드래그하여 이동';
+        card.innerHTML = `
+          <div class="as-card-top">
+            <div>
+              <div class="as-card-hosp">${escapeHtml(d.hospital)}</div>
+              <div class="as-card-prod">${escapeHtml(d.product_name)}</div>
+            </div>
+            ${hasLoaner ? `<span class="as-loaner-badge" title="A/S 수리 기간 임시 대체기기 지원중">🚨 대체기 지원</span>` : ''}
+          </div>
+          <div class="as-card-note">${escapeHtml(d.as_info ? (d.as_info.note || d.latest_note || '') : d.latest_note || 'A/S 접수 건')}</div>
+          <div class="as-card-meta">
+            <span>담당: ${escapeHtml(d.sales_rep || '미정')}</span>
+            <span>${d.as_info ? d.as_info.date : d.last_date || ''}</span>
+          </div>
+        `;
+      }
+
       col.list.appendChild(card);
     });
   });
@@ -2200,20 +2227,32 @@ async function handleASDrop(e, targetStage) {
   if (!targetDeal) return;
 
   const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+  const cleanHosp = (targetDeal.hospital || '').replace(/\s+/g, '').toLowerCase();
 
-  if (!targetDeal.as_info) {
-    targetDeal.as_info = { date: todayStr, note: targetDeal.latest_note || '', status: targetStage };
-  } else {
-    targetDeal.as_info.status = targetStage;
-  }
+  // Find all related pipeline deals for this hospital + equipment group to keep them in sync
+  const pipe = (window.SALES_DB && window.SALES_DB.pipeline) ? window.SALES_DB.pipeline : [];
+  const relatedDeals = pipe.filter(d => {
+    if ((d.hospital || '').replace(/\s+/g, '').toLowerCase() !== cleanHosp) return false;
+    return (d.product_id === targetDeal.product_id) || (d.product_name === targetDeal.product_name);
+  });
 
-  if (targetStage === '수리완료') {
-    targetDeal.status = '도입완료·납품';
-    targetDeal.as_info.resolved_date = todayStr;
-  } else {
-    targetDeal.status = 'A/S접수·처리';
-  }
-  targetDeal.last_date = todayStr;
+  if (!relatedDeals.includes(targetDeal)) relatedDeals.push(targetDeal);
+
+  relatedDeals.forEach(d => {
+    if (!d.as_info) {
+      d.as_info = { date: todayStr, note: d.latest_note || '', status: targetStage };
+    } else {
+      d.as_info.status = targetStage;
+    }
+
+    if (targetStage === '수리완료') {
+      d.status = '도입완료·납품';
+      d.as_info.resolved_date = todayStr;
+    } else {
+      d.status = 'A/S접수·처리';
+    }
+    d.last_date = todayStr;
+  });
 
   persistSalesDB();
   recalcGlobalStats();
@@ -2222,7 +2261,9 @@ async function handleASDrop(e, targetStage) {
   showToast(`✨ [${targetDeal.hospital}] A/S 진행상태가 '${targetStage}'(으)로 변경되었습니다.`);
 
   // Supabase Cloud Sync
-  await syncPipelineDealToCloud(targetDeal);
+  for (const rd of relatedDeals) {
+    await syncPipelineDealToCloud(rd);
+  }
 }
 
 function openNewASModal() {
