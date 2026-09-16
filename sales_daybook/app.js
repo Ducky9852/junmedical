@@ -188,6 +188,24 @@ function isEquipmentProduct(prodName = '', prodId = '', note = '') {
   return EQUIP_KEYWORDS.some(k => txt.includes(k));
 }
 
+// Helper: Compare hospitals by latest activity/visit date descending (최근 방문일자 우선 정렬)
+function compareHospitalVisitDate(a, b) {
+  const getCleanDate = (h) => {
+    if (!h) return '';
+    const d = (h.last_activity_date || h.last_visit || '').trim();
+    if (d === '-' || !d) return '';
+    return d.replace(/-/g, '/');
+  };
+  const dateA = getCleanDate(a);
+  const dateB = getCleanDate(b);
+  if (dateA && !dateB) return -1;
+  if (!dateA && dateB) return 1;
+  if (dateA && dateB && dateA !== dateB) {
+    return dateB.localeCompare(dateA); // Most recent date first
+  }
+  return (a.name || '').localeCompare(b.name || '', 'ko');
+}
+
 // Automatically ensure every hospital in activity_logs exists in hospitals master table and deduplicate
 function syncHospitalsFromLogs() {
   if (!window.SALES_DB || !window.SALES_DB.activity_logs) return;
@@ -427,7 +445,7 @@ function syncHospitalsFromLogs() {
     h.fail_count = deals.filter(d => d.status === '영업실패·보류').length;
   });
 
-  window.SALES_DB.hospitals.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+  window.SALES_DB.hospitals.sort(compareHospitalVisitDate);
   window.SALES_DB.stats.total_hospitals = window.SALES_DB.hospitals.length;
   window.SALES_DB.stats.active_hospitals = window.SALES_DB.hospitals.length;
 }
@@ -533,8 +551,8 @@ window.addEventListener('DOMContentLoaded', () => {
   initProductPipelineView();
   initAnalyticsView();
   
-  // Default select first hospital with active demo/deal
-  const defaultHosp = window.SALES_DB.hospitals.find(h => h.name.includes('유성선병원') || h.name.includes('서산중앙')) || window.SALES_DB.hospitals[0];
+  // Default select first hospital with most recent visit date
+  const defaultHosp = (window.SALES_DB.hospitals && window.SALES_DB.hospitals.length > 0) ? window.SALES_DB.hospitals[0] : null;
   if (defaultHosp) {
     selectHospital(defaultHosp.name);
   }
@@ -844,6 +862,9 @@ function renderHospitalList() {
 
     return matchRegion && matchKpi;
   });
+
+  // Sort filtered hospital list by most recent visit/activity date first (최근 방문일자 내림차순 정렬)
+  filtered.sort(compareHospitalVisitDate);
 
   container.innerHTML = '';
   
@@ -1654,7 +1675,7 @@ async function saveModalChanges() {
         fail_count: newStatus === '영업실패·보류' ? 1 : 0,
         products_active: [targetDeal.product_name]
       });
-      window.SALES_DB.hospitals.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+      window.SALES_DB.hospitals.sort(compareHospitalVisitDate);
     }
   }
 
@@ -2535,7 +2556,7 @@ function saveLogModalChanges() {
         products_active: []
       };
       window.SALES_DB.hospitals.push(existingHosp);
-      window.SALES_DB.hospitals.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+      window.SALES_DB.hospitals.sort(compareHospitalVisitDate);
       window.SALES_DB.stats.total_hospitals = window.SALES_DB.hospitals.length;
       initHeaderMetrics();
       renderHospitalList();
@@ -2645,7 +2666,7 @@ function saveNewHospital() {
   };
 
   window.SALES_DB.hospitals.push(newHosp);
-  window.SALES_DB.hospitals.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+  window.SALES_DB.hospitals.sort(compareHospitalVisitDate);
   window.SALES_DB.stats.total_hospitals = window.SALES_DB.hospitals.length;
 
   if (note) {
@@ -4857,7 +4878,7 @@ async function saveParsedLogToDB() {
       products_active: [finalProdName]
     };
     window.SALES_DB.hospitals.push(hosp);
-    window.SALES_DB.hospitals.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+    window.SALES_DB.hospitals.sort(compareHospitalVisitDate);
   } else {
     hosp.name = hospName; // standardize name
     hosp.last_activity_date = dateStr;
