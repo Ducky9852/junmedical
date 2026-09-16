@@ -206,6 +206,61 @@ function compareHospitalVisitDate(a, b) {
   return (a.name || '').localeCompare(b.name || '', 'ko');
 }
 
+// Persistent Registry for User-Deleted Pipeline Deals (Tombstone Prevention against Cloud Poll Resurrections)
+const DELETED_DEALS_KEY = 'jun_sales_deleted_deals_registry_v1';
+
+function getDeletedDealsRegistry() {
+  try {
+    const raw = localStorage.getItem(DELETED_DEALS_KEY);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) {
+        return new Set(arr);
+      }
+    }
+  } catch(e) {}
+  return new Set();
+}
+
+function registerDeletedDeal(hospital, productId, productName, dealId) {
+  try {
+    const set = getDeletedDealsRegistry();
+    if (dealId) set.add(`id__${dealId}`);
+    if (hospital) {
+      const canonHosp = getCanonicalHospitalKey(hospital);
+      const cleanHosp = hospital.replace(/\s+/g, '');
+      if (productId) {
+        set.add(`${canonHosp}__${productId.replace(/\s+/g, '')}`);
+        set.add(`${cleanHosp}__${productId.replace(/\s+/g, '')}`);
+      }
+      if (productName) {
+        set.add(`${canonHosp}__${productName.replace(/\s+/g, '')}`);
+        set.add(`${cleanHosp}__${productName.replace(/\s+/g, '')}`);
+      }
+    }
+    localStorage.setItem(DELETED_DEALS_KEY, JSON.stringify(Array.from(set)));
+  } catch(e) {}
+}
+
+function unregisterDeletedDeal(hospital, productId, productName) {
+  try {
+    const set = getDeletedDealsRegistry();
+    if (hospital) {
+      const canonHosp = getCanonicalHospitalKey(hospital);
+      const cleanHosp = hospital.replace(/\s+/g, '');
+      if (productId) {
+        set.delete(`${canonHosp}__${productId.replace(/\s+/g, '')}`);
+        set.delete(`${cleanHosp}__${productId.replace(/\s+/g, '')}`);
+      }
+      if (productName) {
+        set.delete(`${canonHosp}__${productName.replace(/\s+/g, '')}`);
+        set.delete(`${cleanHosp}__${productName.replace(/\s+/g, '')}`);
+      }
+    }
+    localStorage.setItem(DELETED_DEALS_KEY, JSON.stringify(Array.from(set)));
+  } catch(e) {}
+}
+
 // Automatically ensure every hospital in activity_logs exists in hospitals master table and deduplicate
 function syncHospitalsFromLogs() {
   if (!window.SALES_DB || !window.SALES_DB.activity_logs) return;
@@ -300,13 +355,21 @@ function syncHospitalsFromLogs() {
 
   // 3. Deduplicate Pipeline Deals Array & Normalize to 6 Standard Sales Stages
   const uniqueDealMap = new Map();
+  const deletedDealKeys = getDeletedDealsRegistry();
   (window.SALES_DB.pipeline || []).forEach(d => {
     if (!d || !d.hospital) return;
+    if (d.id && deletedDealKeys.has(`id__${d.id}`)) return;
     const stdName = normalizeHospitalName(d.hospital);
-    d.hospital = stdName;
     const canonHospKey = getCanonicalHospitalKey(stdName);
-    const prodKey = (d.product_id || d.product_name || 'PROD_GENERAL').replace(/\s+/g, '');
-    const dealKey = `${canonHospKey}__${prodKey}`;
+    const cleanHosp = stdName.replace(/\s+/g, '');
+    const prodKey = (d.product_id || '').replace(/\s+/g, '');
+    const prodNameKey = (d.product_name || '').replace(/\s+/g, '');
+    if (prodKey && (deletedDealKeys.has(`${canonHospKey}__${prodKey}`) || deletedDealKeys.has(`${cleanHosp}__${prodKey}`))) return;
+    if (prodNameKey && (deletedDealKeys.has(`${canonHospKey}__${prodNameKey}`) || deletedDealKeys.has(`${cleanHosp}__${prodNameKey}`))) return;
+
+    d.hospital = stdName;
+    const finalProdKey = (d.product_id || d.product_name || 'PROD_GENERAL').replace(/\s+/g, '');
+    const dealKey = `${canonHospKey}__${finalProdKey}`;
 
     // Auto-migrate legacy statuses to standard 6 stages
     if (d.status === '데모·샘플평가' || d.status === '소모품 샘플' || d.status === '의료장비 데모') {
@@ -485,7 +548,20 @@ async function fetchLatestFromSupabase(showToastOnManual = false) {
       window.SALES_DB.stats.active_hospitals = hospData.length;
     }
     if (!pipeErr && pipeData && pipeData.length > 0) {
-      window.SALES_DB.pipeline = pipeData;
+      const deletedKeys = getDeletedDealsRegistry();
+      const validPipe = pipeData.filter(d => {
+        if (!d) return false;
+        if (d.id && deletedKeys.has(`id__${d.id}`)) return false;
+        const canonHosp = getCanonicalHospitalKey(d.hospital);
+        const cleanHosp = (d.hospital || '').replace(/\s+/g, '');
+        const pKey = (d.product_id || '').replace(/\s+/g, '');
+        const pNameKey = (d.product_name || '').replace(/\s+/g, '');
+        
+        if (pKey && (deletedKeys.has(`${canonHosp}__${pKey}`) || deletedKeys.has(`${cleanHosp}__${pKey}`))) return false;
+        if (pNameKey && (deletedKeys.has(`${canonHosp}__${pNameKey}`) || deletedKeys.has(`${cleanHosp}__${pNameKey}`))) return false;
+        return true;
+      });
+      window.SALES_DB.pipeline = validPipe;
     }
 
     // Auto sync hospitals from logs
@@ -1590,19 +1666,30 @@ async function deleteCurrentDeal() {
     return;
   }
 
-  // 1. Remove from in-memory pipeline
-  const idx = window.SALES_DB.pipeline.findIndex(d => (d.id && d.id === dealId) || ((d.hospital || '').replace(/\s+/g, '') === (hosp || '').replace(/\s+/g, '') && (d.product_id === prodId || d.product_name === prodName)));
-  if (idx !== -1) {
-    window.SALES_DB.pipeline.splice(idx, 1);
-  }
+  const cleanHosp = (hosp || '').replace(/\s+/g, '');
+  const canonKey = getCanonicalHospitalKey(hosp);
+
+  // 1. Remove ALL matching deals from in-memory pipeline
+  window.SALES_DB.pipeline = (window.SALES_DB.pipeline || []).filter(d => {
+    if (!d) return false;
+    if (dealId && d.id && d.id === dealId) return false;
+    const dHosp = (d.hospital || '').replace(/\s+/g, '');
+    const isSameHosp = dHosp === cleanHosp || getCanonicalHospitalKey(d.hospital) === canonKey;
+    const isSameProd = (d.product_id === prodId || d.product_name === prodName || (d.product_id && prodId && d.product_id.replace(/\s+/g, '') === prodId.replace(/\s+/g, '')));
+    if (isSameHosp && isSameProd) return false;
+    return true;
+  });
 
   // 2. Remove from hospital's products_active if present
-  const hospObj = window.SALES_DB.hospitals.find(h => (h.name || '').replace(/\s+/g, '') === (hosp || '').replace(/\s+/g, ''));
+  const hospObj = (window.SALES_DB.hospitals || []).find(h => (h.name || '').replace(/\s+/g, '') === cleanHosp || getCanonicalHospitalKey(h.name) === canonKey);
   if (hospObj && hospObj.products_active) {
     hospObj.products_active = hospObj.products_active.filter(p => p !== prodName && p !== prodId);
   }
 
-  // 3. Persist local cache & re-render
+  // 3. Register in DELETED_DEALS tombstone so background polling never resurrects it
+  registerDeletedDeal(hosp, prodId, prodName, dealId);
+
+  // 4. Persist local cache & re-render
   persistSalesDB();
   recalcGlobalStats();
   selectHospital(hosp);
@@ -1611,22 +1698,23 @@ async function deleteCurrentDeal() {
   renderDemoTracker();
   closeEditModal();
 
-  // 4. Delete from Supabase Cloud DB
+  // 5. Complete deletion from Supabase Cloud DB
   const client = getSupabaseClient();
   if (client) {
     try {
-      let query = client.from('pipeline').delete();
       if (dealId) {
-        query = query.eq('id', dealId);
-      } else {
-        query = query.eq('hospital', hosp).eq('product_id', prodId);
+        await client.from('pipeline').delete().eq('id', dealId);
       }
-      const { error } = await query;
-      if (error) {
-        console.warn('Supabase delete error:', error);
-      } else {
-        console.log(`⚡ Deleted [${hosp}] ${prodId} (id: ${dealId}) from Supabase pipeline successfully.`);
+      if (hosp && prodId) {
+        await client.from('pipeline').delete().eq('hospital', hosp).eq('product_id', prodId);
       }
+      if (hosp && prodName) {
+        await client.from('pipeline').delete().eq('hospital', hosp).eq('product_name', prodName);
+      }
+      if (canonKey && canonKey !== hosp) {
+        await client.from('pipeline').delete().eq('hospital', canonKey).eq('product_id', prodId);
+      }
+      console.log(`⚡ Deleted [${hosp}] ${prodName} (${prodId}) from Supabase pipeline successfully.`);
     } catch(err) {
       console.warn('Supabase cloud delete error:', err);
     }
@@ -1718,6 +1806,9 @@ async function saveModalChanges() {
       if (targetDeal.demo_type) targetDeal.demo_info.type = targetDeal.demo_type;
     }
   }
+
+  // Unregister tombstone if user intentionally saved/restored this deal
+  unregisterDeletedDeal(targetDeal.hospital, targetDeal.product_id, targetDeal.product_name);
 
   // Re-render
   recalcGlobalStats();
