@@ -1310,6 +1310,30 @@ function openEditModal(deal) {
     cb.checked = (deal.fail_reasons && deal.fail_reasons.includes(cb.value));
   });
 
+  // Equipment Demo Purpose handling (신규 판매평가 vs A/S 수리대체기)
+  const isEquipment = isEquipmentProduct(deal.product_name, deal.product_id, deal.latest_note);
+  const isDemoState = (deal.status === '의료장비 데모' || deal.status === '데모·샘플평가' || deal.status === '샘플·임상평가' || deal.status === '소모품 샘플' || (deal.demo_info && deal.demo_info.status));
+
+  let currentDemoType = 'sales';
+  if (deal.demo_type === 'loaner' || (deal.demo_info && deal.demo_info.type === 'loaner')) {
+    currentDemoType = 'loaner';
+  } else if (deal.demo_type === 'sales' || (deal.demo_info && deal.demo_info.type === 'sales')) {
+    currentDemoType = 'sales';
+  } else {
+    const noteTxt = `${deal.latest_note || ''} ${deal.demo_info ? deal.demo_info.note : ''}`.toLowerCase();
+    const isLoaner = noteTxt.includes('대체') || noteTxt.includes('as') || noteTxt.includes('수리') || noteTxt.includes('블루') || noteTxt.includes('임시');
+    currentDemoType = isLoaner ? 'loaner' : 'sales';
+  }
+
+  const demoTypeWrap = document.getElementById('modal-demo-type-wrap');
+  const demoTypeSelect = document.getElementById('modal-demo-type-select');
+  if (demoTypeSelect) {
+    demoTypeSelect.value = currentDemoType;
+  }
+  if (demoTypeWrap) {
+    demoTypeWrap.style.display = (isEquipment || isDemoState) ? 'block' : 'none';
+  }
+
   modal.showModal();
 }
 
@@ -1524,6 +1548,13 @@ function onModalStatusChange() {
   } else {
     reasonsWrap.style.display = 'none';
   }
+
+  const demoTypeWrap = document.getElementById('modal-demo-type-wrap');
+  if (demoTypeWrap && currentEditingDeal) {
+    const isEquip = isEquipmentProduct(currentEditingDeal.product_name, currentEditingDeal.product_id, currentEditingDeal.latest_note);
+    const isDemoState = (status.includes('데모') || status.includes('샘플') || status === '의료장비 데모' || status === '샘플·임상평가' || isEquip);
+    demoTypeWrap.style.display = isDemoState ? 'block' : 'none';
+  }
 }
 
 async function deleteCurrentDeal() {
@@ -1644,13 +1675,26 @@ async function saveModalChanges() {
   targetDeal.fail_reasons = (newStatus === '영업실패·보류') ? selectedReasons : [];
   targetDeal.last_date = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
 
-  if (newStatus === '의료장비 데모' || newStatus === '소모품 샘플' || newStatus === '데모·샘플평가') {
+  // Save Equipment Demo Purpose (신규 판매평가 vs A/S 수리대체기)
+  const demoTypeSelect = document.getElementById('modal-demo-type-select');
+  if (demoTypeSelect) {
+    const chosenType = demoTypeSelect.value;
+    targetDeal.demo_type = chosenType;
+    if (targetDeal.demo_info) {
+      targetDeal.demo_info.type = chosenType;
+    }
+  }
+
+  if (newStatus === '의료장비 데모' || newStatus === '소모품 샘플' || newStatus === '데모·샘플평가' || newStatus === '샘플·임상평가') {
     if (!targetDeal.demo_info) {
       targetDeal.demo_info = {
         date: targetDeal.last_date,
         note: newNote || `${newStatus} 평가 진행`,
-        status: '평가진행중'
+        status: '평가진행중',
+        type: targetDeal.demo_type || 'sales'
       };
+    } else {
+      if (targetDeal.demo_type) targetDeal.demo_info.type = targetDeal.demo_type;
     }
   }
 
@@ -2160,7 +2204,7 @@ function renderASControlCenter() {
 
       // Check if loaner (대체기) is provided
       const noteTxt = `${d.latest_note || ''} ${d.as_info ? d.as_info.note : ''}`;
-      const hasLoaner = noteTxt.includes('데모') || noteTxt.includes('대체') || noteTxt.includes('블루');
+      const hasLoaner = (d.demo_type === 'loaner') || (d.demo_info && d.demo_info.type === 'loaner') || noteTxt.includes('데모') || noteTxt.includes('대체') || noteTxt.includes('블루');
 
       // 6. Compact Slim Card for '수리완료' column
       if (stage === '수리완료') {
@@ -2301,12 +2345,20 @@ function renderDemoTracker() {
 
   // Calculate D-Day & Purpose
   const classifiedDeals = activeDemoDeals.map(d => {
-    const noteTxt = `${d.latest_note || ''} ${d.demo_info ? d.demo_info.note : ''}`.toLowerCase();
-    const isLoaner = noteTxt.includes('대체') || noteTxt.includes('as') || noteTxt.includes('수리') || noteTxt.includes('블루') || noteTxt.includes('임시');
+    let purpose = 'sales';
+    if (d.demo_type === 'loaner' || (d.demo_info && d.demo_info.type === 'loaner')) {
+      purpose = 'loaner';
+    } else if (d.demo_type === 'sales' || (d.demo_info && d.demo_info.type === 'sales')) {
+      purpose = 'sales';
+    } else {
+      const noteTxt = `${d.latest_note || ''} ${d.demo_info ? d.demo_info.note : ''}`.toLowerCase();
+      const isLoaner = noteTxt.includes('대체') || noteTxt.includes('as') || noteTxt.includes('수리') || noteTxt.includes('블루') || noteTxt.includes('임시');
+      purpose = isLoaner ? 'loaner' : 'sales';
+    }
     return {
       deal: d,
-      purpose: isLoaner ? 'loaner' : 'sales',
-      purposeLabel: isLoaner ? '🚨 A/S 수리 대체 대여기 (Loaner)' : '🎯 신규 판매·도입 평가 데모 (Sales)',
+      purpose: purpose,
+      purposeLabel: purpose === 'loaner' ? '🚨 A/S 수리 대체 대여기 (Loaner)' : '🎯 신규 판매·도입 평가 데모 (Sales)',
       returnDeadline: '2주 이내 (회수 추적)'
     };
   });

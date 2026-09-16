@@ -55,7 +55,7 @@
         <div class="brand-icon">🩺</div>
         <div class="brand-text">
           <div class="brand-title-wrap">
-            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-019</span>
+            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-020</span>
             <button type="button" class="btn-cloud-sync" onclick="fetchLatestFromSupabase(true)" title="클라우드 최신 실시간 동기화">🔄</button>
             <h1>MEDI-SALES 360°</h1>
           </div>
@@ -299,18 +299,7 @@
               </div>
             </div>
 
-            <!-- 3. Regular Won Products -->
-            <div class="status-card won-card" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToHospitalStatus(event, '도입완료·납품')">
-              <div class="status-card-header">
-                <h3><span>🏆</span> 정규 도입 및 납품 품목</h3>
-                <span class="mini-badge badge-won" id="count-won-items">0건</span>
-              </div>
-              <div class="item-list status-card-body" id="list-won-items">
-                <div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:12px;">도입된 품목이 없습니다.</div>
-              </div>
-            </div>
-
-            <!-- 4. In Progress Products -->
+            <!-- 3. In Progress Products -->
             <div class="status-card active-card" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToHospitalStatus(event, '제품소개·영업중')">
               <div class="status-card-header">
                 <h3><span>⚡</span> 영업 제안 & 협의 품목</h3>
@@ -318,6 +307,17 @@
               </div>
               <div class="item-list status-card-body" id="list-active-items">
                 <div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:12px;">진행 중인 제안이 없습니다.</div>
+              </div>
+            </div>
+
+            <!-- 4. Regular Won Products (정규도입: 실패 및 보류 품목 앞) -->
+            <div class="status-card won-card" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDropToHospitalStatus(event, '도입완료·납품')">
+              <div class="status-card-header">
+                <h3><span>🏆</span> 정규 도입 및 납품 품목</h3>
+                <span class="mini-badge badge-won" id="count-won-items">0건</span>
+              </div>
+              <div class="item-list status-card-body" id="list-won-items">
+                <div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding:12px;">도입된 품목이 없습니다.</div>
               </div>
             </div>
 
@@ -1048,6 +1048,21 @@
             <option value="도입완료·납품">🟢 5. 도입완료·납품 (정규 수주)</option>
             <option value="영업실패·보류">❌ 6. 영업실패·보류</option>
           </select>
+        </div>
+
+        <!-- Equipment Demo Purpose (Sales Evaluation vs Loaner) -->
+        <div class="modal-field" id="modal-demo-type-wrap" style="display:none; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:8px; padding:12px; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="modal-label" style="color:#f59e0b; font-weight:700; margin-bottom:0;">🔬 장비 데모/대여 목적 구분</label>
+            <span class="mini-badge" style="background:rgba(245,158,11,0.2); color:#fbbf24;">장비 데모 트래커 연동</span>
+          </div>
+          <select id="modal-demo-type-select" class="modal-select">
+            <option value="sales">🎯 신규 판매·도입 평가 데모 (Sales)</option>
+            <option value="loaner">🚨 A/S 수리 대체 대여기 (Loaner)</option>
+          </select>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-top:6px; line-height:1.4;">
+            * [🔬 장비 데모] 트래커의 <strong>'신규 판매평가' vs 'A/S 대체기'</strong> 탭 분류 및 회수 관리에 즉시 반영됩니다.
+          </div>
         </div>
 
         <div class="modal-field" id="modal-reasons-wrap" style="display:none;">
