@@ -206,6 +206,51 @@ function compareHospitalVisitDate(a, b) {
   return (a.name || '').localeCompare(b.name || '', 'ko');
 }
 
+// Helper: Check if a pipeline deal is an active (unresolved) A/S case across all 5 progress stages
+function isDealActiveAS(d) {
+  if (!d) return false;
+  const hasAS = (d.status === 'A/S접수·처리') || (d.as_info && d.as_info.status);
+  if (!hasAS) return false;
+
+  const asStatus = ((d.as_info && d.as_info.status) || '').toLowerCase();
+  const noteTxt = `${d.latest_note || ''} ${d.as_info ? (d.as_info.note || '') : ''}`.toLowerCase();
+  
+  // Completed / Resolved checks
+  const isCompleted = asStatus.includes('완료') || asStatus.includes('출고') || asStatus.includes('해결') ||
+                      (d.status !== 'A/S접수·처리' && !d.as_info && (noteTxt.includes('출고') || noteTxt.includes('수리완료') || noteTxt.includes('조치완료')));
+  return !isCompleted;
+}
+
+// Helper: Get deduplicated active A/S deals (matching A/S 360 관제센터 logic)
+function getActiveASDeals(pipeline) {
+  const pipe = pipeline || ((window.SALES_DB && window.SALES_DB.pipeline) ? window.SALES_DB.pipeline : []);
+  const activeDeals = pipe.filter(isDealActiveAS);
+
+  const seenKey = new Set();
+  const deduped = [];
+  activeDeals.forEach(d => {
+    const hospKey = (d.hospital || '').replace(/\s+/g, '').toLowerCase();
+    const pStr = `${d.product_id || ''} ${d.product_name || ''} ${d.latest_note || ''}`.toLowerCase();
+    let equipGroup = 'general';
+    if (pStr.includes('모슬레이터') || pStr.includes('핸들') || pStr.includes('201.023')) {
+      equipGroup = 'morcellator_handle';
+    } else if (pStr.includes('보비') || pStr.includes('bovie') || pStr.includes('zeus') || pStr.includes('아프로')) {
+      equipGroup = 'bovie_unit';
+    } else if (pStr.includes('oxy9') || pStr.includes('bt350')) {
+      equipGroup = 'monitoring_unit';
+    } else {
+      equipGroup = (d.product_id || 'general').toLowerCase();
+    }
+    const uniqueKey = `${hospKey}__${equipGroup}`;
+    if (!seenKey.has(uniqueKey)) {
+      seenKey.add(uniqueKey);
+      deduped.push(d);
+    }
+  });
+
+  return deduped;
+}
+
 // Persistent Registry for User-Deleted Pipeline Deals (Tombstone Prevention against Cloud Poll Resurrections)
 const DELETED_DEALS_KEY = 'jun_sales_deleted_deals_registry_v1';
 
@@ -504,7 +549,7 @@ function syncHospitalsFromLogs() {
     h.demo_count = activeDemoDeals.filter(d => isEquipmentProduct(d.product_name, d.product_id, d.latest_note)).length;
     h.sample_count = activeDemoDeals.filter(d => !isEquipmentProduct(d.product_name, d.product_id, d.latest_note)).length;
     
-    h.as_count = deals.filter(d => (d.as_info && d.as_info.status.includes('접수') && !d.as_info.status.includes('완료')) || (d.status === 'A/S접수·처리' && (!d.as_info || !d.as_info.status.includes('완료')))).length;
+    h.as_count = deals.filter(isDealActiveAS).length;
     h.fail_count = deals.filter(d => d.status === '영업실패·보류').length;
   });
 
@@ -733,7 +778,7 @@ function initHeaderMetrics() {
   const hospList = (window.SALES_DB && window.SALES_DB.hospitals) ? window.SALES_DB.hospitals : [];
   const logs = (window.SALES_DB && window.SALES_DB.activity_logs) ? window.SALES_DB.activity_logs : [];
 
-  const activeAsCount = pipe.filter(d => (d.as_info && d.as_info.status.includes('접수') && !d.as_info.status.includes('완료') && d.status !== '도입완료·납품') || (d.status === 'A/S접수·처리' && (!d.as_info || !d.as_info.status.includes('완료')))).length;
+  const activeAsCount = getActiveASDeals(pipe).length;
   
   // Split Equipment Demo vs Disposable Sample
   const allActiveDemos = pipe.filter(d => d.status === '의료장비 데모' || d.status === '소모품 샘플' || d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status.includes('진행')));
@@ -923,7 +968,7 @@ function renderHospitalList() {
     const deals = window.SALES_DB.pipeline.filter(d => (d.hospital || '').replace(/\s+/g, '') === cleanHospName);
     let matchKpi = true;
     if (selectedKpiFilter === 'as') {
-      matchKpi = deals.some(d => (d.as_info && d.as_info.status.includes('접수') && !d.as_info.status.includes('완료') && d.status !== '도입완료·납품') || (d.status === 'A/S접수·처리' && (!d.as_info || !d.as_info.status.includes('완료'))));
+      matchKpi = deals.some(isDealActiveAS);
     } else if (selectedKpiFilter === 'demo') {
       // Equipment Demo Only
       matchKpi = deals.some(d => (d.status === '의료장비 데모' || d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status.includes('진행'))) && isEquipmentProduct(d.product_name, d.product_id, d.latest_note));
@@ -964,7 +1009,7 @@ function renderHospitalList() {
 
     // Check flags for this hospital
     const deals = window.SALES_DB.pipeline.filter(d => getCanonicalHospitalKey(d.hospital) === canonKey);
-    const hasAS = deals.some(d => (d.as_info && d.as_info.status.includes('접수') && !d.as_info.status.includes('완료') && d.status !== '도입완료·납품') || (d.status === 'A/S접수·처리' && (!d.as_info || !d.as_info.status.includes('완료'))));
+    const hasAS = deals.some(isDealActiveAS);
     
     const activeDemoDeals = deals.filter(d => d.status === '의료장비 데모' || d.status === '소모품 샘플' || d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status.includes('진행')));
     const hasEquipDemo = activeDemoDeals.some(d => isEquipmentProduct(d.product_name, d.product_id, d.latest_note));
@@ -1049,13 +1094,15 @@ function renderHospitalDetails(hospName) {
   // 2. Fetch Deals & AS Alerts (Canonical matching)
   const deals = window.SALES_DB.pipeline.filter(d => getCanonicalHospitalKey(d.hospital) === canonKey);
   
-  // Urgent A/S check (완료되지 않은 미결 A/S 접수 건만 표시!)
-  const asDeal = deals.find(d => (d.as_info && d.as_info.status.includes('접수') && !d.as_info.status.includes('완료') && d.status !== '도입완료·납품') || (d.status === 'A/S접수·처리' && (!d.as_info || !d.as_info.status.includes('완료'))));
+  // Urgent A/S check (완료되지 않은 미결 A/S 접수/진행 건 표시)
+  const asDeal = deals.find(isDealActiveAS);
   const asAlertBox = document.getElementById('detail-as-alert');
   if (asDeal) {
     asAlertBox.style.display = 'flex';
     document.getElementById('detail-as-title').textContent = `🚨 [${asDeal.product_name}] A/S 및 수리 조치 필요`;
-    document.getElementById('detail-as-desc').textContent = `${asDeal.as_info ? asDeal.as_info.date : ''} 접수: ${asDeal.as_info ? asDeal.as_info.note : asDeal.latest_note || ''}`;
+    const asDate = (asDeal.as_info && asDeal.as_info.date) ? asDeal.as_info.date : (asDeal.last_date || '');
+    const asNote = (asDeal.as_info && asDeal.as_info.note) ? asDeal.as_info.note : (asDeal.latest_note || 'A/S 접수 건');
+    document.getElementById('detail-as-desc').textContent = `${asDate ? asDate + ' ' : ''}상태: ${asDeal.as_info ? asDeal.as_info.status : asDeal.status} / ${asNote}`;
   } else {
     asAlertBox.style.display = 'none';
   }
@@ -2330,7 +2377,7 @@ function renderASControlCenter() {
           <div class="compact-prod">${escapeHtml(d.product_name)}</div>
           <div class="compact-meta">
             <span>담당: ${escapeHtml(d.sales_rep || '미정')}</span>
-            <span>${d.as_info ? (d.as_info.resolved_date || d.as_info.date) : d.last_date || ''}</span>
+            <span>${(d.as_info && (d.as_info.resolved_date || d.as_info.date)) ? (d.as_info.resolved_date || d.as_info.date) : (d.last_date || '')}</span>
           </div>
         `;
       } else {
@@ -2347,7 +2394,7 @@ function renderASControlCenter() {
           <div class="as-card-note">${escapeHtml(d.as_info ? (d.as_info.note || d.latest_note || '') : d.latest_note || 'A/S 접수 건')}</div>
           <div class="as-card-meta">
             <span>담당: ${escapeHtml(d.sales_rep || '미정')}</span>
-            <span>${d.as_info ? d.as_info.date : d.last_date || ''}</span>
+            <span>${(d.as_info && d.as_info.date) ? d.as_info.date : (d.last_date || '')}</span>
           </div>
         `;
       }
@@ -3171,7 +3218,7 @@ function recalcGlobalStats() {
 
   stats.won_deals = deals.filter(d => d.status === '도입완료·납품').length;
   stats.active_demos = deals.filter(d => d.status === '의료장비 데모' || d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status === '평가진행중')).length;
-  stats.active_as = deals.filter(d => d.status === 'A/S접수·처리' || (d.as_info && d.as_info.status && d.as_info.status.includes('접수'))).length;
+  stats.active_as = getActiveASDeals(deals).length;
   stats.progress_deals = deals.filter(d => d.status.includes('영업중') || d.status.includes('견적') || d.status.includes('접촉') || d.status.includes('샘플')).length;
   stats.lost_deals = deals.filter(d => d.status === '영업실패·보류').length;
 
