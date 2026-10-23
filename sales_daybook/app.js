@@ -757,7 +757,9 @@ function switchTab(tabId) {
   // Scroll to top smoothly on tab switch
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  if (tabId === 'as') {
+  if (tabId === 'product-search') {
+    initProductSearchTab();
+  } else if (tabId === 'as') {
     renderASControlCenter();
   } else if (tabId === 'demo-tracker') {
     renderDemoTracker();
@@ -5826,3 +5828,729 @@ function exportExpenditureToCSV() {
 setupClipboardPasteListener();
 
 
+
+
+
+/* ==========================================================================
+   [Phase 2] 제품·단가·보험코드 실시간 조회 로직 (자사 ERP + 심평원 EDI + 납품이력 3중 연동)
+   ========================================================================== */
+
+let isProdSearchInitialized = false;
+let erpProductsCache = null;
+
+// 자사 ERP 품목 마스터 사전 로드 (메모리 캐싱)
+async function getErpProducts() {
+  if (erpProductsCache) return erpProductsCache;
+  try {
+    const res = await fetch('erp_products.json?v=jun-V1-026');
+    if (res.ok) {
+      erpProductsCache = await res.json();
+      console.log('📦 ERP Products cached:', erpProductsCache.length, 'items');
+    } else {
+      erpProductsCache = [];
+    }
+  } catch (e) {
+    console.warn('ERP Products load error:', e);
+    erpProductsCache = [];
+  }
+  return erpProductsCache;
+}
+
+function initProductSearchTab() {
+  if (isProdSearchInitialized) return;
+  isProdSearchInitialized = true;
+
+  // 백그라운드에서 ERP 마스터 미리 로드
+  getErpProducts();
+
+  const input = document.getElementById('prod-search-input');
+  const clearBtn = document.getElementById('prod-search-clear-btn');
+
+  if (input) {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        triggerProductSearch();
+      }
+    });
+
+    input.addEventListener('input', () => {
+      if (clearBtn) {
+        clearBtn.style.display = input.value.trim().length > 0 ? 'flex' : 'none';
+      }
+    });
+  }
+}
+
+function clearProductSearch() {
+  const input = document.getElementById('prod-search-input');
+  const clearBtn = document.getElementById('prod-search-clear-btn');
+  if (input) {
+    input.value = '';
+    input.focus();
+  }
+  if (clearBtn) clearBtn.style.display = 'none';
+}
+
+function quickSearchProduct(keyword) {
+  const input = document.getElementById('prod-search-input');
+  if (input) {
+    input.value = keyword;
+    const clearBtn = document.getElementById('prod-search-clear-btn');
+    if (clearBtn) clearBtn.style.display = 'flex';
+  }
+  triggerProductSearch();
+}
+
+async function triggerProductSearch() {
+  const input = document.getElementById('prod-search-input');
+  if (!input) return;
+
+  const query = input.value.trim();
+  if (!query) {
+    showToast('검색어를 입력해 주세요.');
+    input.focus();
+    return;
+  }
+
+  const grid = document.getElementById('prod-cards-grid');
+  const statusText = document.getElementById('prod-status-text');
+  const countBadge = document.getElementById('prod-result-count-badge');
+
+  if (grid) {
+    grid.innerHTML = `
+      <div class="prod-empty-state">
+        <div class="empty-icon">⏳</div>
+        <h3>'${escapeHtml(query)}' 조회 중...</h3>
+        <p>자사 ERP 마스터, 심평원 상한가 고시 및 5개년 납품이력을 통합 분석하고 있습니다.</p>
+      </div>
+    `;
+  }
+  if (statusText) statusText.textContent = `'${query}' 검색 중...`;
+  if (countBadge) countBadge.style.display = 'none';
+
+  try {
+    const sb = getSupabaseClient();
+    const erpList = await getErpProducts();
+    const qLower = query.toLowerCase();
+
+    // 1. 자사 ERP 마스터 검색 (이름, 코드, 규격, EDI, 키워드 매칭)
+    const cleanQ = qLower.replace(/[\s-_]/g, '');
+    const erpMatches = erpList.filter(p => {
+      const name = (p.name || '').toLowerCase();
+      const code = (p.code || p.id || '').toLowerCase();
+      const cleanCode = code.replace(/[\s-_]/g, '');
+      const spec = (p.spec || '').toLowerCase();
+      const edi = (p.edi || '').toLowerCase();
+      const cleanEdi = edi.replace(/[\s-_]/g, '');
+      const vendor = (p.vendor || '').toLowerCase();
+      
+      // 제품코드 일치 (완전일치 or 부분일치 or 하이픈 제외 일치)
+      const isCodeMatch = code.includes(qLower) || cleanCode.includes(cleanQ) || (cleanQ.length >= 2 && cleanCode === cleanQ);
+      const isEdiMatch = edi.includes(qLower) || cleanEdi.includes(cleanQ);
+      
+      return isCodeMatch || isEdiMatch || name.includes(qLower) || spec.includes(qLower) || vendor.includes(qLower);
+    });
+
+    // 2. 심평원 EDI 치료재료 조회 (오류 컬럼 pay_type 제거, category_name 적용)
+    let ediPromise = Promise.resolve({ data: [] });
+    if (sb) {
+      ediPromise = sb
+        .from('edi_materials')
+        .select('edi_code, item_name, spec, unit, manufacturer, max_price, category_name, category_code, apply_date')
+        .or(`edi_code.ilike.%${query}%,item_name.ilike.%${query}%,manufacturer.ilike.%${query}%`)
+        .limit(50);
+    }
+
+    // 3. 자사 과거 판매내역 조회 (최대 60건)
+    let salesPromise = Promise.resolve({ data: [] });
+    if (sb) {
+      salesPromise = sb
+        .from('sales')
+        .select('product_code, customer, product_name, spec, qty, unit_price, supply_amount, sale_date')
+        .or(`product_code.ilike.%${query}%,product_name.ilike.%${query}%,customer.ilike.%${query}%`)
+        .order('sale_date', { ascending: false })
+        .limit(60);
+    }
+
+    const [ediRes, salesRes] = await Promise.all([ediPromise, salesPromise]);
+
+    const ediMatches = (ediRes && ediRes.data) ? ediRes.data : [];
+    const salesMatches = (salesRes && salesRes.data) ? salesRes.data : [];
+
+    // 만약 ERP에 매칭된 품목 중 EDI 코드가 있다면 심평원 DB에서 해당 EDI 코드 추가 조회
+    const extraEdiCodes = erpMatches.map(e => e.edi).filter(code => code && !ediMatches.some(m => m.edi_code === code));
+    if (extraEdiCodes.length > 0 && sb) {
+      try {
+        const extraRes = await sb
+          .from('edi_materials')
+          .select('edi_code, item_name, spec, unit, manufacturer, max_price, category_name, category_code, apply_date')
+          .in('edi_code', extraEdiCodes);
+        if (extraRes && extraRes.data) {
+          ediMatches.push(...extraRes.data);
+        }
+      } catch (e) {
+        console.warn('추가 EDI 조회 예외:', e);
+      }
+    }
+
+    renderProductSearchResults(ediMatches, salesMatches, erpMatches, query);
+
+  } catch (err) {
+    console.error('제품 검색 오류:', err);
+    if (grid) {
+      grid.innerHTML = `
+        <div class="prod-empty-state">
+          <div class="empty-icon">⚠️</div>
+          <h3>데이터를 불러오는 중 오류가 발생했습니다</h3>
+          <p>${escapeHtml(err.message || String(err))}</p>
+        </div>
+      `;
+    }
+    if (statusText) statusText.textContent = '조회 실패';
+  }
+}
+
+// 공통 스테리스트립 등 고시 상한가 보정 테이블 (EDI 코드 기준)
+const KNOWN_EDI_MAX_PRICES = {
+  'B3110219': { max_price: 915, name: 'Steri-strip (피부봉합용 테이프)', spec: '3mm*75mm / 6mm*75mm', mfr: '3M / 케어빌코리아' },
+  'B3120219': { max_price: 1370, name: 'Steri-strip (피부봉합용 테이프)', spec: '6mm*100mm / 12mm*100mm', mfr: '3M / 케어빌코리아' }
+};
+
+function renderProductSearchResults(ediMatches, salesMatches, erpMatches, query) {
+  const grid = document.getElementById('prod-cards-grid');
+  const statusText = document.getElementById('prod-status-text');
+  const countBadge = document.getElementById('prod-result-count-badge');
+  if (!grid) return;
+
+  const combinedMap = new Map();
+
+  // 1. 자사 ERP 마스터 품목을 최우선으로 카드 생성 (우선순위 1)
+  erpMatches.forEach(erp => {
+    const key = `erp_${erp.code || erp.id || erp.name}`;
+    let maxPrice = null;
+    let ediCode = erp.edi || null;
+
+    // 만약 심평원 고시 목록에 해당 EDI가 있으면 상한가 연결
+    if (ediCode) {
+      const ediFound = ediMatches.find(m => m.edi_code === ediCode);
+      if (ediFound && ediFound.max_price) {
+        maxPrice = ediFound.max_price;
+      } else if (KNOWN_EDI_MAX_PRICES[ediCode]) {
+        maxPrice = KNOWN_EDI_MAX_PRICES[ediCode].max_price;
+      }
+    }
+
+    combinedMap.set(key, {
+      product_code: erp.code || erp.id || null,
+      edi_code: ediCode,
+      name: erp.name,
+      spec: erp.spec || '-',
+      unit: erp.unit || 'EA',
+      max_price: maxPrice,
+      manufacturer: erp.vendor || '자사 공급원',
+      category: erp.category || '자사 마스터',
+      is_own: true,
+      price_out: erp.price_out || null,
+      price_in: erp.price_in || null,
+      sales_history: []
+    });
+  });
+
+  // 2. 심평원 EDI 고시 목록 결합 (우선순위 2)
+  ediMatches.forEach(item => {
+    // 이미 ERP 카드로 등록되었는지 확인 (EDI 코드 일치)
+    let exists = false;
+    for (const card of combinedMap.values()) {
+      if (card.edi_code && card.edi_code === item.edi_code) {
+        if (!card.max_price && item.max_price) card.max_price = item.max_price;
+        exists = true;
+        break;
+      }
+    }
+
+    if (!exists) {
+      const key = `edi_${item.edi_code || item.item_name}`;
+      combinedMap.set(key, {
+        edi_code: item.edi_code,
+        name: item.item_name,
+        spec: item.spec || '-',
+        unit: item.unit || '1EA',
+        max_price: item.max_price,
+        manufacturer: item.manufacturer || '-',
+        category: item.category_name || '심평원 고시품목',
+        is_own: false,
+        price_out: null,
+        price_in: null,
+        sales_history: []
+      });
+    }
+  });
+
+  // 3. 자사 판매이력을 카드에 매핑 (우선순위 3)
+  salesMatches.forEach(sale => {
+    let matchedCard = null;
+    const saleName = (sale.product_name || '').toLowerCase();
+    const saleSpec = (sale.spec || '').toLowerCase();
+
+    for (const card of combinedMap.values()) {
+      const cardName = (card.name || '').toLowerCase();
+      // 이름 또는 규격 매핑
+      if (cardName.includes(saleName) || saleName.includes(cardName)) {
+        matchedCard = card;
+        break;
+      }
+    }
+
+    if (matchedCard) {
+      matchedCard.sales_history.push(sale);
+    } else {
+      // 매칭되지 않은 단독 판매내역 카드
+      const sKey = `sale_${sale.product_name}_${sale.spec || ''}`;
+      if (!combinedMap.has(sKey)) {
+        // 혹시 스테리스트립인지 확인하여 상한가 및 EDI 자동 매핑
+        let autoEdi = null;
+        let autoMaxPrice = null;
+        if (saleName.includes('steri') || saleName.includes('스테리')) {
+          if (saleSpec.includes('100mm') || saleName.includes('1546') || saleName.includes('1547')) {
+            autoEdi = 'B3120219';
+            autoMaxPrice = 1370;
+          } else {
+            autoEdi = 'B3110219';
+            autoMaxPrice = 915;
+          }
+        }
+
+        combinedMap.set(sKey, {
+          edi_code: autoEdi,
+          name: sale.product_name,
+          spec: sale.spec || '-',
+          unit: 'EA',
+          max_price: autoMaxPrice,
+          manufacturer: '자사 판매품목',
+          category: '과거 판매이력',
+          is_own: true,
+          price_out: null,
+          price_in: null,
+          sales_history: [sale]
+        });
+      } else {
+        combinedMap.get(sKey).sales_history.push(sale);
+      }
+    }
+  });
+
+  // 정렬: 자사 취급 및 판매이력 있는 품목 우선 -> 상한가 내림차순
+  const finalCards = Array.from(combinedMap.values()).sort((a, b) => {
+    const aScore = (a.is_own ? 10 : 0) + (a.sales_history.length > 0 ? 5 : 0);
+    const bScore = (b.is_own ? 10 : 0) + (b.sales_history.length > 0 ? 5 : 0);
+    if (bScore !== aScore) return bScore - aScore;
+    return (b.max_price || 0) - (a.max_price || 0);
+  });
+
+  const totalCount = finalCards.length;
+
+  if (countBadge) {
+    countBadge.textContent = `${totalCount}건 발견`;
+    countBadge.style.display = 'inline-block';
+  }
+
+  if (statusText) {
+    statusText.innerHTML = `검색어 <strong>'${escapeHtml(query)}'</strong> 결과: 총 <strong>${totalCount}개</strong> 품목`;
+  }
+
+  if (totalCount === 0) {
+    grid.innerHTML = `
+      <div class="prod-empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>'${escapeHtml(query)}' 에 대한 검색 결과가 없습니다</h3>
+        <p>철자나 띄어쓰기를 바꾸어 다시 검색해보세요. (예: 3M, 영문 품명, 병원명)</p>
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+  finalCards.forEach((card, idx) => {
+    const isReimbursable = card.max_price !== null && card.max_price > 0;
+    const maxPriceFormatted = isReimbursable ? `${Number(card.max_price).toLocaleString()}원` : (card.edi_code ? '비급여' : '산정불가/비급여');
+    const historyCount = card.sales_history.length;
+
+    html += `
+      <div class="prod-card" id="prod-card-${idx}">
+        <div class="prod-card-header">
+          <div class="prod-title-area">
+            <div class="prod-name">
+              ${escapeHtml(card.name)}
+              ${card.product_code ? `<span class="badge-own-product" style="background:rgba(56,189,248,0.15); border-color:#38bdf8; color:#38bdf8; margin-left:6px;" title="자사 제품코드: 클릭하여 복사" onclick="copyEdiCode('${card.product_code}', event)">코드: ${card.product_code}</span>` : ''}
+              ${card.is_own ? '<span class="badge-own-product" style="margin-left:6px;" title="자사 취급 품목">자사취급</span>' : ''}
+            </div>
+            <div class="prod-meta-line">
+              <span><strong>규격:</strong> ${escapeHtml(card.spec)}</span>
+              <span>•</span>
+              <span><strong>제조/수입사:</strong> ${escapeHtml(card.manufacturer)}</span>
+              ${card.category ? `<span>•</span> <span><strong>구분:</strong> ${escapeHtml(card.category)}</span>` : ''}
+              <span>•</span>
+              <span><strong>단위:</strong> ${escapeHtml(card.unit)}</span>
+              ${card.price_out ? `<span>•</span> <span style="color:#fbbf24;"><strong>기준판매가:</strong> ${Number(card.price_out).toLocaleString()}원</span>` : ''}
+            </div>
+          </div>
+          
+          <div class="prod-badges-area">
+            ${isReimbursable ? `
+              <span class="badge-max-price" title="보건복지부 심평원 고시 상한금액">
+                상한가 ${maxPriceFormatted} <small style="font-size:0.75rem; font-weight:normal;">(급여)</small>
+              </span>
+            ` : `
+              <span class="badge-max-price" style="background:rgba(148,163,184,0.18); border-color:#64748b; color:#94a3b8;">
+                ${maxPriceFormatted}
+              </span>
+            `}
+            
+            <div style="display:flex; align-items:center; gap:6px;">
+              ${card.edi_code ? `
+                <span class="badge-edi-code" onclick="copyEdiCode('${card.edi_code}', event)" title="클릭하여 보험코드 복사">
+                  📋 ${card.edi_code}
+                </span>
+                <button type="button" class="btn-alt-compare" onclick="openAlternativesModal('${card.edi_code}', '${escapeHtml(card.name)}', event)" title="심평원 동일 중분류 타사 제품 및 상한가 비교">
+                  🔄 대체품 비교
+                </button>
+              ` : '<span class="badge-edi-code" style="background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.15); color:#94a3b8;">코드미등록</span>'}
+            </div>
+          </div>
+        </div>
+
+        <div class="prod-history-section">
+          <div class="history-header-toggle" onclick="toggleCardHistory(${idx})">
+            <span>
+              📊 <strong>병원별 최근 납품 단가 이력</strong> 
+              ${historyCount > 0 ? `<span style="color:#38bdf8; font-weight:700;">(최근 ${historyCount}건 납품 기록)</span>` : '<span style="color:#94a3b8;">(자사 납품 이력 없음 - 신규 제안 가능)</span>'}
+            </span>
+            <span id="history-arrow-${idx}" style="font-size:0.75rem; color:#94a3b8;">${historyCount > 0 ? '▼ 접기' : '▶ 펼치기'}</span>
+          </div>
+
+          ${historyCount > 0 ? `
+            <div id="history-content-${idx}" style="display:block;">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>납품 거래처(병원)</th>
+                    <th>납품일자</th>
+                    <th style="text-align:right;">납품단가</th>
+                    <th style="text-align:right;">수량</th>
+                    <th style="text-align:right;">공급가액</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${card.sales_history.slice(0, 10).map(s => `
+                    <tr>
+                      <td><strong style="color:#fff;">${escapeHtml(s.customer)}</strong></td>
+                      <td class="history-date">${s.sale_date}</td>
+                      <td style="text-align:right;"><span class="history-price">${Number(s.unit_price).toLocaleString()}원</span></td>
+                      <td style="text-align:right; color:#cbd5e1;">${Number(s.qty).toLocaleString()}</td>
+                      <td style="text-align:right; color:#94a3b8;">${s.supply_amount ? `${Number(s.supply_amount).toLocaleString()}원` : '-'}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+              ${historyCount > 10 ? `<div style="text-align:center; font-size:0.75rem; color:#94a3b8; margin-top:6px;">(최근 10건만 표시됨 / 전체 ${historyCount}건)</div>` : ''}
+            </div>
+          ` : `
+            <div id="history-content-${idx}" style="display:none; font-size:0.78rem; color:#94a3b8; padding-top:6px;">
+              아직 해당 병원 납품 내역이 등록되지 않았습니다. 신규 견적 시 심평원 상한가(${maxPriceFormatted})를 기준으로 단가를 산정할 수 있습니다.
+            </div>
+          `}
+        </div>
+
+      </div>
+    `;
+  });
+
+  grid.innerHTML = html;
+}
+
+function toggleCardHistory(idx) {
+  const content = document.getElementById(`history-content-${idx}`);
+  const arrow = document.getElementById(`history-arrow-${idx}`);
+  if (!content) return;
+
+  const isHidden = (content.style.display === 'none');
+  content.style.display = isHidden ? 'block' : 'none';
+  if (arrow) arrow.textContent = isHidden ? '▼ 접기' : '▶ 펼치기';
+}
+
+function copyEdiCode(code, e) {
+  if (e) e.stopPropagation();
+  navigator.clipboard.writeText(code).then(() => {
+    showToast(`📋 보험코드 [${code}]가 클립보드에 복사되었습니다!`);
+  }).catch(() => {
+    showToast(`보험코드: ${code}`);
+  });
+}
+
+// 탭 전환 시 자동 초기화 연동
+window.addEventListener('DOMContentLoaded', () => {
+  initProductSearchTab();
+});
+
+
+/* ==========================================================================
+   [Phase 3] 플로팅 AI 영업 비서 챗봇 클라이언트 통신 로직
+   ========================================================================== */
+const AI_CHAT_API_URL = "http://127.0.0.1:8000/api/chat";
+let aiChatSessionId = "session_" + Date.now();
+
+function toggleAIChatModal() {
+  const modal = document.getElementById('ai-chat-modal');
+  if (!modal) return;
+  const isHidden = (modal.style.display === 'none' || modal.style.display === '');
+  modal.style.display = isHidden ? 'flex' : 'none';
+  if (isHidden) {
+    const input = document.getElementById('ai-chat-input');
+    if (input) setTimeout(() => input.focus(), 100);
+  }
+}
+
+function sendQuickPrompt(promptText) {
+  const input = document.getElementById('ai-chat-input');
+  if (input) {
+    input.value = promptText;
+    sendAIChatMessage();
+  }
+}
+
+async function sendAIChatMessage() {
+  const input = document.getElementById('ai-chat-input');
+  const messagesBox = document.getElementById('ai-chat-messages');
+  if (!input || !messagesBox) return;
+
+  const text = input.value.trim();
+  if (!text) return;
+
+  // 1. 사용자 말풍선 추가
+  const userMsgEl = document.createElement('div');
+  userMsgEl.className = 'ai-msg user-msg';
+  userMsgEl.innerHTML = `<div class="msg-bubble">${escapeHtml(text)}</div>`;
+  messagesBox.appendChild(userMsgEl);
+
+  input.value = '';
+  messagesBox.scrollTop = messagesBox.scrollHeight;
+
+  // 2. 봇 로딩 인디케이터 추가
+  const loadingEl = document.createElement('div');
+  loadingEl.className = 'ai-msg bot-msg';
+  loadingEl.id = 'ai-msg-loading';
+  loadingEl.innerHTML = `
+    <div class="msg-bubble" style="display:flex; align-items:center; gap:8px;">
+      <span>🤖</span> <span>데이터를 조회하고 분석하고 있습니다...</span>
+    </div>
+  `;
+  messagesBox.appendChild(loadingEl);
+  messagesBox.scrollTop = messagesBox.scrollHeight;
+
+  try {
+    const res = await fetch(AI_CHAT_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: text,
+        session_id: aiChatSessionId
+      })
+    });
+
+    if (!res.ok) {
+      throw new Error(`서버 오류 (HTTP ${res.status})`);
+    }
+
+    const data = await res.json();
+    loadingEl.remove();
+
+    // 3. 답변 말풍선 추가 (마크다운 간단 변환)
+    const botMsgEl = document.createElement('div');
+    botMsgEl.className = 'ai-msg bot-msg';
+    botMsgEl.innerHTML = `<div class="msg-bubble">${formatAIMessage(data.answer)}</div>`;
+    messagesBox.appendChild(botMsgEl);
+
+  } catch (err) {
+    console.error('AI Chat Error:', err);
+    loadingEl.remove();
+    const errorEl = document.createElement('div');
+    errorEl.className = 'ai-msg bot-msg';
+    errorEl.innerHTML = `
+      <div class="msg-bubble" style="border-color:rgba(239,68,68,0.4); background:rgba(239,68,68,0.1);">
+        ⚠️ <strong>연결 실패</strong>: AI 챗봇 백엔드 서버(FastAPI 8000포트)가 켜져 있는지 확인해 주세요.<br>
+        <small style="color:#94a3b8;">${escapeHtml(err.message)}</small>
+      </div>
+    `;
+    messagesBox.appendChild(errorEl);
+  }
+
+  messagesBox.scrollTop = messagesBox.scrollHeight;
+}
+
+// 간단한 마크다운 파서 (줄바꿈, 볼드, 마크다운 표 렌더링)
+function formatAIMessage(markdownText) {
+  if (!markdownText) return '';
+  let txt = escapeHtml(markdownText);
+
+  // 볼드 **text**
+  txt = txt.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+  // 줄바꿈
+  txt = txt.replace(/\n/g, '<br>');
+
+  return txt;
+}
+
+// 엔터키 전송 이벤트 연동
+window.addEventListener('DOMContentLoaded', () => {
+  const chatInput = document.getElementById('ai-chat-input');
+  if (chatInput) {
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        sendAIChatMessage();
+      }
+    });
+  }
+});
+
+
+/* ==========================================================================
+   [Phase 4] 동일 중분류 대체품 비교 모달 제어 로직
+   ========================================================================== */
+async function openAlternativesModal(ediCode, productName, e) {
+  if (e) e.stopPropagation();
+  const backdrop = document.getElementById('alt-compare-modal-backdrop');
+  const targetBox = document.getElementById('alt-modal-target-box');
+  const tableWrap = document.getElementById('alt-table-wrap');
+  const catDesc = document.getElementById('alt-modal-category-desc');
+  const countText = document.getElementById('alt-table-count');
+
+  if (!backdrop || !tableWrap) return;
+  backdrop.style.display = 'flex';
+
+  if (targetBox) {
+    targetBox.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong style="color:#fff; font-size:1.02rem;">${escapeHtml(productName)}</strong>
+          <span style="color:#38bdf8; margin-left:8px; font-family:monospace;">[EDI: ${ediCode}]</span>
+        </div>
+        <div style="color:#94a3b8; font-size:0.8rem;">기준 품목</div>
+      </div>
+    `;
+  }
+
+  tableWrap.innerHTML = `
+    <div style="text-align:center; padding:40px; color:#94a3b8;">
+      ⏳ 심평원 동일 중분류 고시 데이터를 조회하고 있습니다...
+    </div>
+  `;
+
+  try {
+    const sb = getSupabaseClient();
+    if (!sb) throw new Error('Supabase 연결 불가');
+
+    // 1. 기준 품목의 중분류 조회
+    const { data: itemData, error: itemErr } = await sb
+      .from('edi_materials')
+      .select('edi_code, item_name, spec, unit, max_price, manufacturer, category_name, category_code')
+      .eq('edi_code', ediCode)
+      .limit(1);
+
+    if (itemErr || !itemData || itemData.length === 0) {
+      tableWrap.innerHTML = `<div style="text-align:center; padding:30px; color:#f87171;">⚠️ 해당 품목의 심평원 중분류 정보를 찾을 수 없습니다.</div>`;
+      return;
+    }
+
+    const targetItem = itemData[0];
+    const catCode = targetItem.category_code;
+    const catName = targetItem.category_name;
+
+    if (catDesc) {
+      catDesc.innerHTML = `중분류: <strong style="color:#c084fc;">${escapeHtml(catName || '동일 분류군')}</strong> (코드: ${catCode || '-'})`;
+    }
+
+    // 2. 동일 중분류의 품목들 조회
+    let query = sb
+      .from('edi_materials')
+      .select('edi_code, item_name, spec, unit, max_price, manufacturer, apply_date')
+      .order('max_price', { ascending: false })
+      .limit(30);
+
+    if (catCode) {
+      query = query.eq('category_code', catCode);
+    } else {
+      query = query.eq('category_name', catName);
+    }
+
+    const { data: altList, error: altErr } = await query;
+    if (altErr) throw altErr;
+
+    const erpList = await getErpProducts();
+    const erpEdiSet = new Set(erpList.map(p => p.edi).filter(Boolean));
+
+    if (countText) {
+      countText.textContent = `동일 분류 품목 (총 ${altList.length}건)`;
+    }
+
+    if (!altList || altList.length === 0) {
+      tableWrap.innerHTML = `<div style="text-align:center; padding:30px; color:#94a3b8;">동일 중분류에 등록된 다른 제품이 없습니다.</div>`;
+      return;
+    }
+
+    let rowsHtml = '';
+    altList.forEach(item => {
+      const isTarget = (item.edi_code === ediCode);
+      const isOwn = erpEdiSet.has(item.edi_code);
+      const rowClass = isTarget ? 'target-row' : (isOwn ? 'own-row' : '');
+      const priceFormatted = item.max_price !== null ? `${Number(item.max_price).toLocaleString()}원` : '비급여';
+
+      rowsHtml += `
+        <tr class="${rowClass}">
+          <td>
+            <div style="font-weight:700; color:#fff;">
+              ${escapeHtml(item.item_name)}
+              ${isTarget ? '<span style="background:rgba(56,189,248,0.25); color:#38bdf8; padding:1px 6px; border-radius:4px; font-size:0.72rem; margin-left:6px;">기준품</span>' : ''}
+              ${isOwn && !isTarget ? '<span style="background:rgba(245,158,11,0.25); color:#fbbf24; padding:1px 6px; border-radius:4px; font-size:0.72rem; margin-left:6px;">자사취급</span>' : ''}
+            </div>
+            <div style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">${escapeHtml(item.spec || '-')} / ${escapeHtml(item.unit || '1EA')}</div>
+          </td>
+          <td style="color:#cbd5e1;">${escapeHtml(item.manufacturer || '-')}</td>
+          <td style="font-family:monospace; color:#38bdf8; cursor:pointer;" onclick="copyEdiCode('${item.edi_code}', event)" title="클릭하여 복사">
+            ${item.edi_code}
+          </td>
+          <td style="text-align:right; font-weight:700; color:${item.max_price ? '#34d399' : '#94a3b8'};">
+            ${priceFormatted}
+          </td>
+        </tr>
+      `;
+    });
+
+    tableWrap.innerHTML = `
+      <table class="alt-table">
+        <thead>
+          <tr>
+            <th>품명 및 규격</th>
+            <th>제조/수입사</th>
+            <th>EDI 코드</th>
+            <th style="text-align:right;">심평원 상한가</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+    `;
+
+  } catch (err) {
+    console.error('대체품 조회 오류:', err);
+    tableWrap.innerHTML = `<div style="text-align:center; padding:30px; color:#f87171;">데이터 조회 실패: ${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function closeAlternativesModal() {
+  const backdrop = document.getElementById('alt-compare-modal-backdrop');
+  if (backdrop) backdrop.style.display = 'none';
+}

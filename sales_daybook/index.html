@@ -16,11 +16,11 @@
   <meta name="apple-mobile-web-app-title" content="MEDI-SALES">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   
-  <link rel="stylesheet" href="app.css?v=jun-V1-016">
+  <link rel="stylesheet" href="app.css?v=jun-V1-029">
   <!-- Supabase JS Client (Loaded in Head for Realtime Multi-PC Sync) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="sales_database.js?v=jun-V1-016"></script>
-  <script src="app.js?v=jun-V1-016"></script>
+  <script src="app.js?v=jun-V1-029"></script>
 </head>
 <body>
 
@@ -76,6 +76,9 @@
         <button class="nav-tab" id="tab-btn-demo-tracker" onclick="switchTab('demo-tracker')" style="border-color:rgba(245,158,11,0.35);">
           <span>🔬 장비 데모</span>
           <span class="badge" id="badge-demo-count" style="background:#f59e0b; color:#000;">0</span>
+        </button>
+        <button class="nav-tab" id="tab-btn-product-search" onclick="switchTab('product-search')" style="border-color:rgba(56,189,248,0.5); color:#38bdf8;">
+          <span style="display:inline-block; margin-right:4px;">🔍</span>제품·단가조회
         </button>
         <button class="nav-tab" id="tab-btn-pipeline" onclick="switchTab('pipeline')">
           <span>📦 파이프라인</span>
@@ -500,6 +503,64 @@
     </section>
 
     <!-- TAB 2: Product Pipeline Kanban Board -->
+    <!-- Tab 2.5: [🔍 제품·단가조회] 심평원 상한가 및 자사 병원별 납품단가 즉시 검색 -->
+    <section id="tab-product-search" class="tab-content" style="display:none;" aria-label="제품·단가조회">
+      <div class="prod-search-container">
+        
+        <!-- 검색 상단 헤더 & 검색창 -->
+        <div class="prod-search-header-box">
+          <div class="prod-search-title-wrap">
+            <h2 class="prod-search-main-title">🔍 제품·단가·보험코드 실시간 조회</h2>
+            <p class="prod-search-sub-desc">
+              심평원 치료재료 <strong>상한금액 24,515건</strong> 및 자사 5개년 <strong>납품이력 89,259건</strong>을 즉시 조회합니다.
+            </p>
+          </div>
+
+          <div class="prod-search-input-wrapper">
+            <span class="search-input-icon">🔍</span>
+            <input type="text" id="prod-search-input" class="prod-search-input-field" 
+                   placeholder="제품코드(R1546 등), 제품명, 보험코드(EDI), 제조사, 규격 입력 (예: R1546, 테가덤, B3120219, 3M)" 
+                   autocomplete="off" />
+            <button type="button" id="prod-search-clear-btn" class="prod-search-clear-btn" style="display:none;" onclick="clearProductSearch()">✕</button>
+            <button type="button" class="prod-search-submit-btn" onclick="triggerProductSearch()">조회하기</button>
+          </div>
+
+          <!-- 빠른 검색 추천 키워드 칩 -->
+          <div class="prod-quick-chips-wrap">
+            <span class="quick-chip-label">⚡ 빠른 검색:</span>
+            <button type="button" class="prod-quick-chip" onclick="quickSearchProduct('테가덤')">테가덤</button>
+            <button type="button" class="prod-quick-chip" onclick="quickSearchProduct('거즈')">거즈</button>
+            <button type="button" class="prod-quick-chip" onclick="quickSearchProduct('카테터')">카테터</button>
+            <button type="button" class="prod-quick-chip" onclick="quickSearchProduct('3M')">3M</button>
+            <button type="button" class="prod-quick-chip" onclick="quickSearchProduct('글러브')">글러브</button>
+            <button type="button" class="prod-quick-chip" onclick="quickSearchProduct('주사기')">주사기</button>
+            <button type="button" class="prod-quick-chip" style="border-color:#38bdf8; color:#38bdf8;" onclick="quickSearchProduct('R1546')">코드: R1546</button>
+          </div>
+        </div>
+
+        <!-- 검색 결과 상태 표시 바 -->
+        <div class="prod-result-status-bar" id="prod-result-status-bar">
+          <div class="status-left">
+            <span class="status-indicator"></span>
+            <span id="prod-status-text">검색어를 입력하고 [조회하기]를 누르거나 엔터를 치세요.</span>
+          </div>
+          <div class="status-right">
+            <span id="prod-result-count-badge" class="result-count-badge" style="display:none;">0건</span>
+          </div>
+        </div>
+
+        <!-- 검색 결과 카드 목록 -->
+        <div id="prod-cards-grid" class="prod-cards-grid">
+          <div class="prod-empty-state">
+            <div class="empty-icon">💡</div>
+            <h3>제품명이나 보험코드를 검색해보세요</h3>
+            <p>병원 미팅 현장에서 심평원 고시 상한가와 과거 납품 단가를 즉시 비교할 수 있습니다.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <section id="tab-pipeline" class="tab-content" aria-label="제품별 파이프라인 매트릭스">
       <div class="product-pipeline-layout">
         
@@ -1687,6 +1748,10 @@
       <span>병원360°</span>
     </button>
     <button class="mobile-nav-item" onclick="switchTab('pipeline')" id="mob-tab-pipeline">
+    <button class="mobile-nav-item" onclick="switchTab('product-search')" id="mob-tab-product-search">
+      <span class="icon">🔍</span>
+      <span>제품단가</span>
+    </button>
       <span class="icon">📦</span>
       <span>파이프라인</span>
     </button>
@@ -1700,12 +1765,87 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=jun-V1-016').then(reg => {
+        navigator.serviceWorker.register('sw.js?v=jun-V1-029').then(reg => {
           reg.update();
           console.log('⚡ PWA Service Worker Active & Updated:', reg.scope);
         }).catch(err => console.warn('SW register error:', err));
       });
     }
   </script>
+
+  <!-- =========================================================================
+       [Phase 3] 플로팅 AI 영업 비서 챗봇 위젯
+       ========================================================================= -->
+  <div id="ai-chat-floating-btn" class="ai-chat-floating-btn" onclick="toggleAIChatModal()" title="AI 영업 비서 대화하기">
+    <span class="chat-icon">💬</span>
+    <span class="chat-badge-pulse">AI비서</span>
+  </div>
+
+  <div id="ai-chat-modal" class="ai-chat-modal" style="display:none;">
+    <div class="ai-chat-header">
+      <div class="ai-chat-header-info">
+        <div class="ai-avatar">🤖</div>
+        <div>
+          <div class="ai-title">준메디칼 AI 영업 비서</div>
+          <div class="ai-status"><span class="online-dot"></span> 심평원 2.4만건 & 5개년 판매 DB 연결됨</div>
+        </div>
+      </div>
+      <div class="ai-header-actions">
+        <button type="button" class="ai-close-btn" onclick="toggleAIChatModal()" title="대화창 닫기">✕</button>
+      </div>
+    </div>
+
+    <div class="ai-chat-messages" id="ai-chat-messages">
+      <div class="ai-msg bot-msg">
+        <div class="msg-bubble">
+          안녕하세요! (주)준메디칼 <strong>AI 영업 비서</strong>입니다. 🏥<br>
+          자사 5개년 판매내역과 심평원 고시 상한가를 바탕으로 즉시 답변해 드립니다.<br><br>
+          <strong>💡 이렇게 물어보세요:</strong>
+          <div class="ai-quick-prompts">
+            <button type="button" class="ai-prompt-chip" onclick="sendQuickPrompt('작년 충남대병원 매출 얼마야?')">📊 충남대 작년 매출</button>
+            <button type="button" class="ai-prompt-chip" onclick="sendQuickPrompt('스테리스트립 상한가 얼마야?')">💊 스테리스트립 상한가</button>
+            <button type="button" class="ai-prompt-chip" onclick="sendQuickPrompt('R1546 최근 얼마에 팔았어?')">📋 R1546 최근 납품가</button>
+            <button type="button" class="ai-prompt-chip" onclick="sendQuickPrompt('담소유병원 2026년 상위 품목 보여줘')">🏆 담소유 26년 상위품목</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-chat-input-bar">
+      <input type="text" id="ai-chat-input" placeholder="질문을 입력하세요 (예: 작년 충남대 거즈 매출은?)" autocomplete="off" />
+      <button type="button" id="ai-chat-send-btn" onclick="sendAIChatMessage()">전송</button>
+    </div>
+  </div>
+
+
+  <!-- =========================================================================
+       [Phase 4] 동일 중분류 치료재료 대체품 비교 팝업 모달
+       ========================================================================= -->
+  <div id="alt-compare-modal-backdrop" class="alt-modal-backdrop" style="display:none;" onclick="closeAlternativesModal()">
+    <div class="alt-modal-window" onclick="event.stopPropagation()">
+      <div class="alt-modal-header">
+        <div class="alt-modal-title-area">
+          <h3 class="alt-modal-title">🔄 심평원 동일 중분류 대체품·경쟁품 비교</h3>
+          <p class="alt-modal-subtitle" id="alt-modal-category-desc">동일 규격 품목군의 타사 제품 및 상한금액을 비교합니다.</p>
+        </div>
+        <button type="button" class="alt-modal-close-btn" onclick="closeAlternativesModal()">✕</button>
+      </div>
+
+      <div class="alt-modal-target-box" id="alt-modal-target-box">
+        <!-- 대상 품목 카드 -->
+      </div>
+
+      <div class="alt-modal-body">
+        <div class="alt-table-header-info">
+          <span id="alt-table-count">동일 분류 품목 목록</span>
+          <span style="font-size:0.75rem; color:#94a3b8;">* 심평원 급여상한금액표 기준</span>
+        </div>
+        <div class="alt-table-scroll-wrap" id="alt-table-wrap">
+          <!-- 대체품 비교 테이블 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
