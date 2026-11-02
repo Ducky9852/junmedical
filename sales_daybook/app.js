@@ -4422,13 +4422,19 @@ function renderHospitalVerificationBox(hospitalName) {
       return `<button type="button" class="ai-hosp-chip" onclick="selectSuggestedHospital('${safeName}')">🏥 ${escapeHtml(hName)} <span style="opacity:0.75; font-size:0.68rem;">(${hRegion} · ${scorePct}%)</span></button>`;
     }).join(' ');
 
+    const safeRawName = (rawName || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     container.innerHTML = `
-      <div style="display:flex; align-items:center; gap:6px; font-weight:700;">
-        <span>💡</span>
-        <span>등록된 거래처와 유사합니다. 아래 병원이 맞으신가요?</span>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; font-weight:700; margin-bottom:4px;">
+        <span style="color:#fde047; font-size:0.85rem;">💡 등록된 거래처와 유사합니다. 아래 병원이 맞으신가요?</span>
       </div>
-      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:2px;">
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; align-items:center;">
         ${chipsHtml}
+      </div>
+      <div style="margin-top:8px; padding-top:8px; border-top:1px dashed rgba(253, 224, 71, 0.35); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+        <span style="font-size:0.75rem; color:#fde047; opacity:0.95;">※ 신규 병원 첫 영업인 경우:</span>
+        <button type="button" class="ai-hosp-chip" onclick="confirmAsNewHospital('${safeRawName}')" style="background:#059669; border:1px solid #10b981; color:#ffffff; font-weight:700; padding:5px 12px; cursor:pointer; font-size:0.78rem; box-shadow:0 2px 4px rgba(0,0,0,0.25);">
+          ✨ 신규 거래처로 등록 ('${escapeHtml(rawName)}')
+        </button>
       </div>
     `;
     container.style.display = 'block';
@@ -4456,6 +4462,27 @@ function selectSuggestedHospital(hospitalName) {
     showToast(`🏥 거래처가 '${hospitalName}'(으)로 선택되었습니다.`);
   }
 }
+
+function confirmAsNewHospital(hospitalName) {
+  window._confirmedNewHospitalName = hospitalName;
+  const container = document.getElementById('ai-hospital-verification-box');
+  if (container) {
+    container.className = 'ai-match-badge new';
+    container.style.background = 'rgba(5, 150, 105, 0.25)';
+    container.style.border = '1.5px solid #10b981';
+    container.style.borderRadius = '8px';
+    container.style.padding = '10px 14px';
+    container.innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+        <span style="color:#34d399; font-weight:700; font-size:0.88rem;">✨ <strong>'${escapeHtml(hospitalName)}'</strong> 신규 거래처로 확정됨</span>
+        <span style="font-size:0.75rem; color:#a7f3d0; background:rgba(6, 78, 59, 0.6); padding:3px 8px; border-radius:4px;">하단 [영업일지 저장] 버튼을 누르면 신규 등록됩니다</span>
+      </div>
+    `;
+    container.style.display = 'block';
+  }
+  showToast(`✨ '${hospitalName}' 신규 거래처로 확정되었습니다. 저장을 진행해 주세요.`);
+}
+
 
 // ----------------------------------------------------
 // 9-3. Intelligent ERP 4,054 Products Suggestion Engine
@@ -4980,21 +5007,26 @@ async function saveParsedLogToDB() {
   const existingHosp = window.SALES_DB.hospitals.find(h => (h.name || '').replace(/\s+/g, '') === cleanHospName);
   const erpMatch = (window.ERP_CUSTOMERS_MASTER || []).find(c => (c.clean_name || c.name).replace(/\s+/g, '') === cleanHospName || (c.name || '').replace(/\s+/g, '') === cleanHospName);
   if (!existingHosp && !erpMatch) {
-    const simRes = findSimilarHospitals(rawHospName);
-    const choice = await promptHospitalConfirmation(rawHospName, simRes.suggestions || []);
-    
-    if (choice.action === 'change') {
-      hospName = choice.hospital;
-      cleanHospName = (hospName || '').replace(/\s+/g, '');
-      const input = document.getElementById('parse-edit-hospital');
-      if (input) input.value = hospName;
-    } else if (choice.action === 'new') {
+    // 사용자가 이미 상단에서 [✨ 신규 거래처로 등록]을 확정한 경우 모달 생략하고 즉시 신규 등록 진행
+    if (window._confirmedNewHospitalName === rawHospName) {
       hospName = rawHospName;
       cleanHospName = (hospName || '').replace(/\s+/g, '');
-      // 신규 거래처로 등록 및 저장 계속 진행
     } else {
-      document.getElementById('parse-edit-hospital')?.focus();
-      return;
+      const simRes = findSimilarHospitals(rawHospName);
+      const choice = await promptHospitalConfirmation(rawHospName, simRes.suggestions || []);
+      
+      if (choice.action === 'change') {
+        hospName = choice.hospital;
+        cleanHospName = (hospName || '').replace(/\s+/g, '');
+        const input = document.getElementById('parse-edit-hospital');
+        if (input) input.value = hospName;
+      } else if (choice.action === 'new') {
+        hospName = rawHospName;
+        cleanHospName = (hospName || '').replace(/\s+/g, '');
+      } else {
+        document.getElementById('parse-edit-hospital')?.focus();
+        return;
+      }
     }
   }
 
