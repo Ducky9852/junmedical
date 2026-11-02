@@ -5989,6 +5989,11 @@ async function getErpProducts() {
     const res = await fetch('erp_products.json?v=jun-V1-026');
     if (res.ok) {
       erpProductsCache = await res.json();
+      // Merge user custom products from localStorage
+      const customList = getCustomProductsFromStorage();
+      if (customList.length > 0) {
+        erpProductsCache = [...customList, ...erpProductsCache];
+      }
       console.log('📦 ERP Products cached:', erpProductsCache.length, 'items');
     } else {
       erpProductsCache = [];
@@ -6697,4 +6702,402 @@ async function openAlternativesModal(ediCode, productName, e) {
 function closeAlternativesModal() {
   const backdrop = document.getElementById('alt-compare-modal-backdrop');
   if (backdrop) backdrop.style.display = 'none';
+}
+
+
+
+// ==========================================================================
+// [Phase 10] 이카운트 ERP 품목등록 스크린샷 AI 자동 판독 & 신규 품목 마스터 등록
+// ==========================================================================
+const JUN_CUSTOM_PRODUCTS_KEY = "JUN_CUSTOM_PRODUCTS_V1";
+let currentEcountParsedData = null;
+let currentEcountImageBase64 = null;
+let currentEcountImageMime = "image/png";
+
+// 1. 로컬 저장소 커스텀 품목 가져오기
+function getCustomProductsFromStorage() {
+  try {
+    const raw = localStorage.getItem(JUN_CUSTOM_PRODUCTS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    console.warn("커스텀 품목 로드 실패:", e);
+    return [];
+  }
+}
+
+// 2. 모달 열기/닫기
+function openEcountProductRegisterModal() {
+  const modal = document.getElementById("ecount-product-register-modal");
+  if (modal) {
+    modal.style.display = "flex";
+  }
+}
+
+function closeEcountProductRegisterModal() {
+  const modal = document.getElementById("ecount-product-register-modal");
+  if (modal) {
+    modal.style.display = "none";
+  }
+  const loading = document.getElementById("ecount-loading-state");
+  if (loading) loading.style.display = "none";
+}
+
+// 3. 파일 선택 핸들러
+function handleEcountFileSelect(files) {
+  if (!files || files.length === 0) return;
+  const file = files[0];
+  processEcountImageFile(file);
+}
+
+// 4. 이미지 파일 읽기 및 AI 분석 트리거
+function processEcountImageFile(file) {
+  if (!file || !file.type.startsWith("image/")) {
+    alert("이미지 파일(PNG, JPG)만 등록 가능합니다.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    const parts = dataUrl.split(",");
+    currentEcountImageMime = file.type || "image/png";
+    currentEcountImageBase64 = parts[1];
+
+    // 드롭존 미리보기 업데이트
+    const previewContainer = document.getElementById("ecount-preview-container");
+    const previewImg = document.getElementById("ecount-preview-img");
+    const promptBox = document.getElementById("ecount-dropzone-prompt");
+    
+    if (previewImg) previewImg.src = dataUrl;
+    if (previewContainer) previewContainer.style.display = "flex";
+    if (promptBox) promptBox.style.display = "none";
+
+    // AI 비전 분석 시작
+    runEcountVisionAnalysis(currentEcountImageBase64, currentEcountImageMime);
+  };
+  reader.readAsDataURL(file);
+}
+
+// 5. 다시 분석하기 버튼
+function triggerEcountReanalyze() {
+  if (!currentEcountImageBase64) {
+    alert("분석할 이미지가 없습니다.");
+    return;
+  }
+  runEcountVisionAnalysis(currentEcountImageBase64, currentEcountImageMime);
+}
+
+// 6. Gemini Vision 멀티모달 API 호출
+async function runEcountVisionAnalysis(b64Data, mimeType) {
+  const loadingState = document.getElementById("ecount-loading-state");
+  const formFields = document.getElementById("ecount-form-fields");
+  
+  if (loadingState) loadingState.style.display = "block";
+
+  // API Key 확인
+  let apiKey = (typeof geminiConfig !== "undefined" && geminiConfig.apiKey) 
+               ? geminiConfig.apiKey 
+               : (localStorage.getItem("JUN_GEMINI_CONFIG_V1_KEY") || "");
+
+  // API 키가 없는 경우 사용자에게 친절히 입력 안내
+  if (!apiKey) {
+    const inputKey = prompt("이카운트 스크린샷 AI 자동 분석을 위해 Gemini API Key를 입력해주세요 (무료 키 가능, 1회 등록 시 영구 유지):");
+    if (inputKey && inputKey.trim()) {
+      apiKey = inputKey.trim();
+      localStorage.setItem("JUN_GEMINI_CONFIG_V1_KEY", apiKey);
+      if (typeof geminiConfig !== "undefined") geminiConfig.apiKey = apiKey;
+    } else {
+      if (loadingState) loadingState.style.display = "none";
+      alert("API 키 없이 수동으로 필드를 입력하여 등록하실 수도 있습니다.");
+      return;
+    }
+  }
+
+  // 사용 가능한 최신 Gemini Vision 모델 리스트
+  const candidateModels = ["gemini-3.5-flash", "gemini-3.8-flash", "gemini-flash-latest"];
+  let parsedData = null;
+  let lastError = null;
+
+  const promptText = `이 이미지는 이카운트 ERP(ECOUNT)의 '품목등록' 팝업창 캡처입니다.
+이미지 속의 입력 필드들을 매우 정밀하게 판독하여 아래 JSON 형식으로만 응답하세요:
+{
+  "product_code": "품목코드 (예: LYN-10-1.5-00)",
+  "product_name": "품목명 (예: CUREGYN)",
+  "spec": "규격 (예: 1.5G(20EA/BOX))",
+  "unit": "단위 (예: EA)",
+  "edi_code": "보험코드 (예: BM5010_J)",
+  "ea_per_box": "EA/BOX (예: 1)",
+  "supplier": "구매처/매입처 (예: 주식회사 에이치엠헬스케어)",
+  "medical_grade": "의료기기 등급 (예: 2등급)",
+  "udi_di": "UDI-DI (예: 08809310785203)",
+  "purchase_price": "입고단가(숫자만, 예: 9900)",
+  "aliases": ["추천 한글/영문 별칭 목록 (예: 큐어진, 큐어진 1.5G, CUREGYN)"]
+}`;
+
+  for (const model of candidateModels) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const payload = {
+        contents: [
+          {
+            parts: [
+              { text: promptText },
+              {
+                inline_data: {
+                  mime_type: mimeType || "image/png",
+                  data: b64Data
+                }
+              }
+            ]
+          }
+        ],
+        generationConfig: {
+          response_mime_type: "application/json"
+        }
+      };
+
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (resp.ok) {
+        const jsonRes = await resp.json();
+        const cand = jsonRes.candidates && jsonRes.candidates[0];
+        const rawText = cand && cand.content && cand.content.parts && cand.content.parts[0] && cand.content.parts[0].text;
+        if (rawText) {
+          parsedData = JSON.parse(rawText);
+          console.log(`✅ [${model}] 이카운트 스크린샷 파싱 성공:`, parsedData);
+          break;
+        }
+      } else {
+        const errText = await resp.text();
+        console.warn(`[${model}] Vision 호출 응답 오류 (${resp.status}):`, errText);
+        lastError = errText;
+      }
+    } catch (err) {
+      console.warn(`[${model}] 시도 중 예외:`, err);
+      lastError = err.message;
+    }
+  }
+
+  if (loadingState) loadingState.style.display = "none";
+
+  if (parsedData) {
+    renderEcountParsedData(parsedData);
+  } else {
+    alert("스크린샷 자동 분석에 실패했습니다. (사유: " + (lastError || "응답 없음") + ")\n화면의 입력창에 직접 정보를 입력하여 등록하실 수 있습니다.");
+  }
+}
+
+// 7. 파싱 결과 폼 필드 채우기
+function renderEcountParsedData(data) {
+  currentEcountParsedData = data;
+
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val !== undefined && val !== null ? val : "";
+  };
+
+  setVal("ecount-field-code", data.product_code);
+  setVal("ecount-field-name", data.product_name);
+  setVal("ecount-field-spec", data.spec);
+  setVal("ecount-field-unit", data.unit || "EA");
+  setVal("ecount-field-eabox", data.ea_per_box || "1");
+  setVal("ecount-field-edi", data.edi_code);
+  setVal("ecount-field-udi", data.udi_di);
+  setVal("ecount-field-supplier", data.supplier);
+  setVal("ecount-field-grade", data.medical_grade);
+  setVal("ecount-field-price", data.purchase_price ? String(data.purchase_price).replace(/[^0-9]/g, "") : "");
+
+  let aliasStr = "";
+  if (Array.isArray(data.aliases)) {
+    aliasStr = data.aliases.join(", ");
+  } else if (typeof data.aliases === "string") {
+    aliasStr = data.aliases;
+  }
+  setVal("ecount-field-aliases", aliasStr);
+
+  // 보험코드(EDI) 있으면 상한가 조회 시도
+  if (data.edi_code) {
+    checkEcountEdiInfo(data.edi_code);
+  }
+}
+
+// 8. EDI 상한가 실시간 검증 배지 표시
+function checkEcountEdiInfo(ediCode) {
+  const badge = document.getElementById("ecount-edi-badge");
+  if (!badge) return;
+  const cleanEdi = (ediCode || "").trim().toUpperCase();
+  if (!cleanEdi) {
+    badge.style.display = "none";
+    badge.innerHTML = "";
+    return;
+  }
+
+  // 로컬 치료재료 마스터에서 상한가 검색 (window.SALES_DB 등 활용)
+  badge.innerHTML = `(치료재료 코드 확인됨: <strong>${escapeHtml(cleanEdi)}</strong>)`;
+  badge.style.display = "inline";
+}
+
+// 9. 신규 품목 마스터 저장 & 현재 일지 반영
+function saveCustomProductFromEcount(applyToCurrentLog) {
+  const getVal = id => (document.getElementById(id)?.value || "").trim();
+
+  const code = getVal("ecount-field-code");
+  const name = getVal("ecount-field-name");
+  const spec = getVal("ecount-field-spec");
+  const unit = getVal("ecount-field-unit") || "EA";
+  const eabox = getVal("ecount-field-eabox") || "1";
+  const edi = getVal("ecount-field-edi");
+  const udi = getVal("ecount-field-udi");
+  const supplier = getVal("ecount-field-supplier");
+  const grade = getVal("ecount-field-grade");
+  const price = parseInt(getVal("ecount-field-price").replace(/[^0-9]/g, ""), 10) || 0;
+  const aliasStr = getVal("ecount-field-aliases");
+
+  if (!code) {
+    alert("품목코드를 입력해주세요.");
+    document.getElementById("ecount-field-code")?.focus();
+    return;
+  }
+  if (!name) {
+    alert("품목명을 입력해주세요.");
+    document.getElementById("ecount-field-name")?.focus();
+    return;
+  }
+
+  const aliases = aliasStr.split(",").map(s => s.trim()).filter(Boolean);
+
+  const newProduct = {
+    code: code,
+    name: name,
+    clean_name: (name || "").replace(/\s+/g, ""),
+    spec: spec,
+    unit: unit,
+    ea_per_box: eabox,
+    edi_code: edi,
+    udi_di: udi,
+    supplier: supplier,
+    medical_grade: grade,
+    purchase_price: price,
+    aliases: aliases,
+    source: "custom_ecount",
+    created_at: new Date().toISOString()
+  };
+
+  // 1. localStorage에 저장
+  const existingList = getCustomProductsFromStorage();
+  // 중복 코드 제거 후 최신화
+  const filteredList = existingList.filter(p => (p.code || "").toUpperCase() !== code.toUpperCase());
+  filteredList.unshift(newProduct);
+  try {
+    localStorage.setItem(JUN_CUSTOM_PRODUCTS_KEY, JSON.stringify(filteredList));
+  } catch (e) {
+    console.warn("로컬 저장소 저장 실패:", e);
+  }
+
+  // 2. 메모리 캐시 최신화 (erpProductsCache 및 window.ERP_PRODUCTS_MASTER)
+  if (typeof erpProductsCache !== "undefined" && Array.isArray(erpProductsCache)) {
+    erpProductsCache.unshift(newProduct);
+  }
+  if (typeof window.ERP_PRODUCTS_MASTER !== "undefined" && Array.isArray(window.ERP_PRODUCTS_MASTER)) {
+    window.ERP_PRODUCTS_MASTER.unshift(newProduct);
+  }
+
+  // 3. 현재 일지 작성 폼에 즉시 적용
+  if (applyToCurrentLog) {
+    const prodNameInput = document.getElementById("parse-edit-product-name");
+    const prodCodeInput = document.getElementById("parse-edit-product-code");
+    const displayLabel = spec ? `${name} ${spec} (${code})` : `${name} (${code})`;
+
+    if (prodNameInput) prodNameInput.value = displayLabel;
+    if (prodCodeInput) prodCodeInput.value = code;
+
+    // 추천 칩 숨김
+    const suggBox = document.getElementById("ai-product-suggestions-box");
+    if (suggBox) suggBox.style.display = "none";
+
+    // 인라인 검색 박스 닫기
+    const searchBox = document.getElementById("ai-parse-product-search-box");
+    if (searchBox) searchBox.style.display = "none";
+  }
+
+  // 4. 모달 닫기 및 알림
+  closeEcountProductRegisterModal();
+
+  const successMsg = applyToCurrentLog 
+    ? `✨ [${name}] 신규 품목이 등록되었으며, 현재 일지에 즉시 반영되었습니다!`
+    : `✨ [${name}] 신규 품목이 사내 품목 마스터에 등록되었습니다!`;
+
+  alert(successMsg);
+}
+
+// 10. 전역 클립보드 붙여넣기(Ctrl + V) 이벤트 리스너 등록
+function initEcountPasteListener() {
+  window.addEventListener("paste", function(e) {
+    // 텍스트 인풋창에서 일반 글자 붙여넣기는 정상 동작하도록 둠
+    const activeEl = document.activeElement;
+    const isTextInput = activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA") && activeEl.id !== "ecount-dropzone";
+
+    const clipboardData = e.clipboardData || window.clipboardData;
+    if (!clipboardData) return;
+
+    const items = clipboardData.items;
+    if (!items) return;
+
+    let imageFile = null;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type && items[i].type.indexOf("image") !== -1) {
+        imageFile = items[i].getAsFile();
+        break;
+      }
+    }
+
+    // 클립보드에 이미지가 복사되어 있는 경우
+    if (imageFile) {
+      e.preventDefault();
+      console.log("📸 클립보드 이미지 감지됨:", imageFile);
+      openEcountProductRegisterModal();
+      processEcountImageFile(imageFile);
+    }
+  });
+
+  // 드래그 앤 드롭 방지 및 드롭 처리
+  const dropzone = document.getElementById("ecount-dropzone");
+  if (dropzone) {
+    ["dragenter", "dragover"].forEach(eventName => {
+      dropzone.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.style.borderColor = "#10b981";
+        dropzone.style.background = "rgba(16,185,129,0.15)";
+      }, false);
+    });
+
+    ["dragleave", "drop"].forEach(eventName => {
+      dropzone.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.style.borderColor = "rgba(56,189,248,0.4)";
+        dropzone.style.background = "rgba(30,41,59,0.5)";
+      }, false);
+    });
+
+    dropzone.addEventListener("drop", e => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files && files.length > 0) {
+        handleEcountFileSelect(files);
+      }
+    }, false);
+  }
+}
+
+// 페이지 로드 시 이벤트 리스너 초기화
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initEcountPasteListener);
+} else {
+  initEcountPasteListener();
 }

@@ -16,11 +16,11 @@
   <meta name="apple-mobile-web-app-title" content="MEDI-SALES">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   
-  <link rel="stylesheet" href="app.css?v=jun-V1-031">
+  <link rel="stylesheet" href="app.css?v=jun-V1-032">
   <!-- Supabase JS Client (Loaded in Head for Realtime Multi-PC Sync) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="sales_database.js?v=jun-V1-016"></script>
-  <script src="app.js?v=jun-V1-031"></script>
+  <script src="app.js?v=jun-V1-032"></script>
 </head>
 <body>
 
@@ -55,7 +55,7 @@
         <div class="brand-icon">🩺</div>
         <div class="brand-text">
           <div class="brand-title-wrap">
-            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-031</span>
+            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-032</span>
             <button type="button" class="btn-cloud-sync" onclick="fetchLatestFromSupabase(true)" title="클라우드 최신 실시간 동기화">🔄</button>
             <h1>MEDI-SALES 360°</h1>
           </div>
@@ -65,6 +65,9 @@
 
       <!-- Navigation Tabs -->
       <nav class="nav-tabs" aria-label="메인 내비게이션">
+        <button class="nav-tab" onclick="openEcountProductRegisterModal()" style="border-color:rgba(16,185,129,0.5); background:rgba(16,185,129,0.15);">
+          <span style="color:#34d399; font-weight:700;">📸 이카운트 품목등록</span>
+        </button>
         <button class="nav-tab active" id="tab-btn-hospital" onclick="switchTab('hospital')">
           <span>🏥 병원 360°</span>
           <span class="badge" id="badge-hospital-count">178</span>
@@ -785,7 +788,8 @@
             <div class="parsed-field-group">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                 <label class="parsed-field-lbl" style="margin-bottom:0;">📦 공식 ERP 제품 매핑</label>
-                <button type="button" class="mini-badge" style="background:rgba(56,189,248,0.2); color:var(--accent-cyan); border:1px solid rgba(56,189,248,0.4); cursor:pointer; font-size:0.7rem; padding:2px 8px; border-radius:4px;" onclick="toggleAiParsedProductSearch()">🔍 4,054개 품목 검색/교체</button>
+                <button type="button" class="mini-badge" style="background:rgba(56,189,248,0.2); color:var(--accent-cyan); border:1px solid rgba(56,189,248,0.4); cursor:pointer; font-size:0.7rem; padding:2px 8px; border-radius:4px;" <button type="button" class="mini-badge" style="background:rgba(56,189,248,0.2); color:var(--accent-cyan); border:1px solid rgba(56,189,248,0.4); cursor:pointer; font-size:0.7rem; padding:2px 8px; border-radius:4px;" onclick="toggleAiParsedProductSearch()">🔍 품목 검색/교체</button>
+                <button type="button" class="mini-badge" style="background:rgba(16,185,129,0.25); color:#34d399; border:1px solid rgba(16,185,129,0.5); cursor:pointer; font-size:0.7rem; padding:2px 8px; border-radius:4px; font-weight:700;" onclick="openEcountProductRegisterModal()">📸 이카운트 캡처로 등록 (Ctrl+V)</button>
               </div>
               <input type="text" id="parse-edit-product-name" class="ai-edit-input highlight-cyan" placeholder="제품명">
               <input type="hidden" id="parse-edit-product-code" value="PROD_GENERAL">
@@ -1765,7 +1769,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=jun-V1-031').then(reg => {
+        navigator.serviceWorker.register('sw.js?v=jun-V1-032').then(reg => {
           reg.update();
           console.log('⚡ PWA Service Worker Active & Updated:', reg.scope);
         }).catch(err => console.warn('SW register error:', err));
@@ -1846,6 +1850,131 @@
       </div>
     </div>
   </div>
+
+
+<!-- ==========================================================================
+     [Phase 10] 이카운트 품목등록 스크린샷 AI 자동 판독 & 신규 등록 모달
+     ========================================================================== -->
+<div id="ecount-product-register-modal" class="custom-modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); z-index:99999; align-items:center; justify-content:center; padding:16px;">
+  <div class="custom-modal-content" style="background:#0f172a; border:1px solid #10b981; border-radius:12px; width:100%; max-width:680px; max-height:90vh; overflow-y:auto; box-shadow:0 25px 50px -12px rgba(16,185,129,0.3); padding:24px; color:#f8fafc; font-family:inherit;">
+    
+    <!-- 모달 헤더 -->
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:12px; margin-bottom:16px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:1.4rem;">📸</span>
+        <div>
+          <h3 style="margin:0; font-size:1.15rem; font-weight:700; color:#34d399;">이카운트 품목등록 AI 자동 판독 & 신규 등록</h3>
+          <p style="margin:2px 0 0; font-size:0.75rem; color:#94a3b8;">스크린샷 1장으로 품목코드·품명·규격·보험코드·UDI·단가를 1초 만에 자동 추출합니다.</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeEcountProductRegisterModal()" style="background:transparent; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer; padding:4px 8px; line-height:1;">&times;</button>
+    </div>
+
+    <!-- 퀵 안내 배너 -->
+    <div style="background:rgba(16,185,129,0.12); border:1px dashed #10b981; border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:0.8rem; line-height:1.45; color:#a7f3d0;">
+      💡 <strong>가장 빠른 방법:</strong> 이카운트 품목등록 창을 <code>Win + Shift + S</code>로 캡처한 뒤, 
+      지금 이 화면에서 바로 <strong style="color:#ffffff; background:#059669; padding:2px 6px; border-radius:4px;">Ctrl + V</strong>를 누르시면 자동으로 AI 스캔이 시작됩니다!
+    </div>
+
+    <!-- 이미지 업로드 / 붙여넣기 드롭존 -->
+    <div id="ecount-dropzone" onclick="document.getElementById('ecount-file-input').click()" style="border:2px dashed rgba(56,189,248,0.4); border-radius:8px; padding:18px; text-align:center; cursor:pointer; background:rgba(30,41,59,0.5); transition:all 0.2s ease; margin-bottom:16px;">
+      <input type="file" id="ecount-file-input" accept="image/*" style="display:none;" onchange="handleEcountFileSelect(this.files)">
+      <div id="ecount-dropzone-prompt">
+        <div style="font-size:1.8rem; margin-bottom:4px;">🖼️</div>
+        <div style="font-size:0.88rem; font-weight:600; color:#38bdf8;">이곳을 클릭하여 캡처 이미지 선택 또는 스크린샷 붙여넣기 (Ctrl + V)</div>
+        <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">JPG, PNG 지원 / 클립보드 이미지 자동 인식</div>
+      </div>
+      <div id="ecount-preview-container" style="display:none; align-items:center; justify-content:center; gap:12px;">
+        <img id="ecount-preview-img" src="" alt="캡처 미리보기" style="max-height:120px; border-radius:6px; border:1px solid #334155;">
+        <div style="text-align:left;">
+          <div style="font-size:0.8rem; font-weight:600; color:#34d399;">✅ 이미지 로드 완료</div>
+          <button type="button" onclick="event.stopPropagation(); triggerEcountReanalyze();" style="margin-top:6px; background:#0284c7; color:#fff; border:none; border-radius:4px; padding:4px 10px; font-size:0.75rem; cursor:pointer;">⚡ 다시 분석하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 로딩 인디케이터 -->
+    <div id="ecount-loading-state" style="display:none; text-align:center; padding:20px; background:rgba(15,23,42,0.6); border-radius:8px; margin-bottom:16px; border:1px solid rgba(56,189,248,0.3);">
+      <div style="font-size:1.6rem; animation:spin 1s linear infinite; display:inline-block;">⚡</div>
+      <div style="font-size:0.9rem; font-weight:700; color:#38bdf8; margin-top:8px;">Gemini Vision AI가 이카운트 품목정보를 정밀 판독 중입니다...</div>
+      <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">품목코드, 규격, 보험코드(EDI), UDI, 단가를 추출하고 있습니다 (약 1~2초 소요)</div>
+    </div>
+
+    <!-- 파싱 결과 폼 (수정 가능) -->
+    <div id="ecount-form-fields" style="display:block;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label style="font-size:0.78rem; font-weight:600; color:#94a3b8; display:block; margin-bottom:4px;">품목코드 <span style="color:#f43f5e;">*</span></label>
+          <input type="text" id="ecount-field-code" placeholder="예: LYN-10-1.5-00" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:8px 10px; color:#f8fafc; font-size:0.85rem; font-weight:700; box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; font-weight:600; color:#94a3b8; display:block; margin-bottom:4px;">품목명 <span style="color:#f43f5e;">*</span></label>
+          <input type="text" id="ecount-field-name" placeholder="예: CUREGYN" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:8px 10px; color:#f8fafc; font-size:0.85rem; font-weight:700; box-sizing:border-box;">
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label style="font-size:0.78rem; font-weight:600; color:#94a3b8; display:block; margin-bottom:4px;">규격</label>
+          <input type="text" id="ecount-field-spec" placeholder="예: 1.5G(20EA/BOX)" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:8px 10px; color:#f8fafc; font-size:0.85rem; box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; font-weight:600; color:#94a3b8; display:block; margin-bottom:4px;">단위</label>
+          <input type="text" id="ecount-field-unit" placeholder="EA" value="EA" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:8px 10px; color:#f8fafc; font-size:0.85rem; box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; font-weight:600; color:#94a3b8; display:block; margin-bottom:4px;">EA/BOX</label>
+          <input type="text" id="ecount-field-eabox" placeholder="1" value="1" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:8px 10px; color:#f8fafc; font-size:0.85rem; box-sizing:border-box;">
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label style="font-size:0.78rem; font-weight:600; color:#94a3b8; display:block; margin-bottom:4px;">
+            보험코드 (EDI) 
+            <span id="ecount-edi-badge" style="display:none; font-size:0.7rem; color:#38bdf8; margin-left:4px;"></span>
+          </label>
+          <input type="text" id="ecount-field-edi" placeholder="예: BM5010_J" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:8px 10px; color:#f8fafc; font-size:0.85rem; box-sizing:border-box;" onchange="checkEcountEdiInfo(this.value)">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; font-weight:600; color:#94a3b8; display:block; margin-bottom:4px;">UDI-DI (표준코드)</label>
+          <input type="text" id="ecount-field-udi" placeholder="예: 08809310785203" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:8px 10px; color:#f8fafc; font-size:0.85rem; box-sizing:border-box;">
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label style="font-size:0.78rem; font-weight:600; color:#94a3b8; display:block; margin-bottom:4px;">구매처 (매입처)</label>
+          <input type="text" id="ecount-field-supplier" placeholder="예: 주식회사 에이치엠헬스케어" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:8px 10px; color:#f8fafc; font-size:0.85rem; box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; font-weight:600; color:#94a3b8; display:block; margin-bottom:4px;">의료기기 등급</label>
+          <input type="text" id="ecount-field-grade" placeholder="예: 2등급" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:8px 10px; color:#f8fafc; font-size:0.85rem; box-sizing:border-box;">
+        </div>
+        <div>
+          <label style="font-size:0.78rem; font-weight:600; color:#94a3b8; display:block; margin-bottom:4px;">입고단가 (원)</label>
+          <input type="number" id="ecount-field-price" placeholder="9900" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:8px 10px; color:#f8fafc; font-size:0.85rem; box-sizing:border-box;">
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <label style="font-size:0.78rem; font-weight:600; color:#94a3b8; display:block; margin-bottom:4px;">
+          추천 별칭 (영업 현장 호칭, 쉼표 구분)
+          <span style="font-size:0.7rem; color:#64748b; font-weight:normal;">- 사원이 일지에 이 이름을 쓰면 AI가 자동 매핑합니다</span>
+        </label>
+        <input type="text" id="ecount-field-aliases" placeholder="예: 큐어진, 큐어진 1.5G, CUREGYN" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:8px 10px; color:#f8fafc; font-size:0.85rem; box-sizing:border-box;">
+      </div>
+
+      <!-- 하단 버튼들 -->
+      <div style="display:flex; justify-content:flex-end; gap:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:16px;">
+        <button type="button" onclick="closeEcountProductRegisterModal()" style="background:#334155; color:#cbd5e1; border:none; border-radius:6px; padding:10px 16px; font-size:0.85rem; font-weight:600; cursor:pointer;">취소</button>
+        <button type="button" onclick="saveCustomProductFromEcount(false)" style="background:#0284c7; color:#fff; border:none; border-radius:6px; padding:10px 16px; font-size:0.85rem; font-weight:600; cursor:pointer;">📦 마스터에만 등록</button>
+        <button type="button" onclick="saveCustomProductFromEcount(true)" style="background:#059669; color:#fff; border:none; border-radius:6px; padding:10px 18px; font-size:0.88rem; font-weight:700; cursor:pointer; box-shadow:0 4px 12px rgba(16,185,129,0.4);">✅ 등록 & 현재 일지에 즉시 적용</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 </body>
 </html>
