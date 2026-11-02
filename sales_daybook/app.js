@@ -4840,6 +4840,127 @@ function parseSalesTextLocally(text) {
   }, text, false);
 }
 
+
+// ==============================================================================
+// 신규 거래처 등록 및 유사 거래처 확인 대화상자 (커스텀 비동기 모달)
+// ==============================================================================
+function promptHospitalConfirmation(rawHospName, suggestions) {
+  return new Promise((resolve) => {
+    const oldModal = document.getElementById('hosp-verify-modal-overlay');
+    if (oldModal) oldModal.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'hosp-verify-modal-overlay';
+    overlay.style.cssText = `
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999999; backdrop-filter: blur(4px); padding: 16px;
+      animation: hospModalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    `;
+
+    // 추천 병원 목록 HTML
+    let suggestionsHtml = '';
+    if (suggestions && suggestions.length > 0) {
+      suggestionsHtml = `
+        <div style="margin: 14px 0 16px; padding: 12px 14px; background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 10px;">
+          <div style="font-size: 13px; font-weight: 700; color: #b45309; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <span>💡</span> 등록된 기존 거래처 중 유사한 병원이 있습니다:
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            ${suggestions.slice(0, 3).map(s => {
+              const sName = s.hospital.name;
+              const sPct = Math.round(s.score * 100);
+              const sRegion = s.hospital.region || '';
+              return `
+                <button type="button" class="btn-sug-choice" data-hosp="${escapeHtml(sName)}" style="
+                  display: flex; align-items: center; justify-content: space-between;
+                  padding: 9px 12px; background: #ffffff; border: 1.5px solid #fde68a; border-radius: 8px;
+                  cursor: pointer; text-align: left; font-size: 13px; font-weight: 600; color: #1e293b;
+                  transition: all 0.15s;
+                " onmouseover="this.style.background='#fef3c7';this.style.borderColor='#f59e0b'" onmouseout="this.style.background='#fff';this.style.borderColor='#fde68a'">
+                  <span>🏢 <b>${escapeHtml(sName)}</b> <span style="font-size: 11.5px; color: #64748b; font-weight: normal;">(${sRegion})</span></span>
+                  <span style="font-size: 11px; background: #fef3c7; color: #b45309; padding: 2px 7px; border-radius: 12px; font-weight: 700;">${sPct}% 일치</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+          <div style="font-size: 11.5px; color: #92400e; margin-top: 8px; line-height: 1.4;">
+            ※ 위 병원의 오타라면 위 버튼을 눌러 바로 변경 저장할 수 있습니다.
+          </div>
+        </div>
+      `;
+    }
+
+    overlay.innerHTML = `
+      <style>
+        @keyframes hospModalFadeIn {
+          from { opacity: 0; transform: scale(0.96); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      </style>
+      <div style="
+        background: #ffffff; width: 100%; max-width: 460px; border-radius: 16px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+        overflow: hidden; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      ">
+        <div style="padding: 18px 22px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 22px;">🏥</span>
+          <span style="font-size: 16.5px; font-weight: 700; color: #0f172a;">거래처 등록 확인</span>
+        </div>
+        
+        <div style="padding: 20px 22px;">
+          <div style="font-size: 14px; line-height: 1.5; color: #334155;">
+            입력하신 <b style="color: #0284c7; background: #e0f2fe; padding: 2px 7px; border-radius: 4px; font-size: 14.5px;">'${escapeHtml(rawHospName)}'</b>은(는)<br>
+            현재 시스템에 등록되지 않은 <b>신규 거래처</b>입니다.
+          </div>
+
+          ${suggestionsHtml}
+
+          <div style="margin-top: 18px; display: flex; flex-direction: column; gap: 8px;">
+            <button type="button" id="btn-confirm-new-hosp" style="
+              width: 100%; padding: 12px 16px; background: #059669; color: #ffffff;
+              border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
+              cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+              box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.3); transition: background 0.15s;
+            " onmouseover="this.style.background='#047857'" onmouseout="this.style.background='#059669'">
+              <span>✨</span>
+              <span>'${escapeHtml(rawHospName)}' 신규 거래처로 등록 & 저장</span>
+            </button>
+
+            <button type="button" id="btn-cancel-hosp-modal" style="
+              width: 100%; padding: 10px 16px; background: #f1f5f9; color: #475569;
+              border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 600;
+              cursor: pointer; transition: background 0.15s;
+            " onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">
+              입력창으로 돌아가기 (다시 확인)
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    document.getElementById('btn-confirm-new-hosp').onclick = () => {
+      overlay.remove();
+      resolve({ action: 'new', hospital: rawHospName });
+    };
+
+    document.getElementById('btn-cancel-hosp-modal').onclick = () => {
+      overlay.remove();
+      resolve({ action: 'cancel' });
+    };
+
+    overlay.querySelectorAll('.btn-sug-choice').forEach(btn => {
+      btn.onclick = () => {
+        const chosen = btn.getAttribute('data-hosp');
+        overlay.remove();
+        resolve({ action: 'change', hospital: chosen });
+      };
+    });
+  });
+}
+
 async function saveParsedLogToDB() {
   // Read current values directly from Editable Form
   const userRep = document.getElementById('parse-edit-sales-rep')?.value || currentAiSelectedRep;
@@ -4858,31 +4979,22 @@ async function saveParsedLogToDB() {
   
   const existingHosp = window.SALES_DB.hospitals.find(h => (h.name || '').replace(/\s+/g, '') === cleanHospName);
   const erpMatch = (window.ERP_CUSTOMERS_MASTER || []).find(c => (c.clean_name || c.name).replace(/\s+/g, '') === cleanHospName || (c.name || '').replace(/\s+/g, '') === cleanHospName);
-
   if (!existingHosp && !erpMatch) {
     const simRes = findSimilarHospitals(rawHospName);
-    if (simRes.suggestions && simRes.suggestions.length > 0) {
-      const topSug = simRes.suggestions[0].hospital.name;
-      const topPct = Math.round(simRes.suggestions[0].score * 100);
-      const confirmChoice = confirm(
-        `⚠️ [거래처 확인 안내]\n\n'${rawHospName}'은(는) 미등록 거래처입니다.\n등록된 거래처 중 '${topSug}' (${topPct}% 일치)이(가) 있습니다.\n\n` +
-        `• [확인] : '${topSug}'(으)로 표준화하여 저장\n` +
-        `• [취소] : 입력창으로 돌아가 거래처명 다시 확인`
-      );
-      if (confirmChoice) {
-        hospName = topSug;
-        cleanHospName = (hospName || '').replace(/\s+/g, '');
-        const input = document.getElementById('parse-edit-hospital');
-        if (input) input.value = topSug;
-      } else {
-        document.getElementById('parse-edit-hospital')?.focus();
-        return;
-      }
+    const choice = await promptHospitalConfirmation(rawHospName, simRes.suggestions || []);
+    
+    if (choice.action === 'change') {
+      hospName = choice.hospital;
+      cleanHospName = (hospName || '').replace(/\s+/g, '');
+      const input = document.getElementById('parse-edit-hospital');
+      if (input) input.value = hospName;
+    } else if (choice.action === 'new') {
+      hospName = rawHospName;
+      cleanHospName = (hospName || '').replace(/\s+/g, '');
+      // 신규 거래처로 등록 및 저장 계속 진행
     } else {
-      if (!confirm(`🆕 '${rawHospName}'은(는) 시스템에 등록되지 않은 신규 거래처입니다.\n\n정말로 신규 거래처로 신규 등록하시겠습니까?`)) {
-        document.getElementById('parse-edit-hospital')?.focus();
-        return;
-      }
+      document.getElementById('parse-edit-hospital')?.focus();
+      return;
     }
   }
 
