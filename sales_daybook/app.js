@@ -5981,6 +5981,74 @@ setupClipboardPasteListener();
 
 let isProdSearchInitialized = false;
 let erpProductsCache = null;
+let catalogIndexCache = null;
+let catalogCodeMapCache = null;
+
+// 확정된 카탈로그 인덱스 사전 로드 및 코드별 역색인 구축
+async function getCatalogIndex() {
+  if (catalogIndexCache) return catalogIndexCache;
+  try {
+    const res = await fetch('catalog_index.json?v=jun-V1-033');
+    if (res.ok) {
+      catalogIndexCache = await res.json();
+      catalogCodeMapCache = {};
+      catalogIndexCache.forEach(c => {
+        (c.matched_codes || []).forEach(code => {
+          const clean = String(code || '').trim().toUpperCase();
+          if (clean && !catalogCodeMapCache[clean]) {
+            catalogCodeMapCache[clean] = c;
+          }
+        });
+      });
+      console.log('📄 Catalog Index cached:', catalogIndexCache.length, 'files');
+    } else {
+      catalogIndexCache = [];
+      catalogCodeMapCache = {};
+    }
+  } catch (e) {
+    console.warn('Catalog index load error:', e);
+    catalogIndexCache = [];
+    catalogCodeMapCache = {};
+  }
+  return catalogIndexCache;
+}
+
+function findMatchedCatalogForProduct(prodCode, prodName) {
+  if (!catalogCodeMapCache) return null;
+  if (prodCode) {
+    const cleanCode = String(prodCode).trim().toUpperCase();
+    if (catalogCodeMapCache[cleanCode]) {
+      return catalogCodeMapCache[cleanCode];
+    }
+  }
+  return null;
+}
+
+async function openProductCatalogPdf(relPath, filename, codeOrName, event) {
+  if (event) event.stopPropagation();
+  const cleanRel = String(relPath || '').replace(/\\/g, '/');
+  const localPdfUrl = `http://localhost:8500/api/pdf/${encodeURIComponent(cleanRel)}`;
+
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 900);
+    const check = await fetch('http://localhost:8500/api/stats', { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (check.ok) {
+      window.open(localPdfUrl, '_blank');
+      showToast(`📄 [${filename}] 카탈로그 PDF를 새 탭에서 열었습니다.`);
+      return;
+    }
+  } catch (e) {
+    // 로컬 매칭 서버 미실행 또는 모바일/외부 접속 환경
+  }
+
+  const slackCmd = `!카탈로그 ${codeOrName}`;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(slackCmd).catch(() => {});
+  }
+  showToast(`📄 [${filename}] 슬랙 명령어(${slackCmd})가 복사되었습니다! #영업도우미 채널에 붙여넣으시면 PDF가 전송됩니다.`);
+}
 
 // 자사 ERP 품목 마스터 사전 로드 (메모리 캐싱)
 async function getErpProducts() {
@@ -6009,8 +6077,9 @@ function initProductSearchTab() {
   if (isProdSearchInitialized) return;
   isProdSearchInitialized = true;
 
-  // 백그라운드에서 ERP 마스터 미리 로드
+  // 백그라운드에서 ERP 마스터 및 카탈로그 인덱스 미리 로드
   getErpProducts();
+  getCatalogIndex();
 
   const input = document.getElementById('prod-search-input');
   const clearBtn = document.getElementById('prod-search-clear-btn');
@@ -6080,7 +6149,7 @@ async function triggerProductSearch() {
 
   try {
     const sb = getSupabaseClient();
-    const erpList = await getErpProducts();
+    const [erpList] = await Promise.all([getErpProducts(), getCatalogIndex()]);
     const qLower = query.toLowerCase();
 
     // 1. 자사 ERP 마스터 검색 (이름, 코드, 규격, EDI, 키워드 매칭)
@@ -6324,6 +6393,7 @@ function renderProductSearchResults(ediMatches, salesMatches, erpMatches, query)
     const isReimbursable = card.max_price !== null && card.max_price > 0;
     const maxPriceFormatted = isReimbursable ? `${Number(card.max_price).toLocaleString()}원` : (card.edi_code ? '비급여' : '산정불가/비급여');
     const historyCount = card.sales_history.length;
+    const matchedCat = findMatchedCatalogForProduct(card.product_code, card.name);
 
     html += `
       <div class="prod-card" id="prod-card-${idx}">
@@ -6342,6 +6412,7 @@ function renderProductSearchResults(ediMatches, salesMatches, erpMatches, query)
               <span>•</span>
               <span><strong>단위:</strong> ${escapeHtml(card.unit)}</span>
               ${card.price_out ? `<span>•</span> <span style="color:#fbbf24;"><strong>기준판매가:</strong> ${Number(card.price_out).toLocaleString()}원</span>` : ''}
+              ${matchedCat ? `<span>•</span> <span style="color:#34d399; font-weight:600;">📄 카탈로그: ${escapeHtml(matchedCat.filename)} (${matchedCat.size_mb || 0}MB)</span>` : ''}
             </div>
           </div>
           
@@ -6356,7 +6427,12 @@ function renderProductSearchResults(ediMatches, salesMatches, erpMatches, query)
               </span>
             `}
             
-            <div style="display:flex; align-items:center; gap:6px;">
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+              ${matchedCat ? `
+                <button type="button" class="btn-alt-compare" style="background:rgba(16,185,129,0.2); border:1px solid #10b981; color:#34d399; font-weight:700;" onclick="openProductCatalogPdf('${escapeHtml(matchedCat.rel_path.replace(/\\/g, '/').replace(/'/g, "\\'"))}', '${escapeHtml(matchedCat.filename.replace(/'/g, "\\'"))}', '${escapeHtml((card.product_code || card.name || '').replace(/'/g, "\\'"))}', event)" title="확정된 카탈로그 브로셔 열람 (${escapeHtml(matchedCat.filename)})">
+                  📄 카탈로그 열람
+                </button>
+              ` : ''}
               ${card.edi_code ? `
                 <span class="badge-edi-code" onclick="copyEdiCode('${card.edi_code}', event)" title="클릭하여 보험코드 복사">
                   📋 ${card.edi_code}
