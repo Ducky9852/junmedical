@@ -6531,7 +6531,8 @@ let aiChatSessionId = "session_" + Date.now();
 let aiChatLastContext = { customer: null, product: null, year: null };
 
 const AI_HOSPITAL_ALIASES = {
-  "충대": "충남대", "충남대": "충남대", "충남대병원": "충남대", "충남대학교병원": "충남대",
+  "세종충남대병원": "세종충남대학교병원", "세종충남대": "세종충남대학교병원", "세종충대": "세종충남대학교병원",
+  "충남대학교병원": "충남대학교병원", "충남대병원": "충남대학교병원", "충남대": "충남대학교병원", "충대": "충남대학교병원",
   "담소유": "담소유", "담소유병원": "담소유",
   "단대": "단국대", "단국대": "단국대", "단국대병원": "단국대",
   "건양대": "건양대", "건양대병원": "건양대",
@@ -6599,29 +6600,40 @@ async function runServerlessAIChat(rawText) {
   else if (/2022년|22년/.test(q)) year = 2022;
   else if (/2021년|21년/.test(q)) year = 2021;
 
-  // 2. 병원명(거래처) 파싱
+  // 2. 병원명(거래처) 파싱 ("A 말고 B" 교정 표현 우선 처리)
+  let qForHosp = q;
+  let excludeCustomer = null;
+  if (q.includes('말고')) {
+    const parts = q.split('말고');
+    excludeCustomer = parts[0].trim();
+    qForHosp = parts.slice(1).join(' ').trim();
+  }
+
   let customer = null;
-  for (const [alias, norm] of Object.entries(AI_HOSPITAL_ALIASES)) {
-    if (q.includes(alias)) {
+  // 긴 별칭부터 매칭하여 '세종충남대'가 '충남대'에 먼저 먹히지 않도록 정렬
+  const sortedAliases = Object.entries(AI_HOSPITAL_ALIASES).sort((a, b) => b[0].length - a[0].length);
+  for (const [alias, norm] of sortedAliases) {
+    if (qForHosp.includes(alias)) {
       customer = norm;
       break;
     }
   }
   if (!customer) {
-    const hospMatch = q.match(/([가-힣A-Za-z0-9]{2,10}(?:대학교병원|대병원|병원|의료원|의원|산부인과|외과|내과))/);
+    const hospMatch = qForHosp.match(/([가-힣A-Za-z0-9]{2,10}(?:대학교병원|대병원|병원|의료원|의원|산부인과|외과|내과))/);
     if (hospMatch) {
       customer = hospMatch[1].replace(/(대학교병원|대병원|병원|의료원|의원)$/, '');
       if (customer.length < 2) customer = hospMatch[1];
     }
   }
 
-  // 후속 질문 맥락 복원 ("그럼 재작년은?", "작년은?")
+  // 후속 질문 맥락 복원 ("그럼 재작년은?", "작년은?", "세종충남대 말고 충남대")
   if (!customer && year && aiChatLastContext.customer && q.length <= 15) {
     customer = aiChatLastContext.customer;
   }
 
-  // 3. 매출 / 상위 품목 / 실적 분석 질의 판별
-  const isSalesQuery = /매출|상위|실적|얼마나\s*팔|얼마\s*팔|많이\s*판|품목\s*보여|총액|합계/.test(q) || (customer && year);
+  // 3. 매출 / 상위 품목 / 실적 분석 질의 판별 (직전 턴이 매출 질의이고 병원명이나 연도만 바꾼 후속 질문도 포함)
+  const isFollowUpSales = Boolean(aiChatLastContext.year && ((customer && q.length <= 20) || (year && q.length <= 15) || q.includes('말고')));
+  const isSalesQuery = /매출|상위|실적|얼마나\s*팔|얼마\s*팔|많이\s*판|품목\s*보여|총액|합계/.test(q) || (customer && year) || isFollowUpSales;
   if (isSalesQuery && sb) {
     const targetYear = year || aiChatLastContext.year || 2026;
     const dateFrom = `${targetYear}-01-01`;
@@ -6630,17 +6642,30 @@ async function runServerlessAIChat(rawText) {
     // 혹시 특정 품목(예: 거즈) 매출 질문인지 확인
     let prodKeyword = null;
     for (const [ko, en] of Object.entries(AI_PRODUCT_SYNONYMS)) {
-      if (q.includes(ko)) { prodKeyword = ko === '거즈' ? '거즈' : en; break; }
+      if (qForHosp.includes(ko)) { prodKeyword = ko === '거즈' ? '거즈' : en; break; }
     }
 
     aiChatLastContext = { customer, product: prodKeyword, year: targetYear };
 
-    const rows = await fetchAllSalesRows(sb, (queryBuilder) => {
+    let rows = await fetchAllSalesRows(sb, (queryBuilder) => {
       let qb = queryBuilder.gte('sale_date', dateFrom).lte('sale_date', dateTo);
-      if (customer) qb = qb.ilike('customer', `%${customer}%`);
+      if (customer === '충남대학교병원') {
+        qb = qb.eq('customer', '충남대학교병원');
+      } else if (customer === '세종충남대학교병원') {
+        qb = qb.eq('customer', '세종충남대학교병원');
+      } else if (customer) {
+        qb = qb.ilike('customer', `%${customer}%`);
+      }
       if (prodKeyword) qb = qb.ilike('product_name', `%${prodKeyword}%`);
       return qb;
     });
+
+    if (excludeCustomer && rows.length > 0) {
+      const exClean = excludeCustomer.replace(/(병원|대학교병원|대병원|\s)/g, '');
+      if (exClean) {
+        rows = rows.filter(r => !(r.customer || '').includes(exClean));
+      }
+    }
 
     if (!rows || rows.length === 0) {
       return `조회 결과 **${targetYear}년 ${customer ? customer + ' ' : ''}${prodKeyword ? prodKeyword + ' ' : ''}판매내역**이 없습니다.\n\n<small style="color:#94a3b8;">출처: 준메디칼 판매내역 DB (${dateFrom} ~ ${dateTo})</small>`;
