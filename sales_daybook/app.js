@@ -1,9 +1,9 @@
-const APP_VERSION = "jun-V1-038";
+const APP_VERSION = "jun-V1-039";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V21_JUN_V1_038";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V22_JUN_V1_039";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -636,6 +636,42 @@ async function fetchLatestFromSupabase(showToastOnManual = false) {
 
     // Fetch all pipeline deals
     const { data: pipeData, error: pipeErr } = await fetchAllTableRows(client, 'pipeline');
+
+    // Fetch recently registered/aliased ERP products so aliases (e.g. 큐어진 -> CUREGYN) sync across all PCs
+    const { data: recentErpProds } = await client
+      .from('erp_products')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(150);
+
+    if (recentErpProds && recentErpProds.length > 0 && window.SALES_DB && Array.isArray(window.SALES_DB.products)) {
+      const existingCodes = new Set(window.SALES_DB.products.map(p => (p.code || p.id || '').toUpperCase()));
+      recentErpProds.forEach(ep => {
+        if (!ep || !ep.code) return;
+        const cUpper = ep.code.toUpperCase();
+        if (!existingCodes.has(cUpper)) {
+          window.SALES_DB.products.unshift({
+            id: ep.code,
+            code: ep.code,
+            name: ep.name,
+            spec: ep.spec || '',
+            vendor: ep.vendor || '',
+            category: ep.category || '',
+            price_in: ep.price_in || 0,
+            price_out: ep.price_out || 0,
+            aliases: ep.aliases || [],
+            keywords: ep.keywords || []
+          });
+          existingCodes.add(cUpper);
+        } else if (Array.isArray(ep.aliases) && ep.aliases.length > 0) {
+          const target = window.SALES_DB.products.find(p => (p.code || p.id || '').toUpperCase() === cUpper);
+          if (target) {
+            target.aliases = Array.from(new Set([...(target.aliases || []), ...ep.aliases]));
+            target.keywords = Array.from(new Set([...(target.keywords || []), ...(ep.keywords || []), ...ep.aliases]));
+          }
+        }
+      });
+    }
 
     if (!logsErr && logsData && logsData.length > 0) {
       window.SALES_DB.activity_logs = logsData;
@@ -4562,7 +4598,8 @@ function confirmAsNewHospital(hospitalName) {
 // 9-3. Intelligent ERP 4,054 Products Suggestion Engine
 // ----------------------------------------------------
 function getTopErpProductSuggestions(text, currentMatchedCode = '') {
-  const master = (window.ERP_PRODUCTS_MASTER || []).concat(window.SALES_DB ? (window.SALES_DB.products || []) : []);
+  const customProds = typeof getCustomProductsFromStorage === 'function' ? getCustomProductsFromStorage() : [];
+  const master = customProds.concat(window.ERP_PRODUCTS_MASTER || [], window.SALES_DB ? (window.SALES_DB.products || []) : [], erpProductsCache || []);
   if (!text || master.length === 0) return [];
 
   const tLower = text.toLowerCase();
@@ -4603,6 +4640,8 @@ function getTopErpProductSuggestions(text, currentMatchedCode = '') {
 
     if (pCode && tLower.includes(pCode.toLowerCase())) score += 100;
     if (pName && tLower.includes(pNameLower)) score += 80;
+    if (Array.isArray(p.aliases) && p.aliases.some(a => a && a.length >= 2 && tLower.includes(a.toLowerCase()))) score += 90;
+    if (Array.isArray(p.keywords) && p.keywords.some(k => k && k.length >= 2 && tLower.includes(k.toLowerCase()))) score += 75;
 
     for (const kw of keywords) {
       const textHasKey = kw.terms.some(t => tLower.includes(t));
@@ -4836,7 +4875,8 @@ function parseSalesTextLocally(text) {
 
   // 3. Product Extraction & Code Mapping
   let matchedProd = { code: "PROD_GENERAL", name: "일반 의료소모품/장비 (PROD_GENERAL)" };
-  const master = (window.ERP_PRODUCTS_MASTER || []).concat(window.SALES_DB ? (window.SALES_DB.products || []) : []);
+  const customProds = typeof getCustomProductsFromStorage === 'function' ? getCustomProductsFromStorage() : [];
+  const master = customProds.concat(window.ERP_PRODUCTS_MASTER || [], window.SALES_DB ? (window.SALES_DB.products || []) : [], erpProductsCache || []);
 
   if (tLower.includes("curegyn") || tLower.includes("cure gyn") || text.includes("큐어진") || tLower.includes("lyn-10") || tLower.includes("lyn-05")) {
     matchedProd = { code: "LYN-10-1.5-00", name: "CUREGYN (LYN-10-1.5-00)" };
@@ -7436,12 +7476,47 @@ function saveCustomProductFromEcount(applyToCurrentLog) {
     console.warn("로컬 저장소 저장 실패:", e);
   }
 
-  // 2. 메모리 캐시 최신화 (erpProductsCache 및 window.ERP_PRODUCTS_MASTER)
+  // 2. 메모리 캐시 최신화 (erpProductsCache, window.ERP_PRODUCTS_MASTER, window.SALES_DB.products) 및 Supabase 클라우드 동기화
   if (typeof erpProductsCache !== "undefined" && Array.isArray(erpProductsCache)) {
     erpProductsCache.unshift(newProduct);
   }
   if (typeof window.ERP_PRODUCTS_MASTER !== "undefined" && Array.isArray(window.ERP_PRODUCTS_MASTER)) {
     window.ERP_PRODUCTS_MASTER.unshift(newProduct);
+  }
+  if (window.SALES_DB && Array.isArray(window.SALES_DB.products)) {
+    window.SALES_DB.products = window.SALES_DB.products.filter(p => (p.code || p.id || "").toUpperCase() !== code.toUpperCase());
+    window.SALES_DB.products.unshift({
+      id: code,
+      code: code,
+      name: name,
+      spec: spec,
+      vendor: supplier,
+      edi: edi,
+      udi: udi,
+      grade: grade,
+      price_in: price,
+      aliases: aliases,
+      keywords: [code, name, spec, edi, supplier, ...aliases].filter(Boolean)
+    });
+    persistSalesDB();
+  }
+  // Supabase erp_products 테이블에도 실시간 저장 (전 직원 공유)
+  const sbClient = getSupabaseClient();
+  if (sbClient) {
+    sbClient.from("erp_products").upsert([{
+      code: code,
+      name: name,
+      spec: spec,
+      vendor: supplier,
+      category: grade || "일반의료기기",
+      keywords: [code, name, spec, edi, supplier, ...aliases].filter(Boolean),
+      aliases: aliases,
+      price_in: price,
+      price_out: 0
+    }], { onConflict: "code" }).then(({ error }) => {
+      if (error) console.warn("Supabase erp_products upsert warning:", error);
+      else console.log("✅ Supabase erp_products synced with aliases:", code, aliases);
+    });
   }
 
   // 3. 현재 일지 작성 폼에 즉시 적용
