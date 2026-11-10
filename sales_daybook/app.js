@@ -1,9 +1,9 @@
-const APP_VERSION = "jun-V1-016";
+const APP_VERSION = "jun-V1-037";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V19_JUN_V1_016";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V20_JUN_V1_037";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -27,6 +27,7 @@ try {
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V16_JUN_V1_013");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V17_JUN_V1_014");
   localStorage.removeItem("JUN_SALES_DB_PERSISTED_V18_JUN_V1_015");
+  localStorage.removeItem("JUN_SALES_DB_PERSISTED_V19_JUN_V1_016");
 } catch(e) {}
 
 // Slack Realtime Notification Config & Helper
@@ -162,30 +163,64 @@ function normalizeHospitalName(name) {
 
 // Check if a product is an Equipment/Hardware (Demo with return management) vs Disposable Consumable (Sample evaluation)
 function isEquipmentProduct(prodName = '', prodId = '', note = '') {
-  const txt = `${prodName || ''} ${prodId || ''} ${note || ''}`.toLowerCase();
+  // Strip generic placeholder names that contain the word '장비' ('일반 의료소모품/장비')
+  const cleanProdName = (prodName || '')
+    .replace(/일반\s*의료소모품\s*\/\s*장비/g, '')
+    .replace(/의료소모품\s*\/\s*장비/g, '');
+  const cleanNote = (note || '')
+    .replace(/\[장비데모\]/g, '')
+    .replace(/전달\s*\(회수추적\)/g, '')
+    .replace(/wisap\s*insufflator\s*수리요청\s*장비회수/gi, '');
+  const txt = `${cleanProdName} ${prodId || ''} ${cleanNote}`.toLowerCase();
   
   // Explicit consumable exclusion overrides
   const CONSUMABLE_KEYWORDS = [
+    'curegyn', 'cure gyn', '큐어진', 'lyn-10', 'lyn-05', 'gy_applicator', 'bm5010lj',
+    '운드클리어', '운드 클리어', 'wound clear', 'wound-clear',
+    '트로카', 'trocar', 'endogard', '121-51855',
+    '써지패드', '서지패드', 'surgi pad', '보비플레이트', '보비 플레이트', '보비패드', 'pk-cgp',
+    '소노겔', '소노젤', 'sono gel', 'sonogel', 'pk-s002',
+    '이지큐본드', 'ezqbond', 'eg-q', '메쉬', 'mesh',
+    '검진가운', '가운', 'gown', '스프린트', 'splint', '마킹펜',
+    '자이네콜라', '가인콜라', 'gynecolla', 'gnc2505', '베리큐어', 'vericure', 'md-br',
     '소공포', '메스', 'surgi sword', '서지소드', '드레이프', 'sheet', '포', '거즈', '밴드', '패치',
-    '바이옵시', 'biopsy', '펀치', 'punch', 'c-line', 'cline', '엔지오', '키트', 'kit', '튤립', 'tulip',
-    '큐어폼', 'cureform', '소독제', 'hygent', '테이프', '봉합사', 'suture', 'seralene', '니들', 'needle',
-    '카테터', 'catheter', '튜브', 'tube', '마스크', '장갑', 'glove', '캡', 'cap', '일회용', '소모품', '샘플'
+    '바이옵시', 'biopsy', '펀치', 'punch', 'c-line', 'cline', '엔지오', '앤지오', 'angio', '키트', 'kit', '튤립', 'tulip',
+    '큐어폼', 'cureform', '소독제', 'hygent', '하이겐트', '테이프', '봉합사', 'suture', 'seralene', '니들', 'needle',
+    '카테터', 'catheter', '튜브', 'tube', '마스크', '장갑', 'glove', '캡', 'cap', '일회용', '1회용', '소모품', '샘플'
+  ];
+  const HARD_EQUIP_KEYWORDS = [
+    '모슬레이터', 'morcellator', 'motor', '모터', '핸들', 'handle', '201.023',
+    'insufflator', '인서플레이터', '7070c', 'oxy9', 'bt-350', 'bt350', 'bistos',
+    '올림푸스', 'olympus', '내시경', 'endoscopy', '광원', 'light source', '모니터', 'monitor',
+    '석션', 'suction', '펌프', 'pump', '초음파', '도플러', 'doppler',
+    '전기수술기', '소작기', 'zeus', '제세동기', 'defibrillator', '엘리게이터', 'alligator', '니들홀더', '93125'
   ];
   const hasConsumable = CONSUMABLE_KEYWORDS.some(k => txt.includes(k));
-  if (hasConsumable && !txt.includes('장비') && !txt.includes('모터') && !txt.includes('핸들') && !txt.includes('본체')) {
+  if (hasConsumable && !HARD_EQUIP_KEYWORDS.some(k => txt.includes(k))) {
     return false;
   }
 
   // Equipment Keywords
   const EQUIP_KEYWORDS = [
-    '장비', '기기', '기계', '본체', '세트', 'set', '모슬레이터', 'motor', 'handle', '핸들', '드라이브', 
-    'oxy9', 'bt-350', 'bistos', '올림푸스', 'olympus', '내시경', 'endoscopy', '광원', 'light source', 
-    '모니터', 'monitor', 'cutter', 'bur', '석션', 'suction', 'pump', '펌프', '인큐베이터', '초음파', 
-    '도플러', 'doppler', 'bovie', '보비', '전기소작', '소작기', '제세동기', 'defibrillator', '인퓨전', 
-    'drill', '드릴', '감시장치', '태아감시', '카트', '스탠드', '201.023', '0220-220-000', '0350-202-000',
-    '회수', '대여', '반납', '장비데모'
+    ...HARD_EQUIP_KEYWORDS,
+    '장비', '기기', '기계', '본체', '드라이브', 
+    'cutter', 'bur', '인큐베이터', 'bovie', '인퓨전', 
+    'drill', '드릴', '감시장치', '태아감시', '카트', '스탠드', '0220-220-000', '0350-202-000',
+    '대여', '차용', '장비데모'
   ];
   return EQUIP_KEYWORDS.some(k => txt.includes(k));
+}
+
+function isActiveDemoOrSampleDeal(d) {
+  if (!d) return false;
+  if (d.status === '도입완료·납품' || d.status === '영업실패·보류' || d.status === 'A/S접수·처리') return false;
+  return (
+    d.status === '의료장비 데모' ||
+    d.status === '소모품 샘플' ||
+    d.status === '데모·샘플평가' ||
+    d.status === '샘플·임상평가' ||
+    Boolean(d.demo_info && d.demo_info.status && d.demo_info.status.includes('진행'))
+  );
 }
 
 // Helper: Compare hospitals by latest activity/visit date descending (최근 방문일자 우선 정렬)
@@ -416,12 +451,13 @@ function syncHospitalsFromLogs() {
     const finalProdKey = (d.product_id || d.product_name || 'PROD_GENERAL').replace(/\s+/g, '');
     const dealKey = `${canonHospKey}__${finalProdKey}`;
 
-    // Auto-migrate legacy statuses to standard 6 stages
-    if (d.status === '데모·샘플평가' || d.status === '소모품 샘플' || d.status === '의료장비 데모') {
-      if (!d.demo_info && (d.status === '의료장비 데모' || d.status === '데모·샘플평가')) {
-        d.demo_info = { date: d.last_date || '', note: d.latest_note || '데모 평가', status: '평가진행중' };
+    // Auto-migrate legacy statuses while preserving Equipment Demo vs Consumable Sample distinction
+    if (d.status === '데모·샘플평가' || d.status === '샘플·임상평가' || d.status === '소모품 샘플' || d.status === '의료장비 데모') {
+      if (!d.demo_info) {
+        d.demo_info = { date: d.last_date || '', note: d.latest_note || '샘플/데모 평가', status: '평가진행중' };
       }
-      d.status = '샘플·임상평가';
+      const isEquip = isEquipmentProduct(d.product_name, d.product_id, d.latest_note);
+      d.status = isEquip ? '의료장비 데모' : '소모품 샘플';
     } else if (d.status === '견적·의사결정' || d.status === '견적서제출·협의') {
       d.status = '견적·도입협의';
     } else if (d.status === '관계관리·접촉' || d.status === '접촉·니즈파악') {
@@ -545,7 +581,7 @@ function syncHospitalsFromLogs() {
     h.won_count = deals.filter(d => d.status === '도입완료·납품').length;
     
     // Split Equipment Demo vs Disposable Sample
-    const activeDemoDeals = deals.filter(d => d.status === '의료장비 데모' || d.status === '소모품 샘플' || d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status.includes('진행')));
+    const activeDemoDeals = deals.filter(isActiveDemoOrSampleDeal);
     h.demo_count = activeDemoDeals.filter(d => isEquipmentProduct(d.product_name, d.product_id, d.latest_note)).length;
     h.sample_count = activeDemoDeals.filter(d => !isEquipmentProduct(d.product_name, d.product_id, d.latest_note)).length;
     
@@ -662,6 +698,23 @@ window.addEventListener('DOMContentLoaded', () => {
       if (p.status && (p.status.includes('중단') || p.status.includes('중지'))) return false;
       return true;
     });
+    if (!window.SALES_DB.products.some(p => (p.code || p.id) === 'LYN-10-1.5-00')) {
+      window.SALES_DB.products.unshift({
+        id: "LYN-10-1.5-00",
+        code: "LYN-10-1.5-00",
+        name: "CUREGYN",
+        spec: "1.5G(20EA/BOX)",
+        vendor: "주식회사 에이치엠헬스케어",
+        category: "창상피복재/산부인과소모품",
+        edi: "BM5010LJ",
+        udi: "08809976713502",
+        grade: "2등급",
+        price_in: 9900,
+        price_out: 22000,
+        keywords: ["LYN-10-1.5-00", "CUREGYN", "큐어진", "cure gyn", "BM5010LJ", "08809976713502", "에이치엠헬스케어"],
+        aliases: ["큐어진", "curegyn", "cure gyn", "큐어진 1.5G", "CUREGYN 1.5G"]
+      });
+    }
   }
   
   // Ensure all hospitals in logs exist in master list
@@ -783,12 +836,12 @@ function initHeaderMetrics() {
   const activeAsCount = getActiveASDeals(pipe).length;
   
   // Split Equipment Demo vs Disposable Sample
-  const allActiveDemos = pipe.filter(d => d.status === '의료장비 데모' || d.status === '소모품 샘플' || d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status.includes('진행')));
+  const allActiveDemos = pipe.filter(isActiveDemoOrSampleDeal);
   const activeDemosCount = allActiveDemos.filter(d => isEquipmentProduct(d.product_name, d.product_id, d.latest_note)).length;
   const activeSamplesCount = allActiveDemos.filter(d => !isEquipmentProduct(d.product_name, d.product_id, d.latest_note)).length;
   
   const wonDealsCount = pipe.filter(d => d.status === '도입완료·납품').length;
-  const progressDealsCount = pipe.filter(d => d.status === '제품소개·영업중' || d.status.includes('영업중') || d.status.includes('견적') || d.status.includes('관계관리')).length;
+  const progressDealsCount = pipe.filter(d => !isActiveDemoOrSampleDeal(d) && (d.status === '제품소개·영업중' || d.status.includes('영업중') || d.status.includes('견적') || d.status.includes('관계관리') || d.status.includes('신규접촉'))).length;
 
   if (window.SALES_DB && window.SALES_DB.stats) {
     window.SALES_DB.stats.total_hospitals = hospList.length;
@@ -973,14 +1026,14 @@ function renderHospitalList() {
       matchKpi = deals.some(isDealActiveAS);
     } else if (selectedKpiFilter === 'demo') {
       // Equipment Demo Only
-      matchKpi = deals.some(d => (d.status === '의료장비 데모' || d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status.includes('진행'))) && isEquipmentProduct(d.product_name, d.product_id, d.latest_note));
+      matchKpi = deals.some(d => isActiveDemoOrSampleDeal(d) && isEquipmentProduct(d.product_name, d.product_id, d.latest_note));
     } else if (selectedKpiFilter === 'sample') {
       // Disposable Sample Only
-      matchKpi = deals.some(d => (d.status === '소모품 샘플' || d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status.includes('진행'))) && !isEquipmentProduct(d.product_name, d.product_id, d.latest_note));
+      matchKpi = deals.some(d => isActiveDemoOrSampleDeal(d) && !isEquipmentProduct(d.product_name, d.product_id, d.latest_note));
     } else if (selectedKpiFilter === 'won') {
       matchKpi = deals.some(d => d.status === '도입완료·납품');
     } else if (selectedKpiFilter === 'active') {
-      matchKpi = deals.some(d => d.status === '제품소개·영업중' || d.status.includes('영업중') || d.status.includes('견적') || d.status.includes('관계관리'));
+      matchKpi = deals.some(d => !isActiveDemoOrSampleDeal(d) && (d.status === '제품소개·영업중' || d.status.includes('영업중') || d.status.includes('견적') || d.status.includes('관계관리') || d.status.includes('신규접촉')));
     }
 
     return matchRegion && matchKpi;
@@ -1013,7 +1066,7 @@ function renderHospitalList() {
     const deals = window.SALES_DB.pipeline.filter(d => getCanonicalHospitalKey(d.hospital) === canonKey);
     const hasAS = deals.some(isDealActiveAS);
     
-    const activeDemoDeals = deals.filter(d => d.status === '의료장비 데모' || d.status === '소모품 샘플' || d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status.includes('진행')));
+    const activeDemoDeals = deals.filter(isActiveDemoOrSampleDeal);
     const hasEquipDemo = activeDemoDeals.some(d => isEquipmentProduct(d.product_name, d.product_id, d.latest_note));
     const hasSample = activeDemoDeals.some(d => !isEquipmentProduct(d.product_name, d.product_id, d.latest_note));
 
@@ -1110,11 +1163,11 @@ function renderHospitalDetails(hospName) {
   }
 
   // 3. Render 5 Status Matrix Lists (Strict mutually exclusive filtering)
-  const allActiveDemoDeals = deals.filter(d => d.status === '의료장비 데모' || d.status === '소모품 샘플' || d.status === '데모·샘플평가' || (d.demo_info && d.demo_info.status.includes('진행')));
+  const allActiveDemoDeals = deals.filter(isActiveDemoOrSampleDeal);
   const demoList = allActiveDemoDeals.filter(d => isEquipmentProduct(d.product_name, d.product_id, d.latest_note));
   const sampleList = allActiveDemoDeals.filter(d => !isEquipmentProduct(d.product_name, d.product_id, d.latest_note));
   const wonList = deals.filter(d => d.status === '도입완료·납품');
-  const activeList = deals.filter(d => d.status === '제품소개·영업중' || d.status.includes('영업중') || d.status.includes('견적') || d.status.includes('관계관리'));
+  const activeList = deals.filter(d => !isActiveDemoOrSampleDeal(d) && (d.status === '제품소개·영업중' || d.status.includes('영업중') || d.status.includes('견적') || d.status.includes('관계관리') || d.status.includes('신규접촉')));
   const lostList = deals.filter(d => d.status === '영업실패·보류');
 
   renderProductMatrixSection('demo', demoList);
@@ -4147,10 +4200,10 @@ async function callGeminiAPI(text) {
 1. hospital: 거래처/병원명. 본문에 명시된 병원명(예: 광제산부인과, 진천 미래산부인과, 순천향대학교 천안병원 등).
 2. contact: 상대 의료진/담당자 이름 및 직함 (예: 김원장, 박과장, 김희웅 영상의학실장). 언급이 없으면 반드시 빈 문자열 ""
 3. sales_rep: 7인 중 본문에 언급된 사원이 있으면 해당 사원명, 없으면 빈 문자열 ""
-4. product_name: 언급된 의료기기/소모품명 (예: Oxy9Wave 휴대형 산소포화도 측정기, 서지 소드 안전 메스, Drive Motor Handle 등). 만약 특정 제품 언급 없이 첫 방문/인사/면담시도/불발/원내 탐색/라포 형성인 경우 반드시 "신규 접촉 및 인사 (품목 미정)"으로 출력하세요.
-5. product_code: 매칭되는 품목코드. 특정 제품이 없거나 단순 인사/탐색인 경우 반드시 "PROD_GENERAL"로 출력하세요.
-6. action_type: 위 활동 유형 중 가장 알맞은 1개. 제품 언급 없는 첫 방문/인사는 "신규접촉" 또는 "관계관리". 장비 데모는 "의료장비 데모", 소모품 샘플은 "소모품 샘플".
-7. sales_status: 위 파이프라인 진행 상태 중 가장 알맞은 1개. 단순 인사/첫 방문은 "제품소개·영업중".
+4. product_name: 언급된 의료기기/소모품명 (예: CUREGYN (LYN-10-1.5-00), 운드클리어 창상피복재 (WOUND-CLEAR), 복강경 트로카 (Crown/Endogard Trocar), Oxy9Wave 휴대형 산소포화도 측정기, 서지 소드 안전 메스, Drive Motor Handle 등). 만약 특정 제품 언급 없이 첫 방문/인사/면담시도/불발/원내 탐색/라포 형성인 경우 반드시 "신규 접촉 및 인사 (품목 미정)"으로 출력하세요.
+5. product_code: 매칭되는 품목코드 (예: 큐어진/curegyn -> "LYN-10-1.5-00", 운드클리어 -> "WOUND-CLEAR", 트로카 -> "121-51855", 소노겔 -> "PK-S002-G", 서지소드 -> "GROUP-PENKO-SWORD", 써지패드 -> "GROUP-PENKO-PAD"). 특정 제품이 없거나 단순 인사/탐색인 경우 반드시 "PROD_GENERAL"로 출력하세요.
+6. action_type: 위 활동 유형 중 가장 알맞은 1개. 제품 언급 없는 첫 방문/인사는 "신규접촉" 또는 "관계관리". 고가 하드웨어 장비 데모 대여는 "의료장비 데모", 일회용/소모품(큐어진/CUREGYN, 운드클리어, 트로카, 소노겔, 써지패드, 메스, 소공포, 가운 등) 샘플 제공은 반드시 "소모품 샘플"("샘플 안드림"이면 "제품설명·소개").
+7. sales_status: 위 파이프라인 진행 상태 중 가장 알맞은 1개. 소모품 샘플 제공 시 반드시 "소모품 샘플", 단순 인사/첫 방문/샘플 미제공 설명은 "제품소개·영업중".
 8. fail_reason: 특이사항 또는 실패 사유 (없으면 "-")
 9. next_action: 다음 할 일 또는 후속 일정 요약 문장
 10. note: 영업활동 상세 내용 및 상담/임상 피드백 요약
@@ -4500,17 +4553,21 @@ function getTopErpProductSuggestions(text, currentMatchedCode = '') {
   const seenCodes = new Set();
 
   const keywords = [
-    { key: '트로카', terms: ['trocar', '트로카', '원포트', '121-51855', '마인드레이'] },
+    { key: '큐어진', terms: ['curegyn', 'cure gyn', '큐어진', 'lyn-10-1.5-00', 'lyn-05-01-00', 'bm5010lj', '에이치엠헬스케어'] },
+    { key: '운드클리어', terms: ['운드클리어', '운드 클리어', 'wound clear', 'wound-clear'] },
+    { key: '트로카', terms: ['trocar', '트로카', '원포트', '121-51855', '마인드레이', 'endogard'] },
     { key: '하이겐트', terms: ['hygent', '하이겐트', '수액세트', '유착방지'] },
     { key: '소공포', terms: ['소공포', '드레이프', 'sheet', '멸균', '세종'] },
     { key: '서지소드', terms: ['서지소드', 'surgi sword', '펜코', '메스', 'knife'] },
+    { key: '써지패드', terms: ['써지패드', '서지패드', 'surgi pad', '보비플레이트', '보비패드'] },
+    { key: '소노겔', terms: ['소노겔', '소노젤', 'sonogel', 'sono gel', 'pk-s002-g'] },
     { key: '바이옵시', terms: ['biopsy', '바이옵시', '펀치'] },
     { key: '크로믹', terms: ['chromic', '크로믹', 'catgut', '봉합사'] },
     { key: '산소포화도', terms: ['oxy9', '산소포화도', 'pulse oximeter'] },
     { key: '태아심음', terms: ['bt350', 'bt-350', '태아심음', 'fetal doppler'] },
     { key: '내시경', terms: ['올림푸스', 'olympus', '내시경', '광원'] },
     { key: '모슬레이디', terms: ['201.023', 'motor handle', '모슬레이디', '모터'] },
-    { key: '엔지오', terms: ['angio', '엔지오', 'st-ang-pr03'] },
+    { key: '엔지오', terms: ['angio', '엔지오', '앤지오', 'st-ang-pr03'] },
     { key: 'c라인', terms: ['c-line', 'c라인', 'cvc', 'st-cvc'] },
     { key: '큐어폼', terms: ['cureform', '큐어폼', '드레싱'] },
     { key: '좌욕기', terms: ['좌욕기', 'zwayok', '필터'] },
@@ -4608,6 +4665,18 @@ function applyParsedResultToUI(data, rawText, isFromGemini = false) {
   }
 
   const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '/');
+
+  // Auto-correct Curegyn & consumable sample classification even if Gemini returned PROD_GENERAL or 의료장비 데모
+  const rawLower = `${rawText || ''} ${data.note || ''} ${data.product_name || ''}`.toLowerCase();
+  if ((!data.product_code || data.product_code === 'PROD_GENERAL') && (rawLower.includes('curegyn') || rawLower.includes('cure gyn') || rawLower.includes('큐어진'))) {
+    data.product_code = 'LYN-10-1.5-00';
+    data.product_name = 'CUREGYN (LYN-10-1.5-00)';
+  }
+  const isEquip = isEquipmentProduct(data.product_name, data.product_code, rawText || data.note || '');
+  if (!isEquip) {
+    if (data.action_type === '의료장비 데모') data.action_type = '소모품 샘플';
+    if (data.sales_status === '의료장비 데모') data.sales_status = '소모품 샘플';
+  }
 
   setVal('parse-edit-sales-rep', rep);
   setVal('parse-edit-date', todayStr);
@@ -4752,7 +4821,23 @@ function parseSalesTextLocally(text) {
   let matchedProd = { code: "PROD_GENERAL", name: "일반 의료소모품/장비 (PROD_GENERAL)" };
   const master = (window.ERP_PRODUCTS_MASTER || []).concat(window.SALES_DB ? (window.SALES_DB.products || []) : []);
 
-  if (tLower.includes("oxy9wave") || tLower.includes("oxy9") || text.includes("옥시나인") || text.includes("산소포화도")) {
+  if (tLower.includes("curegyn") || tLower.includes("cure gyn") || text.includes("큐어진") || tLower.includes("lyn-10") || tLower.includes("lyn-05")) {
+    matchedProd = { code: "LYN-10-1.5-00", name: "CUREGYN (LYN-10-1.5-00)" };
+  } else if (text.includes("운드클리어") || text.includes("운드 클리어") || tLower.includes("wound clear")) {
+    matchedProd = { code: "WOUND-CLEAR", name: "운드클리어 창상피복재 (WOUND-CLEAR)" };
+  } else if (text.includes("트로카") || tLower.includes("trocar") || tLower.includes("endogard") || text.includes("121-51855")) {
+    matchedProd = { code: "121-51855", name: "복강경 트로카 (Crown/Endogard Trocar)" };
+  } else if (text.includes("소노겔") || text.includes("소노젤") || tLower.includes("sonogel") || tLower.includes("sono gel") || tLower.includes("pk-s002")) {
+    matchedProd = { code: "PK-S002-G", name: "PENKO SONO GEL (PK-S002-G)" };
+  } else if (text.includes("써지패드") || text.includes("서지패드") || tLower.includes("surgi pad")) {
+    matchedProd = { code: "GROUP-PENKO-PAD", name: "[펜코] 써지 패드 (SURGI PAD)" };
+  } else if (text.includes("보비플레이트") || text.includes("보비 플레이트") || text.includes("보비패드")) {
+    matchedProd = { code: "PK-CGP202S-TB", name: "펜코 보비 플레이트/펜슬 (PK-CGP202S-TB)" };
+  } else if (text.includes("이지큐본드") || tLower.includes("ezqbond")) {
+    matchedProd = { code: "WB-EGQ-A--02", name: "이지큐본드 메쉬 (EG-Q BOND)" };
+  } else if (text.includes("검진가운") || text.includes("1회용 가운") || text.includes("일회용 가운")) {
+    matchedProd = { code: "PROD_GOWN", name: "일회용 검진가운 (PROD_GOWN)" };
+  } else if (tLower.includes("oxy9wave") || tLower.includes("oxy9") || text.includes("옥시나인") || text.includes("산소포화도")) {
     matchedProd = { code: "MED-OXY9WAVE", name: "Oxy9Wave 휴대형 산소포화도 측정기 (MED-OXY9WAVE)" };
   } else if (tLower.includes("bt350") || tLower.includes("bt-350") || text.includes("태아심음")) {
     matchedProd = { code: "MED-BT350", name: "BT-350 태아심음측정기 (MED-BT350)" };
@@ -4760,7 +4845,7 @@ function parseSalesTextLocally(text) {
     matchedProd = { code: "MED-OLYMPUS", name: "올림푸스 수술/내시경 장비 (OLYMPUS)" };
   } else if (text.includes("모슬레이디") || text.includes("모슬") || tLower.includes("motor handle") || text.includes("201.023")) {
     matchedProd = { code: "201.023", name: "Drive Motor Handle(SET) (201.023)" };
-  } else if (text.includes("엔지오") || tLower.includes("angio") || tLower.includes("pr03") || tLower.includes("PR03")) {
+  } else if (text.includes("엔지오") || text.includes("앤지오") || tLower.includes("angio") || tLower.includes("pr03") || tLower.includes("PR03")) {
     matchedProd = { code: "ST-ANG-PR03", name: "Surgi FXA Angio Procedure Kit (ST-ANG-PR03)" };
   } else if (text.includes("c라인") || text.includes("C라인") || tLower.includes("c-line")) {
     matchedProd = { code: "ST-CVC-CLINE11A", name: "[CVC] Surgi FXT C-Line Adv.11A Tray Kit (ST-CVC-CLINE11A)" };
@@ -4778,7 +4863,11 @@ function parseSalesTextLocally(text) {
     matchedProd = { code: "PROD_HYGENT", name: "[하이겐트] Hygent 수액세트/치료재료" };
   } else {
     for (const p of master) {
-      if (p && p.name && p.name.length >= 3 && text.includes(p.name)) {
+      if (p && p.name && p.name.length >= 3 && (text.includes(p.name) || tLower.includes(p.name.toLowerCase()))) {
+        matchedProd = { code: p.code || p.id, name: `${p.name} (${p.code || p.id})` };
+        break;
+      }
+      if (p && Array.isArray(p.aliases) && p.aliases.some(a => a && a.length >= 2 && tLower.includes(a.toLowerCase()))) {
         matchedProd = { code: p.code || p.id, name: `${p.name} (${p.code || p.id})` };
         break;
       }
@@ -4791,7 +4880,8 @@ function parseSalesTextLocally(text) {
   let failReason = "-";
   let nextAction = "다음 방문 일정 확인 및 지속적 관계 유지";
 
-  const hasSample = text.includes("샘플") || text.includes("데모") || text.includes("테스트") || text.includes("써보고") || text.includes("사용해");
+  const noSampleGiven = text.includes("샘플은 안드림") || text.includes("샘플 안드림") || text.includes("샘플안드림") || text.includes("샘플제공하지 않음") || text.includes("샘플 제공하지 않음");
+  const hasSample = !noSampleGiven && (text.includes("샘플") || text.includes("데모") || text.includes("테스트") || text.includes("써보고") || text.includes("사용해"));
   const hasAS = text.includes("A/S") || text.includes("as") || text.includes("수리") || text.includes("클레임") || text.includes("교환") || text.includes("불량");
   const hasBuyNew = text.includes("새 제품 판매") || text.includes("새제품 판매") || text.includes("판매하기로") || text.includes("신규 구매") || text.includes("교체 구매");
   const hasDelivery = (text.includes("납품") || text.includes("발주") || text.includes("확정") || text.includes("도입완료")) && !hasSample;
