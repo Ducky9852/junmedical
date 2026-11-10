@@ -1,9 +1,9 @@
-const APP_VERSION = "jun-V1-037";
+const APP_VERSION = "jun-V1-038";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V20_JUN_V1_037";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V21_JUN_V1_038";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -594,6 +594,30 @@ function syncHospitalsFromLogs() {
   window.SALES_DB.stats.active_hospitals = window.SALES_DB.hospitals.length;
 }
 
+// Helper: Fetch all rows from a Supabase table beyond the default 1,000-row PostgREST limit
+async function fetchAllTableRows(client, tableName, orderCol = null) {
+  let allRows = [];
+  let offset = 0;
+  const pageSize = 1000;
+  while (true) {
+    let q = client.from(tableName).select('*');
+    if (orderCol) {
+      q = q.order(orderCol, { ascending: false });
+    }
+    q = q.range(offset, offset + pageSize - 1);
+    const { data, error } = await q;
+    if (error) {
+      return { data: allRows.length > 0 ? allRows : null, error };
+    }
+    if (!data || data.length === 0) break;
+    allRows = allRows.concat(data);
+    if (data.length < pageSize) break;
+    offset += pageSize;
+    if (offset >= 20000) break;
+  }
+  return { data: allRows, error: null };
+}
+
 // Cloud Async Fetcher from Supabase
 async function fetchLatestFromSupabase(showToastOnManual = false) {
   const client = getSupabaseClient();
@@ -604,21 +628,14 @@ async function fetchLatestFromSupabase(showToastOnManual = false) {
   try {
     console.log('🔄 Fetching real-time updates from Supabase Cloud...');
     
-    // Fetch logs (descending by id/date)
-    const { data: logsData, error: logsErr } = await client
-      .from('activity_logs')
-      .select('*')
-      .order('id', { ascending: false });
+    // Fetch all logs beyond 1,000-row limit (descending by id)
+    const { data: logsData, error: logsErr } = await fetchAllTableRows(client, 'activity_logs', 'id');
 
-    // Fetch hospitals
-    const { data: hospData, error: hospErr } = await client
-      .from('hospitals')
-      .select('*');
+    // Fetch all hospitals
+    const { data: hospData, error: hospErr } = await fetchAllTableRows(client, 'hospitals');
 
-    // Fetch pipeline
-    const { data: pipeData, error: pipeErr } = await client
-      .from('pipeline')
-      .select('*');
+    // Fetch all pipeline deals
+    const { data: pipeData, error: pipeErr } = await fetchAllTableRows(client, 'pipeline');
 
     if (!logsErr && logsData && logsData.length > 0) {
       window.SALES_DB.activity_logs = logsData;
