@@ -1,9 +1,9 @@
-const APP_VERSION = "jun-V1-039";
+const APP_VERSION = "jun-V1-040";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V22_JUN_V1_039";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V22_JUN_V1_040";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -3971,6 +3971,62 @@ function saveEditedActivityLog() {
     if (!newHospObj.products_active.includes(prodName)) newHospObj.products_active.push(prodName);
   }
 
+  // Auto-split secondary products/actions if combined in one note (e.g. A/S + 소모품 샘플)
+  const cleanHosp = (hosp || '').replace(/\s+/g, '');
+  const extraDetected = extractAdditionalDealsFromNote(note, prodCode);
+  for (const extra of extraDetected) {
+    const alreadyExists = window.SALES_DB.activity_logs.some(l =>
+      (l.hospital || '').replace(/\s+/g, '') === cleanHosp &&
+      l.date === date &&
+      l.product_code === extra.code &&
+      l.action_type === extra.action_type
+    );
+    if (!alreadyExists) {
+      const extraLog = {
+        hospital: hosp,
+        date: date,
+        sales_rep: rep,
+        action_type: extra.action_type,
+        title: `[${extra.action_type}] ${extra.name}`,
+        note: note,
+        products: [extra.name],
+        product_code: extra.code,
+        next_action: nextAction,
+        region: logData.region
+      };
+      window.SALES_DB.activity_logs.unshift(extraLog);
+      const client = getSupabaseClient();
+      if (client) {
+        client.from('activity_logs').insert([extraLog]).select().then(({ data }) => {
+          if (data && data[0]) extraLog.id = data[0].id;
+        });
+      }
+      showToast(`🔀 복합 일지 감지: [${extra.action_type}] ${extra.name} 건이 별도 영업일지로 함께 분리 등록되었습니다!`);
+    }
+
+    const extraIsDemo = (extra.action_type === '의료장비 데모' || extra.action_type === '소모품 샘플');
+    let extraDeal = (window.SALES_DB.pipeline || []).find(d => (d.hospital || '').replace(/\s+/g, '') === cleanHosp && (d.product_id === extra.code || d.product_name === extra.name));
+    if (!extraDeal) {
+      extraDeal = {
+        hospital: hosp,
+        region: logData.region,
+        sales_rep: rep,
+        product_id: extra.code,
+        product_name: extra.name,
+        status: extra.sales_status,
+        last_date: date,
+        latest_action: extra.action_type,
+        latest_note: note,
+        demo_info: extraIsDemo ? { date: date, note: note, status: '평가진행중' } : null,
+        as_info: extra.action_type === 'A/S·클레임' ? { date: date, note: note, status: '접수완료' } : null,
+        fail_reasons: []
+      };
+      window.SALES_DB.pipeline.unshift(extraDeal);
+      if (typeof syncPipelineDealToCloud === 'function') syncPipelineDealToCloud(extraDeal);
+    }
+  }
+  window.SALES_DB.stats.total_logs = window.SALES_DB.activity_logs.length;
+
   // Sync hospitals from logs to ensure consistency
   syncHospitalsFromLogs();
 
@@ -4660,19 +4716,134 @@ function getTopErpProductSuggestions(text, currentMatchedCode = '') {
   return scored.slice(0, 4).map(s => s.product);
 }
 
+function detectAllProductsAndActionsInNote(text) {
+  if (!text) return [];
+  const tLower = text.toLowerCase();
+  const clauses = text.split(/(?:\r?\n|및|그리고|또한|,|\/|;)+/).map(c => c.trim()).filter(Boolean);
+  const fullClauses = clauses.length > 0 ? clauses : [text];
+
+  const rules = [
+    { code: '7070C', name: 'Insufflator (7070C)', terms: ['insufflator', 'wisap', '인서플레이터', '7070c'] },
+    { code: 'LYN-10-1.5-00', name: 'CUREGYN (LYN-10-1.5-00)', terms: ['curegyn', 'cure gyn', '큐어진', 'lyn-10', 'lyn-05'] },
+    { code: 'WOUND-CLEAR', name: '운드클리어 창상피복재 (WOUND-CLEAR)', terms: ['운드클리어', '운드 클리어', 'wound clear', 'woundclear'] },
+    { code: '121-51855', name: '복강경 트로카 (Crown/Endogard Trocar)', terms: ['트로카', 'trocar', 'endogard', '121-51855'] },
+    { code: 'PK-S002-G', name: 'PENKO SONO GEL (PK-S002-G)', terms: ['소노겔', '소노젤', 'sonogel', 'sono gel', 'pk-s002'] },
+    { code: 'GROUP-PENKO-PAD', name: '[펜코] 써지 패드 (SURGI PAD)', terms: ['써지패드', '서지패드', 'surgi pad', 'surgipad'] },
+    { code: 'PK-CGP202S-TB', name: '펜코 보비 플레이트/펜슬 (PK-CGP202S-TB)', terms: ['보비플레이트', '보비 플레이트', '보비패드'] },
+    { code: 'WB-EGQ-A--02', name: '이지큐본드 메쉬 (EG-Q BOND)', terms: ['이지큐본드', 'ezqbond', 'eg-q bond'] },
+    { code: 'PROD_GOWN', name: '일회용 검진가운 (PROD_GOWN)', terms: ['검진가운', '1회용 가운', '일회용 가운'] },
+    { code: 'MED-OXY9WAVE', name: 'Oxy9Wave 휴대형 산소포화도 측정기 (MED-OXY9WAVE)', terms: ['oxy9wave', 'oxy9', '옥시나인', '산소포화도'] },
+    { code: 'MED-BT350', name: 'BT-350 태아심음측정기 (MED-BT350)', terms: ['bt350', 'bt-350', '태아심음'] },
+    { code: 'MED-OLYMPUS', name: '올림푸스 수술/내시경 장비 (OLYMPUS)', terms: ['올림푸스', 'olympus'] },
+    { code: '201.023', name: 'Drive Motor Handle(SET) (201.023)', terms: ['모슬레이디', 'motor handle', '201.023'] },
+    { code: 'ST-ANG-PR03', name: 'Surgi FXA Angio Procedure Kit (ST-ANG-PR03)', terms: ['엔지오', '앤지오', 'angio', 'st-ang-pr03'] },
+    { code: 'ST-CVC-CLINE11A', name: '[CVC] Surgi FXT C-Line Adv.11A Tray Kit (ST-CVC-CLINE11A)', terms: ['c라인', 'c-line', 'st-cvc'] },
+    { code: 'GROUP-SEJONG-SHEET', name: '[세종] 멸균 소공포 (MULTI USEFUL SHEET)', terms: ['소공포', '드레이프'] },
+    { code: 'GROUP-PENKO-SWORD', name: '[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)', terms: ['서지소드', '안전 메스', 'surgi sword'] },
+    { code: 'PROD_BIOPSY', name: '일회용 펀치 생검기 (Punch Biopsy)', terms: ['바이옵시', '펀치 생검기', 'punch biopsy'] },
+    { code: 'PROD_ZWAYOK', name: '병원용 좌욕기 필터 (PROD_ZWAYOK)', terms: ['좌욕기'] },
+    { code: 'PROD_TULIP', name: '듀얼 튤립 카테터 (Dual Tulip)', terms: ['튤립', '듀얼튤립', 'tulip'] },
+    { code: 'PROD_HYGENT', name: '[하이겐트] Hygent 수액세트/치료재료', terms: ['하이겐트', 'hygent'] }
+  ];
+
+  // Also include user-registered custom products and aliases
+  const customProds = typeof getCustomProductsFromStorage === 'function' ? getCustomProductsFromStorage() : [];
+  for (const cp of customProds) {
+    if (!cp || !cp.code) continue;
+    if (rules.some(r => r.code === cp.code)) continue;
+    const terms = [cp.name, cp.code].concat(cp.aliases || []).filter(t => t && t.length >= 2).map(t => t.toLowerCase());
+    if (terms.length > 0) {
+      rules.push({ code: cp.code, name: `${cp.name} (${cp.code})`, terms });
+    }
+  }
+
+  const found = [];
+  for (const r of rules) {
+    let matchedTerm = null;
+    let firstIdx = Infinity;
+    for (const term of r.terms) {
+      const idx = tLower.indexOf(term.toLowerCase());
+      if (idx !== -1 && idx < firstIdx) {
+        firstIdx = idx;
+        matchedTerm = term.toLowerCase();
+      }
+    }
+    if (matchedTerm !== null) {
+      // Find clauses mentioning this product
+      const prodClauses = fullClauses.filter(c => r.terms.some(t => c.toLowerCase().includes(t.toLowerCase())));
+      const localContext = prodClauses.length > 0 ? prodClauses.join(' ') : text;
+      const isEquip = isEquipmentProduct(r.name, r.code, localContext);
+
+      const clauseHasAS = /A\/S|as|수리|고장|불량|클레임|교환|점검|회수/i.test(localContext);
+      const clauseHasSample = /샘플|데모|테스트|평가|써보/i.test(localContext);
+      const clauseHasDelivery = (/납품|발주|확정|도입완료|출고/.test(localContext)) && !clauseHasSample;
+      const wholeHasSample = /샘플|데모|테스트|평가|써보/i.test(text);
+      const wholeHasAS = /A\/S|as|수리|고장|불량|클레임|교환/i.test(text);
+
+      let actionType = '제품설명·소개';
+      let salesStatus = '제품소개·영업중';
+
+      if (clauseHasAS && (isEquip || !clauseHasSample)) {
+        actionType = 'A/S·클레임';
+        salesStatus = 'A/S접수·처리';
+      } else if (clauseHasSample || (!clauseHasAS && wholeHasSample)) {
+        actionType = isEquip ? '의료장비 데모' : '소모품 샘플';
+        salesStatus = isEquip ? '의료장비 데모' : '소모품 샘플';
+      } else if (clauseHasDelivery) {
+        actionType = '납품·설치';
+        salesStatus = '도입완료·납품';
+      } else if (wholeHasAS && isEquip) {
+        actionType = 'A/S·클레임';
+        salesStatus = 'A/S접수·처리';
+      }
+
+      found.push({
+        code: r.code,
+        name: r.name,
+        action_type: actionType,
+        sales_status: salesStatus,
+        index: firstIdx
+      });
+    }
+  }
+
+  found.sort((a, b) => a.index - b.index);
+  return found;
+}
+
+function extractAdditionalDealsFromNote(text, primaryProdCode) {
+  const allDetected = detectAllProductsAndActionsInNote(text);
+  if (allDetected.length <= 1) return [];
+  const normPrimary = (primaryProdCode || '').trim().toUpperCase();
+  return allDetected.filter(item => item.code.toUpperCase() !== normPrimary);
+}
+
 function renderProductSuggestionsBox(text, currentMatchedCode = '') {
   const box = document.getElementById('ai-product-suggestions-box');
   const chipsContainer = document.getElementById('ai-product-suggestions-chips');
   if (!box || !chipsContainer) return;
 
   const suggestions = getTopErpProductSuggestions(text, currentMatchedCode);
-  if (!suggestions || suggestions.length === 0) {
+  const multiDetected = detectAllProductsAndActionsInNote(text);
+
+  if ((!suggestions || suggestions.length === 0) && multiDetected.length <= 1) {
     box.style.display = 'none';
     chipsContainer.innerHTML = '';
     return;
   }
 
-  chipsContainer.innerHTML = suggestions.map((p, idx) => {
+  let multiBannerHtml = '';
+  if (multiDetected.length >= 2) {
+    const itemsLabel = multiDetected.map((d, i) => `<b>${i + 1}. [${escapeHtml(d.action_type)}] ${escapeHtml(d.name)}</b>`).join(' ＋ ');
+    multiBannerHtml = `
+      <div style="width:100%; margin-bottom:8px; padding:8px 11px; background:rgba(16,185,129,0.14); border:1px solid rgba(16,185,129,0.4); border-radius:8px; font-size:0.76rem; color:#6ee7b7; line-height:1.45;">
+        🔀 <strong>복합 영업일지 자동 분리 감지 (${multiDetected.length}건):</strong><br>
+        저장 시 ${itemsLabel} 총 <strong>${multiDetected.length}건</strong>으로 자동 나누어 등록됩니다.
+      </div>
+    `;
+  }
+
+  chipsContainer.innerHTML = multiBannerHtml + (suggestions || []).map((p, idx) => {
     const pCode = p.code || p.id || '';
     const pName = p.name || '';
     const isActive = (pCode === currentMatchedCode) ? 'active' : '';
@@ -4877,47 +5048,10 @@ function parseSalesTextLocally(text) {
   let matchedProd = { code: "PROD_GENERAL", name: "일반 의료소모품/장비 (PROD_GENERAL)" };
   const customProds = typeof getCustomProductsFromStorage === 'function' ? getCustomProductsFromStorage() : [];
   const master = customProds.concat(window.ERP_PRODUCTS_MASTER || [], window.SALES_DB ? (window.SALES_DB.products || []) : [], erpProductsCache || []);
+  const detectedItems = detectAllProductsAndActionsInNote(text);
 
-  if (tLower.includes("curegyn") || tLower.includes("cure gyn") || text.includes("큐어진") || tLower.includes("lyn-10") || tLower.includes("lyn-05")) {
-    matchedProd = { code: "LYN-10-1.5-00", name: "CUREGYN (LYN-10-1.5-00)" };
-  } else if (text.includes("운드클리어") || text.includes("운드 클리어") || tLower.includes("wound clear")) {
-    matchedProd = { code: "WOUND-CLEAR", name: "운드클리어 창상피복재 (WOUND-CLEAR)" };
-  } else if (text.includes("트로카") || tLower.includes("trocar") || tLower.includes("endogard") || text.includes("121-51855")) {
-    matchedProd = { code: "121-51855", name: "복강경 트로카 (Crown/Endogard Trocar)" };
-  } else if (text.includes("소노겔") || text.includes("소노젤") || tLower.includes("sonogel") || tLower.includes("sono gel") || tLower.includes("pk-s002")) {
-    matchedProd = { code: "PK-S002-G", name: "PENKO SONO GEL (PK-S002-G)" };
-  } else if (text.includes("써지패드") || text.includes("서지패드") || tLower.includes("surgi pad")) {
-    matchedProd = { code: "GROUP-PENKO-PAD", name: "[펜코] 써지 패드 (SURGI PAD)" };
-  } else if (text.includes("보비플레이트") || text.includes("보비 플레이트") || text.includes("보비패드")) {
-    matchedProd = { code: "PK-CGP202S-TB", name: "펜코 보비 플레이트/펜슬 (PK-CGP202S-TB)" };
-  } else if (text.includes("이지큐본드") || tLower.includes("ezqbond")) {
-    matchedProd = { code: "WB-EGQ-A--02", name: "이지큐본드 메쉬 (EG-Q BOND)" };
-  } else if (text.includes("검진가운") || text.includes("1회용 가운") || text.includes("일회용 가운")) {
-    matchedProd = { code: "PROD_GOWN", name: "일회용 검진가운 (PROD_GOWN)" };
-  } else if (tLower.includes("oxy9wave") || tLower.includes("oxy9") || text.includes("옥시나인") || text.includes("산소포화도")) {
-    matchedProd = { code: "MED-OXY9WAVE", name: "Oxy9Wave 휴대형 산소포화도 측정기 (MED-OXY9WAVE)" };
-  } else if (tLower.includes("bt350") || tLower.includes("bt-350") || text.includes("태아심음")) {
-    matchedProd = { code: "MED-BT350", name: "BT-350 태아심음측정기 (MED-BT350)" };
-  } else if (tLower.includes("올림푸스") || tLower.includes("olympus")) {
-    matchedProd = { code: "MED-OLYMPUS", name: "올림푸스 수술/내시경 장비 (OLYMPUS)" };
-  } else if (text.includes("모슬레이디") || text.includes("모슬") || tLower.includes("motor handle") || text.includes("201.023")) {
-    matchedProd = { code: "201.023", name: "Drive Motor Handle(SET) (201.023)" };
-  } else if (text.includes("엔지오") || text.includes("앤지오") || tLower.includes("angio") || tLower.includes("pr03") || tLower.includes("PR03")) {
-    matchedProd = { code: "ST-ANG-PR03", name: "Surgi FXA Angio Procedure Kit (ST-ANG-PR03)" };
-  } else if (text.includes("c라인") || text.includes("C라인") || tLower.includes("c-line")) {
-    matchedProd = { code: "ST-CVC-CLINE11A", name: "[CVC] Surgi FXT C-Line Adv.11A Tray Kit (ST-CVC-CLINE11A)" };
-  } else if (text.includes("소공포") || text.includes("드레이프")) {
-    matchedProd = { code: "GROUP-SEJONG-SHEET", name: "[세종] 멸균 소공포 (MULTI USEFUL SHEET)" };
-  } else if (text.includes("서지소드") || text.includes("펜코") || text.includes("나이프") || text.includes("메스")) {
-    matchedProd = { code: "GROUP-PENKO-SWORD", name: "[펜코] 서지 소드 안전 메스 (DF & STRIP SURGI SWORD)" };
-  } else if (text.includes("바이옵시") || text.includes("펀치")) {
-    matchedProd = { code: "PROD_BIOPSY", name: "일회용 펀치 생검기 (Punch Biopsy)" };
-  } else if (text.includes("좌욕기") || text.includes("필터")) {
-    matchedProd = { code: "PROD_ZWAYOK", name: "병원용 좌욕기 필터 (PROD_ZWAYOK)" };
-  } else if (text.includes("튤립") || text.includes("듀얼튤립")) {
-    matchedProd = { code: "PROD_TULIP", name: "듀얼 튤립 카테터 (Dual Tulip)" };
-  } else if (text.includes("하이겐트") || tLower.includes("hygent")) {
-    matchedProd = { code: "PROD_HYGENT", name: "[하이겐트] Hygent 수액세트/치료재료" };
+  if (detectedItems.length > 0) {
+    matchedProd = { code: detectedItems[0].code, name: detectedItems[0].name };
   } else {
     for (const p of master) {
       if (p && p.name && p.name.length >= 3 && (text.includes(p.name) || tLower.includes(p.name.toLowerCase()))) {
@@ -4944,7 +5078,10 @@ function parseSalesTextLocally(text) {
   const hasDelivery = (text.includes("납품") || text.includes("발주") || text.includes("확정") || text.includes("도입완료")) && !hasSample;
   const hasLoss = text.includes("보류") || text.includes("실패") || text.includes("거절") || text.includes("안쓴대") || text.includes("부담") || text.includes("안맞는") || text.includes("어렵다고") || text.includes("돈이없") || text.includes("못들어옴");
 
-  if (hasBuyNew || (hasAS && text.includes("판매하기로"))) {
+  if (detectedItems.length >= 2) {
+    actionType = detectedItems[0].action_type;
+    pipelineStage = detectedItems[0].sales_status;
+  } else if (hasBuyNew || (hasAS && text.includes("판매하기로"))) {
     actionType = "납품·설치";
     pipelineStage = "도입완료·납품";
     failReason = text.includes("불가") ? "기존 장비 A/S 수리 불가에 따른 신제품 교체 확정" : "-";
@@ -5272,6 +5409,71 @@ async function saveParsedLogToDB() {
     }
   }
 
+  // 2-B. Multi-Product / Multi-Action Auto-Split (e.g. A/S + 소모품 샘플 in a single sales log)
+  const extraDetectedItems = extractAdditionalDealsFromNote(noteVal, finalProdCode);
+  const extraLogEntries = [];
+  const extraDeals = [];
+  const hospRegionVal = erpMatch ? erpMatch.region : (existingHosp ? existingHosp.region : "세종충북");
+
+  for (const extra of extraDetectedItems) {
+    const alreadyLogged = window.SALES_DB.activity_logs.some(l =>
+      (l.hospital || '').replace(/\s+/g, '') === cleanHospName &&
+      l.date === dateStr &&
+      l.product_code === extra.code &&
+      l.action_type === extra.action_type
+    );
+    if (!alreadyLogged) {
+      const extraLog = {
+        hospital: hospName,
+        date: dateStr,
+        sales_rep: userRep,
+        action_type: extra.action_type,
+        title: `[${extra.action_type}] ${extra.name}`,
+        note: noteVal,
+        products: [extra.name],
+        product_code: extra.code,
+        next_action: nextAction,
+        region: hospRegionVal,
+        contact: contactName
+      };
+      window.SALES_DB.activity_logs.unshift(extraLog);
+      extraLogEntries.push(extraLog);
+    }
+
+    const extraIsDemo = (extra.action_type === '의료장비 데모' || extra.action_type === '소모품 샘플' || extra.sales_status === '의료장비 데모' || extra.sales_status === '소모품 샘플');
+    let extraDeal = window.SALES_DB.pipeline.find(d => (d.hospital || '').replace(/\s+/g, '') === cleanHospName && (d.product_id === extra.code || d.product_name === extra.name));
+    if (!extraDeal) {
+      extraDeal = {
+        hospital: hospName,
+        region: hospRegionVal,
+        sales_rep: userRep,
+        product_id: extra.code,
+        product_name: extra.name,
+        status: extra.sales_status,
+        last_date: dateStr,
+        latest_action: extra.action_type,
+        latest_note: noteVal,
+        demo_info: extraIsDemo ? { date: dateStr, note: noteVal, status: '평가진행중' } : null,
+        as_info: extra.action_type === 'A/S·클레임' ? { date: dateStr, note: noteVal, status: '접수완료' } : null,
+        fail_reasons: []
+      };
+      window.SALES_DB.pipeline.unshift(extraDeal);
+    } else {
+      extraDeal.sales_rep = userRep;
+      extraDeal.status = extra.sales_status;
+      extraDeal.last_date = dateStr;
+      extraDeal.latest_action = extra.action_type;
+      extraDeal.latest_note = noteVal;
+      if (extraIsDemo) extraDeal.demo_info = { date: dateStr, note: noteVal, status: '평가진행중' };
+      if (extra.action_type === 'A/S·클레임') {
+        extraDeal.as_info = { date: dateStr, note: noteVal, status: '접수완료' };
+        extraDeal.status = 'A/S접수·처리';
+      }
+    }
+    extraDeals.push(extraDeal);
+  }
+  window.SALES_DB.stats.total_logs = window.SALES_DB.activity_logs.length;
+
   // Auto-resolve pending A/S deals only if this log specifically completes A/S for THIS product or replaces THIS equipment
   let resolvedAsDeals = [];
   const isASCompletion = noteVal.includes('A/S 수리완료') || noteVal.includes('A/S 조치완료') || noteVal.includes('수리 완료') || (actionType === 'A/S·클레임' && (salesStatus === '도입완료·납품' || noteVal.includes('출고')));
@@ -5350,7 +5552,15 @@ async function saveParsedLogToDB() {
       if (logErr) console.warn('Supabase activity_log insert error:', logErr);
       else if (insertedLog && insertedLog[0]) logEntry.id = insertedLog[0].id;
 
+      for (const exLog of extraLogEntries) {
+        const { data: insEx, error: exErr } = await client.from('activity_logs').insert([exLog]).select();
+        if (!exErr && insEx && insEx[0]) exLog.id = insEx[0].id;
+      }
+
       if (deal) await syncPipelineDealToCloud(deal);
+      for (const exDeal of extraDeals) {
+        await syncPipelineDealToCloud(exDeal);
+      }
       for (const rd of resolvedAsDeals) {
         await syncPipelineDealToCloud(rd);
       }
@@ -5366,8 +5576,15 @@ async function saveParsedLogToDB() {
 
   // Automatically Post to Slack #영업일지 channel
   sendSalesLogToSlack(logEntry);
+  for (const exLog of extraLogEntries) {
+    sendSalesLogToSlack(exLog);
+  }
 
-  showToast(`🎉 [${hospName}] 영업일지가 성공적으로 저장되었습니다! 다음 일지를 바로 작성하실 수 있습니다.`, 4000);
+  if (extraLogEntries.length > 0) {
+    showToast(`🎉 [${hospName}] 복합 영업일지가 총 ${1 + extraLogEntries.length}건(품목·활동별 자동 분리)으로 저장되었습니다!`, 4500);
+  } else {
+    showToast(`🎉 [${hospName}] 영업일지가 성공적으로 저장되었습니다! 다음 일지를 바로 작성하실 수 있습니다.`, 4000);
+  }
 
   // Cleanly refresh and reset AI input form for seamless continuous logging
   resetAiSalesForm();
