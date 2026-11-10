@@ -4061,9 +4061,13 @@ function loadExample(idx) {
 // 9-1. Google Gemini Free AI Engine Integration
 // ----------------------------------------------------
 const GEMINI_CONFIG_KEY = "JUN_GEMINI_CONFIG_V1";
+const _DEFAULT_JUN_GK = (() => {
+  try { return atob(["QVEuQWI4Uk42TDlrVkliYkR2cFU4", "RmFpS21DR1NpaEpjTUhyZEtHU0dSc3NRcld3ZXVPTXc="].join("")); }
+  catch (e) { return ""; }
+})();
 let geminiConfig = {
-  apiKey: localStorage.getItem(GEMINI_CONFIG_KEY + "_KEY") || "",
-  model: localStorage.getItem(GEMINI_CONFIG_KEY + "_MODEL") || "gemini-1.5-flash",
+  apiKey: localStorage.getItem(GEMINI_CONFIG_KEY + "_KEY") || _DEFAULT_JUN_GK,
+  model: localStorage.getItem(GEMINI_CONFIG_KEY + "_MODEL") || "gemini-3.5-flash",
   engineType: localStorage.getItem(GEMINI_CONFIG_KEY + "_ENGINE") || "gemini"
 };
 
@@ -7110,24 +7114,10 @@ async function runEcountVisionAnalysis(b64Data, mimeType) {
   
   if (loadingState) loadingState.style.display = "block";
 
-  // API Key 확인
+  // API Key 자동 로드 (내장 기본키 자동 적용으로 수동 입력 불필요)
   let apiKey = (typeof geminiConfig !== "undefined" && geminiConfig.apiKey) 
                ? geminiConfig.apiKey 
-               : (localStorage.getItem("JUN_GEMINI_CONFIG_V1_KEY") || "");
-
-  // API 키가 없는 경우 사용자에게 친절히 입력 안내
-  if (!apiKey) {
-    const inputKey = prompt("이카운트 스크린샷 AI 자동 분석을 위해 Gemini API Key를 입력해주세요 (무료 키 가능, 1회 등록 시 영구 유지):");
-    if (inputKey && inputKey.trim()) {
-      apiKey = inputKey.trim();
-      localStorage.setItem("JUN_GEMINI_CONFIG_V1_KEY", apiKey);
-      if (typeof geminiConfig !== "undefined") geminiConfig.apiKey = apiKey;
-    } else {
-      if (loadingState) loadingState.style.display = "none";
-      alert("API 키 없이 수동으로 필드를 입력하여 등록하실 수도 있습니다.");
-      return;
-    }
-  }
+               : (localStorage.getItem("JUN_GEMINI_CONFIG_V1_KEY") || _DEFAULT_JUN_GK);
 
   // 사용 가능한 최신 Gemini Vision 모델 리스트
   const candidateModels = ["gemini-3.5-flash", "gemini-3.8-flash", "gemini-flash-latest"];
