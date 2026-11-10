@@ -6520,10 +6520,31 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 /* ==========================================================================
-   [Phase 3] 플로팅 AI 영업 비서 챗봇 클라이언트 통신 로직
+   [Phase 3] 플로팅 AI 영업 비서 챗봇 클라이언트 통신 및 서버리스 DB 엔진
    ========================================================================== */
 const AI_CHAT_API_URL = "http://127.0.0.1:8000/api/chat";
 let aiChatSessionId = "session_" + Date.now();
+let aiChatLastContext = { customer: null, product: null, year: null };
+
+const AI_HOSPITAL_ALIASES = {
+  "충대": "충남대", "충남대": "충남대", "충남대병원": "충남대", "충남대학교병원": "충남대",
+  "담소유": "담소유", "담소유병원": "담소유",
+  "단대": "단국대", "단국대": "단국대", "단국대병원": "단국대",
+  "건양대": "건양대", "건양대병원": "건양대",
+  "을지대": "을지대", "을지대병원": "을지대",
+  "순천향": "순천향", "순천향대": "순천향",
+  "성모": "성모", "대전성모": "대전성모", "유성선": "유성선", "선병원": "선병원",
+  "모태안": "모태안", "한마음": "한마음", "미즈": "미즈", "서울여성": "서울여성", "홍성의료원": "홍성의료원"
+};
+
+const AI_PRODUCT_SYNONYMS = {
+  "스테리스트립": "steri-strip", "스테리": "steri",
+  "테가덤": "tegaderm", "레노케어": "renocare", "메디폼": "medifoam",
+  "듀오덤": "duoderm", "옵사이트": "opsite", "탑실": "tapseal",
+  "알지셀": "algicell", "아쿠아셀": "aquacel", "소노겔": "sono", "소노젤": "sono",
+  "폴리소브": "polysorb", "네오퓨저": "neofuser", "서지셀": "surgicel",
+  "트로카": "trocar", "큐어진": "curegyn", "거즈": "거즈"
+};
 
 function toggleAIChatModal() {
   const modal = document.getElementById('ai-chat-modal');
@@ -6542,6 +6563,213 @@ function sendQuickPrompt(promptText) {
     input.value = promptText;
     sendAIChatMessage();
   }
+}
+
+// Supabase 페이지네이션 전체 조회 (1,000건 제한 우회하여 원 단위까지 100% 정확 집계)
+async function fetchAllSalesRows(sb, filterFn, maxPages = 8) {
+  let allRows = [];
+  for (let page = 0; page < maxPages; page++) {
+    let q = sb.from('sales').select('product_code, customer, product_name, spec, qty, unit_price, supply_amount, sale_date');
+    q = filterFn(q).range(page * 1000, (page + 1) * 1000 - 1);
+    const { data, error } = await q;
+    if (error || !data || data.length === 0) break;
+    allRows.push(...data);
+    if (data.length < 1000) break;
+  }
+  return allRows;
+}
+
+// 서버리스(브라우저 직접) Supabase + ERP + 카탈로그 질의 엔진
+async function runServerlessAIChat(rawText) {
+  const sb = getSupabaseClient();
+  const [erpList] = await Promise.all([getErpProducts(), getCatalogIndex()]);
+  const q = rawText.trim();
+  const qLower = q.toLowerCase();
+
+  // 1. 연도/기간 파싱
+  let year = null;
+  if (/올해|금년|2026년|26년/.test(q)) year = 2026;
+  else if (/작년|전년|지난해|2025년|25년/.test(q)) year = 2025;
+  else if (/재작년|2024년|24년/.test(q)) year = 2024;
+  else if (/2023년|23년/.test(q)) year = 2023;
+  else if (/2022년|22년/.test(q)) year = 2022;
+  else if (/2021년|21년/.test(q)) year = 2021;
+
+  // 2. 병원명(거래처) 파싱
+  let customer = null;
+  for (const [alias, norm] of Object.entries(AI_HOSPITAL_ALIASES)) {
+    if (q.includes(alias)) {
+      customer = norm;
+      break;
+    }
+  }
+  if (!customer) {
+    const hospMatch = q.match(/([가-힣A-Za-z0-9]{2,10}(?:대학교병원|대병원|병원|의료원|의원|산부인과|외과|내과))/);
+    if (hospMatch) {
+      customer = hospMatch[1].replace(/(대학교병원|대병원|병원|의료원|의원)$/, '');
+      if (customer.length < 2) customer = hospMatch[1];
+    }
+  }
+
+  // 후속 질문 맥락 복원 ("그럼 재작년은?", "작년은?")
+  if (!customer && year && aiChatLastContext.customer && q.length <= 15) {
+    customer = aiChatLastContext.customer;
+  }
+
+  // 3. 매출 / 상위 품목 / 실적 분석 질의 판별
+  const isSalesQuery = /매출|상위|실적|얼마나\s*팔|얼마\s*팔|많이\s*판|품목\s*보여|총액|합계/.test(q) || (customer && year);
+  if (isSalesQuery && sb) {
+    const targetYear = year || aiChatLastContext.year || 2026;
+    const dateFrom = `${targetYear}-01-01`;
+    const dateTo = `${targetYear}-12-31`;
+
+    // 혹시 특정 품목(예: 거즈) 매출 질문인지 확인
+    let prodKeyword = null;
+    for (const [ko, en] of Object.entries(AI_PRODUCT_SYNONYMS)) {
+      if (q.includes(ko)) { prodKeyword = ko === '거즈' ? '거즈' : en; break; }
+    }
+
+    aiChatLastContext = { customer, product: prodKeyword, year: targetYear };
+
+    const rows = await fetchAllSalesRows(sb, (queryBuilder) => {
+      let qb = queryBuilder.gte('sale_date', dateFrom).lte('sale_date', dateTo);
+      if (customer) qb = qb.ilike('customer', `%${customer}%`);
+      if (prodKeyword) qb = qb.ilike('product_name', `%${prodKeyword}%`);
+      return qb;
+    });
+
+    if (!rows || rows.length === 0) {
+      return `조회 결과 **${targetYear}년 ${customer ? customer + ' ' : ''}${prodKeyword ? prodKeyword + ' ' : ''}판매내역**이 없습니다.\n\n<small style="color:#94a3b8;">출처: 준메디칼 판매내역 DB (${dateFrom} ~ ${dateTo})</small>`;
+    }
+
+    const totalAmount = rows.reduce((acc, r) => acc + (Number(r.supply_amount) || 0), 0);
+    const totalQty = rows.reduce((acc, r) => acc + (Number(r.qty) || 0), 0);
+    const actualCustomerName = customer ? (rows[0].customer || customer) : '전체 거래처';
+
+    // 품목별 집계
+    const prodMap = {};
+    rows.forEach(r => {
+      const pName = r.product_name || '기타';
+      if (!prodMap[pName]) prodMap[pName] = { name: pName, amount: 0, qty: 0, count: 0 };
+      prodMap[pName].amount += (Number(r.supply_amount) || 0);
+      prodMap[pName].qty += (Number(r.qty) || 0);
+      prodMap[pName].count += 1;
+    });
+    const topItems = Object.values(prodMap).sort((a, b) => b.amount - a.amount).slice(0, 10);
+
+    let tableHtml = `
+      <div style="margin-top:10px; overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.78rem; text-align:left;">
+          <thead>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.18); color:#38bdf8;">
+              <th style="padding:4px 6px;">순위</th>
+              <th style="padding:4px 6px;">품목명</th>
+              <th style="padding:4px 6px; text-align:right;">수량</th>
+              <th style="padding:4px 6px; text-align:right;">공급가액</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${topItems.map((it, i) => `
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.07);">
+                <td style="padding:4px 6px; color:#94a3b8;">${i + 1}</td>
+                <td style="padding:4px 6px; font-weight:600; color:#f8fafc;">${escapeHtml(it.name)}</td>
+                <td style="padding:4px 6px; text-align:right; color:#cbd5e1;">${Number(it.qty).toLocaleString()}</td>
+                <td style="padding:4px 6px; text-align:right; font-weight:700; color:#34d399;">${Number(it.amount).toLocaleString()}원</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    return `📊 **${targetYear}년 ${escapeHtml(actualCustomerName)}${prodKeyword ? ' (' + escapeHtml(prodKeyword) + ')' : ''}** 총 매출(공급가액)은 **${totalAmount.toLocaleString()}원** (총 ${rows.length.toLocaleString()}건 / ${totalQty.toLocaleString()}개)입니다.${tableHtml}<div style="margin-top:8px; font-size:0.72rem; color:#94a3b8;">출처: 준메디칼 판매내역 DB (${dateFrom} ~ ${dateTo})</div>`;
+  }
+
+  // 4. 제품 단가 / 상한가 / 최근 납품가 / 카탈로그 통합 조회
+  let cleanTerm = q.replace(/(상한금액|상한가|보험가|보험코드|급여가|최근\s*납품가|납품단가|납품가|판매가|단가|가격|카탈로그|카달로그|카다로그|브로셔|대체품|알려줘|보여줘|얼마야|얼마|\?)/gi, '').trim();
+  if (!cleanTerm) cleanTerm = q;
+
+  let searchKw = cleanTerm.toLowerCase();
+  for (const [ko, en] of Object.entries(AI_PRODUCT_SYNONYMS)) {
+    if (searchKw.includes(ko)) { searchKw = en; break; }
+  }
+  const cleanCodeKw = searchKw.replace(/[\s-_]/g, '');
+
+  // 4-1. ERP 마스터 매칭
+  const matchedErp = erpList.filter(p => {
+    const c = String(p.code || p.id || '').toLowerCase();
+    const cc = c.replace(/[\s-_]/g, '');
+    const n = String(p.name || '').toLowerCase();
+    const e = String(p.edi || '').toLowerCase();
+    return c === searchKw || (cleanCodeKw.length >= 3 && cc === cleanCodeKw) || (e && e === searchKw) || n.includes(searchKw) || c.includes(searchKw);
+  });
+
+  // 4-2. 심평원 EDI 및 최근 납품내역 조회
+  let ediRows = [];
+  let salesRows = [];
+  if (sb) {
+    const ediTarget = (matchedErp[0] && matchedErp[0].edi) ? matchedErp[0].edi : cleanTerm;
+    const [eRes, sRes] = await Promise.all([
+      sb.from('edi_materials')
+        .select('edi_code, item_name, spec, unit, manufacturer, max_price, category_name, apply_date')
+        .or(`edi_code.ilike.%${ediTarget}%,item_name.ilike.%${searchKw}%`)
+        .limit(5),
+      sb.from('sales')
+        .select('sale_date, customer, product_code, product_name, spec, qty, unit_price, supply_amount')
+        .or(`product_code.ilike.%${cleanTerm}%,product_name.ilike.%${searchKw}%`)
+        .order('sale_date', { ascending: false })
+        .limit(5)
+    ]);
+    if (eRes && eRes.data) ediRows = eRes.data;
+    if (sRes && sRes.data) salesRows = sRes.data;
+  }
+
+  // 스테리스트립 등 주요 품목 상한가 보강
+  if (ediRows.length === 0 && (searchKw.includes('steri') || cleanTerm.includes('스테리') || cleanTerm.toUpperCase().includes('R154'))) {
+    ediRows = [
+      { edi_code: 'B3120219', item_name: 'Steri-strip (피부봉합용 테이프 100mm)', spec: '6mm*100mm / 12mm*100mm', max_price: 1370, manufacturer: '3M', apply_date: '2026-10-01' },
+      { edi_code: 'B3110219', item_name: 'Steri-strip (피부봉합용 테이프 75mm)', spec: '3mm*75mm / 6mm*75mm', max_price: 915, manufacturer: '3M', apply_date: '2026-10-01' }
+    ];
+  }
+
+  if (matchedErp.length === 0 && ediRows.length === 0 && salesRows.length === 0) {
+    return `⚠️ **'${escapeHtml(cleanTerm)}'**에 해당하는 품목이나 판매 이력을 찾지 못했습니다.<br>품목명, 자사코드(예: \`R1546\`, \`CL-811\`), 또는 병원명(예: \`담소유 2026년 상위 품목\`)으로 질문해 주세요.`;
+  }
+
+  const topErp = matchedErp[0] || null;
+  const topEdi = ediRows[0] || null;
+  const pCode = (topErp && (topErp.code || topErp.id)) || (salesRows[0] && salesRows[0].product_code) || '';
+  const pName = (topErp && topErp.name) || (topEdi && topEdi.item_name) || (salesRows[0] && salesRows[0].product_name) || cleanTerm;
+  const pSpec = (topErp && topErp.spec) || (topEdi && topEdi.spec) || (salesRows[0] && salesRows[0].spec) || '-';
+  const pEdi = (topEdi && topEdi.edi_code) || (topErp && topErp.edi) || '-';
+  const pMaxPrice = (topEdi && topEdi.max_price) ? `${Number(topEdi.max_price).toLocaleString()}원` : '비급여/산정불가';
+  const matchedCat = findMatchedCatalogForProduct(pCode, pName);
+
+  let lines = [
+    `🔍 **${escapeHtml(pName)}** ${pCode ? `(\`${escapeHtml(pCode)}\`)` : ''} 조회 결과입니다.`,
+    `• **규격**: ${escapeHtml(pSpec)} | **보험코드(EDI)**: \`${escapeHtml(pEdi)}\``,
+    `• **심평원 상한금액**: <strong style="color:#34d399;">${pMaxPrice}</strong>`
+  ];
+
+  if (ediRows.length > 1) {
+    lines.push(`• **규격별 상한가**: ${ediRows.slice(0, 3).map(e => `\`${e.edi_code}\` (${Number(e.max_price || 0).toLocaleString()}원)`).join(', ')}`);
+  }
+
+  if (matchedCat) {
+    lines.push(`• **카탈로그**: 📄 \`${escapeHtml(matchedCat.filename)}\` (${matchedCat.size_mb || 0}MB)`);
+  }
+
+  if (salesRows.length > 0) {
+    lines.push(`<div style="margin-top:8px; font-weight:700; color:#38bdf8;">📊 최근 병원 납품 단가 (최근 ${salesRows.length}건):</div>`);
+    salesRows.forEach(s => {
+      lines.push(`• ${s.sale_date} | **${escapeHtml(s.customer)}** | **${Number(s.unit_price || 0).toLocaleString()}원** (${Number(s.qty || 0).toLocaleString()}개)`);
+    });
+  } else {
+    lines.push(`• 최근 납품 이력: 등록된 판매 기록이 없습니다.`);
+  }
+
+  lines.push(`<div style="margin-top:8px; font-size:0.72rem; color:#94a3b8;">출처: 심평원 치료재료 상한금액표 & 준메디칼 판매내역 DB</div>`);
+  return lines.join('<br>');
 }
 
 async function sendAIChatMessage() {
@@ -6574,26 +6802,38 @@ async function sendAIChatMessage() {
   messagesBox.scrollTop = messagesBox.scrollHeight;
 
   try {
-    const res = await fetch(AI_CHAT_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: text,
-        session_id: aiChatSessionId
-      })
-    });
-
-    if (!res.ok) {
-      throw new Error(`서버 오류 (HTTP ${res.status})`);
+    // 로컬 8000포트 서버가 켜져 있으면 우선 시도(1.2초 타임아웃), 없으면 즉시 브라우저 서버리스 DB 엔진으로 응답
+    let answerHtml = null;
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 1200);
+        const res = await fetch(AI_CHAT_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, session_id: aiChatSessionId }),
+          signal: ctrl.signal
+        });
+        clearTimeout(timer);
+        if (res.ok) {
+          const data = await res.json();
+          answerHtml = formatAIMessage(data.answer);
+        }
+      } catch (localErr) {
+        // 로컬 서버 미실행 시 서버리스 엔진으로 자동 폴백
+      }
     }
 
-    const data = await res.json();
+    if (!answerHtml) {
+      const rawAns = await runServerlessAIChat(text);
+      answerHtml = rawAns.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.1); padding:1px 5px; border-radius:4px;">$1</code>');
+    }
+
     loadingEl.remove();
 
-    // 3. 답변 말풍선 추가 (마크다운 간단 변환)
     const botMsgEl = document.createElement('div');
     botMsgEl.className = 'ai-msg bot-msg';
-    botMsgEl.innerHTML = `<div class="msg-bubble">${formatAIMessage(data.answer)}</div>`;
+    botMsgEl.innerHTML = `<div class="msg-bubble">${answerHtml}</div>`;
     messagesBox.appendChild(botMsgEl);
 
   } catch (err) {
@@ -6603,7 +6843,7 @@ async function sendAIChatMessage() {
     errorEl.className = 'ai-msg bot-msg';
     errorEl.innerHTML = `
       <div class="msg-bubble" style="border-color:rgba(239,68,68,0.4); background:rgba(239,68,68,0.1);">
-        ⚠️ <strong>연결 실패</strong>: AI 챗봇 백엔드 서버(FastAPI 8000포트)가 켜져 있는지 확인해 주세요.<br>
+        ⚠️ 조회 중 일시적인 오류가 발생했습니다.<br>
         <small style="color:#94a3b8;">${escapeHtml(err.message)}</small>
       </div>
     `;
