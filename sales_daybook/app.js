@@ -1,9 +1,9 @@
-const APP_VERSION = "jun-V1-041";
+const APP_VERSION = "jun-V1-042";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V22_JUN_V1_041";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V22_JUN_V1_042";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -6442,6 +6442,7 @@ async function getErpProducts() {
 }
 
 function initProductSearchTab() {
+  refreshProductSearchDataStats();
   if (isProdSearchInitialized) return;
   isProdSearchInitialized = true;
 
@@ -7830,4 +7831,810 @@ if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initEcountPasteListener);
 } else {
   initEcountPasteListener();
+}
+
+// =========================================================================
+// [제품·단가조회] 1. 심평원 상한금액표(월별) 업데이트 & 2. 판매현황(1년치 비교·증분) 업데이트
+// =========================================================================
+
+let pendingEdiUpdateRows = [];
+let pendingSalesAllParsedRows = [];
+let pendingSalesExistingKeySet = new Set();
+let pendingSalesFilteredRows = [];
+
+async function ensureXlsxLoaded() {
+  if (typeof XLSX !== 'undefined') return true;
+  return new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.head.appendChild(script);
+  });
+}
+
+async function refreshProductSearchDataStats() {
+  const sb = getSupabaseClient();
+  if (!sb) return;
+  try {
+    const [ediCountRes, salesCountRes, latestSaleRes, latestJunRes, latestSeojunRes] = await Promise.all([
+      sb.from('edi_materials').select('edi_code', { count: 'exact', head: true }),
+      sb.from('sales').select('id', { count: 'exact', head: true }),
+      sb.from('sales').select('sale_date').order('sale_date', { ascending: false }).limit(1),
+      sb.from('sales').select('sale_date').eq('company', '준메디칼').order('sale_date', { ascending: false }).limit(1),
+      sb.from('sales').select('sale_date').eq('company', '서준').order('sale_date', { ascending: false }).limit(1)
+    ]);
+
+    const ediCount = (ediCountRes && typeof ediCountRes.count === 'number') ? ediCountRes.count : 24517;
+    const salesCount = (salesCountRes && typeof salesCountRes.count === 'number') ? salesCountRes.count : 89259;
+    const latestDate = (latestSaleRes && latestSaleRes.data && latestSaleRes.data[0]) ? latestSaleRes.data[0].sale_date : '2026-09-30';
+    const latestJun = (latestJunRes && latestJunRes.data && latestJunRes.data[0]) ? latestJunRes.data[0].sale_date : '-';
+    const latestSeojun = (latestSeojunRes && latestSeojunRes.data && latestSeojunRes.data[0]) ? latestSeojunRes.data[0].sale_date : '-';
+
+    window._latestSalesStats = { ediCount, salesCount, latestDate, latestJun, latestSeojun };
+
+    const ediLbl = document.getElementById('live-edi-count-label');
+    const salesLbl = document.getElementById('live-sales-count-label');
+    const dateLbl = document.getElementById('live-sales-latest-date-label');
+
+    if (ediLbl) ediLbl.textContent = `상한금액 ${ediCount.toLocaleString()}건`;
+    if (salesLbl) salesLbl.textContent = `납품이력 ${salesCount.toLocaleString()}건`;
+    if (dateLbl) dateLbl.textContent = `(최근 납품일: ${latestDate})`;
+  } catch (err) {
+    console.warn('refreshProductSearchDataStats error:', err);
+  }
+}
+
+function ensureDataUpdateModalsDOM() {
+  if (!document.getElementById('edi-monthly-update-modal')) {
+    const ediModal = document.createElement('div');
+    ediModal.id = 'edi-monthly-update-modal';
+    ediModal.style.cssText = 'display:none; position:fixed; inset:0; z-index:99999; background:rgba(2,6,23,0.82); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:16px;';
+    ediModal.innerHTML = `
+      <div style="background:#0f172a; border:1px solid rgba(16,185,129,0.45); border-radius:16px; width:100%; max-width:680px; max-height:90vh; overflow-y:auto; padding:24px; color:#f8fafc; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:14px; margin-bottom:16px;">
+          <div>
+            <h3 style="margin:0; font-size:1.15rem; font-weight:800; color:#34d399;">📋 심평원 치료재료 상한금액표 (월별 고시) 업데이트</h3>
+            <p style="margin:4px 0 0; font-size:0.8rem; color:#94a3b8;">매월 심평원에서 고시하는 급여상한금액표 엑셀(.xlsx/.xls/.csv)을 업로드하여 최신 상한가로 일괄 갱신합니다.</p>
+          </div>
+          <button type="button" onclick="closeEdiMonthlyUpdateModal()" style="background:none; border:none; color:#94a3b8; font-size:1.3rem; cursor:pointer;">✕</button>
+        </div>
+
+        <div id="edi-modal-db-status" style="padding:10px 14px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:10px; font-size:0.82rem; color:#a7f3d0; margin-bottom:14px;">
+          현재 DB 등록 상한금액: 조회 중...
+        </div>
+
+        <div style="border:2px dashed rgba(16,185,129,0.45); border-radius:12px; padding:22px; text-align:center; background:rgba(30,41,59,0.5); cursor:pointer; margin-bottom:16px;" onclick="document.getElementById('edi-monthly-file-input').click()">
+          <input type="file" id="edi-monthly-file-input" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleEdiMonthlyFileChange(this.files)">
+          <div style="font-size:1.8rem; margin-bottom:6px;">📂</div>
+          <div style="font-size:0.92rem; font-weight:700; color:#e2e8f0;">클릭하여 심평원 급여상한금액표 엑셀 파일 선택</div>
+          <div style="font-size:0.76rem; color:#94a3b8; margin-top:4px;">필수 컬럼: 코드(보험코드), 품명, 규격, 단위, 상한금액, 제조회사, 중분류 등 자동 인식</div>
+        </div>
+
+        <div id="edi-parse-preview-box" style="display:none; margin-bottom:16px;">
+          <div id="edi-parse-summary-text" style="font-size:0.86rem; font-weight:700; color:#34d399; margin-bottom:8px;"></div>
+          <div style="max-height:200px; overflow-y:auto; border:1px solid #334155; border-radius:8px; background:#020617;">
+            <table style="width:100%; border-collapse:collapse; font-size:0.76rem; text-align:left;">
+              <thead style="background:#1e293b; color:#cbd5e1; position:sticky; top:0;">
+                <tr>
+                  <th style="padding:7px 10px;">보험코드(EDI)</th>
+                  <th style="padding:7px 10px;">품명</th>
+                  <th style="padding:7px 10px;">규격</th>
+                  <th style="padding:7px 10px; text-align:right;">상한금액</th>
+                  <th style="padding:7px 10px;">적용일자</th>
+                </tr>
+              </thead>
+              <tbody id="edi-parse-preview-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="edi-upload-progress-wrap" style="display:none; margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#6ee7b7; margin-bottom:6px;">
+            <span id="edi-upload-progress-text">Supabase 클라우드 DB 업데이트 중...</span>
+            <span id="edi-upload-progress-pct">0%</span>
+          </div>
+          <div style="width:100%; height:10px; background:#1e293b; border-radius:999px; overflow:hidden;">
+            <div id="edi-upload-progress-bar" style="width:0%; height:100%; background:linear-gradient(90deg, #10b981, #34d399); transition:width 0.2s;"></div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:14px;">
+          <button type="button" onclick="closeEdiMonthlyUpdateModal()" style="padding:9px 16px; background:#334155; color:#cbd5e1; border:none; border-radius:8px; font-size:0.84rem; font-weight:600; cursor:pointer;">닫기</button>
+          <button type="button" id="btn-exec-edi-upload" onclick="executeEdiMonthlyUpload()" style="display:none; padding:9px 18px; background:#059669; color:#fff; border:none; border-radius:8px; font-size:0.86rem; font-weight:700; cursor:pointer; box-shadow:0 4px 12px rgba(16,185,129,0.35);">🚀 상한금액 DB 일괄 업데이트 시작</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(ediModal);
+  }
+
+  if (!document.getElementById('sales-incremental-update-modal')) {
+    const salesModal = document.createElement('div');
+    salesModal.id = 'sales-incremental-update-modal';
+    salesModal.style.cssText = 'display:none; position:fixed; inset:0; z-index:99999; background:rgba(2,6,23,0.82); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:16px;';
+    salesModal.innerHTML = `
+      <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.45); border-radius:16px; width:100%; max-width:740px; max-height:92vh; overflow-y:auto; padding:24px; color:#f8fafc; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:14px; margin-bottom:16px;">
+          <div>
+            <h3 style="margin:0; font-size:1.15rem; font-weight:800; color:#38bdf8;">📈 판매현황 (1년치 엑셀 비교 · 미등록 월 자동 증분) 업데이트</h3>
+            <p style="margin:4px 0 0; font-size:0.8rem; color:#94a3b8;">1년치 판매현황 엑셀을 올리면 기존 DB와 자동 비교하여, 안 올라간 월(예: 9월 이후 등)의 미등록 판매내역만 정확히 추출해 업데이트합니다.</p>
+          </div>
+          <button type="button" onclick="closeSalesIncrementalUpdateModal()" style="background:none; border:none; color:#94a3b8; font-size:1.3rem; cursor:pointer;">✕</button>
+        </div>
+
+        <div id="sales-modal-db-status" style="padding:10px 14px; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; font-size:0.82rem; color:#bae6fd; margin-bottom:14px; line-height:1.5;">
+          현재 DB 납품이력 현황 조회 중...
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+          <div>
+            <label style="display:block; font-size:0.78rem; font-weight:700; color:#94a3b8; margin-bottom:5px;">🏢 사업자(법인) 구분</label>
+            <select id="sales-update-company-select" onchange="onSalesCompanyOrCutoffChange()" style="width:100%; padding:9px 12px; background:#1e293b; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-size:0.84rem; font-weight:600;">
+              <option value="auto">자동 감지 (파일명 '서준' 포함 시 서준, 기본 준메디칼)</option>
+              <option value="준메디칼">준메디칼</option>
+              <option value="서준">서준</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-size:0.78rem; font-weight:700; color:#94a3b8; margin-bottom:5px;">📅 업데이트 기준월 (시작일 필터)</label>
+            <select id="sales-update-cutoff-select" onchange="recalcSalesIncrementalFilter()" style="width:100%; padding:9px 12px; background:#1e293b; border:1px solid #334155; border-radius:8px; color:#38bdf8; font-size:0.84rem; font-weight:700;">
+              <option value="auto">⚡ 전체 기간 비교 후 미등록분만 자동 추출 (권장)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="border:2px dashed rgba(56,189,248,0.45); border-radius:12px; padding:20px; text-align:center; background:rgba(30,41,59,0.5); cursor:pointer; margin-bottom:16px;" onclick="document.getElementById('sales-incremental-file-input').click()">
+          <input type="file" id="sales-incremental-file-input" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleSalesIncrementalFileChange(this.files)">
+          <div style="font-size:1.8rem; margin-bottom:6px;">📊</div>
+          <div style="font-size:0.92rem; font-weight:700; color:#e2e8f0;">클릭하여 1년치 판매현황 엑셀/CSV 파일 선택 (예: 준 2026.xlsx, 서준 2026.xlsx)</div>
+          <div style="font-size:0.76rem; color:#94a3b8; margin-top:4px;">일자, 판매처명(거래처명), 품목코드, 품목명, 규격명, 수량, 단가, 공급가액, 부가세 자동 파싱</div>
+        </div>
+
+        <div id="sales-compare-result-box" style="display:none; margin-bottom:16px;">
+          <div id="sales-compare-summary-banner" style="padding:12px 14px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.4); border-radius:10px; font-size:0.84rem; color:#d1fae5; margin-bottom:10px; line-height:1.55;"></div>
+
+          <div style="font-size:0.8rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">📅 월별 DB 등록 현황 vs 엑셀 비교표</div>
+          <div style="max-height:210px; overflow-y:auto; border:1px solid #334155; border-radius:8px; background:#020617; margin-bottom:10px;">
+            <table style="width:100%; border-collapse:collapse; font-size:0.77rem; text-align:left;">
+              <thead style="background:#1e293b; color:#cbd5e1; position:sticky; top:0;">
+                <tr>
+                  <th style="padding:7px 10px;">년-월</th>
+                  <th style="padding:7px 10px; text-align:right;">엑셀 파일 건수</th>
+                  <th style="padding:7px 10px; text-align:right;">기존 DB 등록됨</th>
+                  <th style="padding:7px 10px; text-align:right;">🆕 신규 업데이트 대상</th>
+                  <th style="padding:7px 10px;">비교 상태</th>
+                </tr>
+              </thead>
+              <tbody id="sales-month-compare-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="sales-upload-progress-wrap" style="display:none; margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#7dd3fc; margin-bottom:6px;">
+            <span id="sales-upload-progress-text">미등록 판매현황 Supabase 업로드 중...</span>
+            <span id="sales-upload-progress-pct">0%</span>
+          </div>
+          <div style="width:100%; height:10px; background:#1e293b; border-radius:999px; overflow:hidden;">
+            <div id="sales-upload-progress-bar" style="width:0%; height:100%; background:linear-gradient(90deg, #0284c7, #38bdf8); transition:width 0.2s;"></div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:14px;">
+          <button type="button" onclick="closeSalesIncrementalUpdateModal()" style="padding:9px 16px; background:#334155; color:#cbd5e1; border:none; border-radius:8px; font-size:0.84rem; font-weight:600; cursor:pointer;">닫기</button>
+          <button type="button" id="btn-exec-sales-upload" onclick="executeSalesIncrementalUpload()" style="display:none; padding:9px 18px; background:#0284c7; color:#fff; border:none; border-radius:8px; font-size:0.86rem; font-weight:700; cursor:pointer; box-shadow:0 4px 12px rgba(2,132,199,0.35);">🚀 미등록 판매현황 업데이트 실행</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(salesModal);
+  }
+}
+
+async function openEdiMonthlyUpdateModal() {
+  ensureDataUpdateModalsDOM();
+  pendingEdiUpdateRows = [];
+  const modal = document.getElementById('edi-monthly-update-modal');
+  const previewBox = document.getElementById('edi-parse-preview-box');
+  const progWrap = document.getElementById('edi-upload-progress-wrap');
+  const execBtn = document.getElementById('btn-exec-edi-upload');
+  const fileInput = document.getElementById('edi-monthly-file-input');
+
+  if (previewBox) previewBox.style.display = 'none';
+  if (progWrap) progWrap.style.display = 'none';
+  if (execBtn) execBtn.style.display = 'none';
+  if (fileInput) fileInput.value = '';
+  if (modal) modal.style.display = 'flex';
+
+  await refreshProductSearchDataStats();
+  const st = window._latestSalesStats || { ediCount: 24517 };
+  const statusEl = document.getElementById('edi-modal-db-status');
+  if (statusEl) {
+    statusEl.innerHTML = `📌 현재 클라우드 DB 등록 심평원 상한금액: <strong>${st.ediCount.toLocaleString()}건</strong> (새 고시 엑셀 업로드 시 기존 코드 상한가 갱신 및 신규 코드가 자동 추가됩니다)`;
+  }
+}
+
+function closeEdiMonthlyUpdateModal() {
+  const modal = document.getElementById('edi-monthly-update-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function formatExcelCellDate(val) {
+  if (val === null || val === undefined || val === '') return '';
+  if (typeof val === 'number' && val > 20000 && val < 80000) {
+    const utcDays = Math.floor(val - 25569);
+    const d = new Date(utcDays * 86400 * 1000);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().slice(0, 10);
+    }
+  }
+  const s = String(val).trim().replace(/\./g, '-').replace(/\//g, '-');
+  const m = s.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) {
+    return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
+  }
+  const m8 = s.match(/^(\d{4})(\d{2})(\d{2})/);
+  if (m8) {
+    return `${m8[1]}-${m8[2]}-${m8[3]}`;
+  }
+  return s.slice(0, 10);
+}
+
+function parseCleanNumber(val) {
+  if (val === null || val === undefined || val === '') return 0;
+  if (typeof val === 'number') return isNaN(val) ? 0 : val;
+  const cleaned = String(val).replace(/,/g, '').trim();
+  const num = parseFloat(cleaned);
+  return isNaN(num) ? 0 : num;
+}
+
+async function handleEdiMonthlyFileChange(files) {
+  if (!files || files.length === 0) return;
+  const file = files[0];
+  const ok = await ensureXlsxLoaded();
+  if (!ok) {
+    alert('엑셀 파서 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해주세요.');
+    return;
+  }
+
+  const summaryText = document.getElementById('edi-parse-summary-text');
+  const previewBox = document.getElementById('edi-parse-preview-box');
+  const tbody = document.getElementById('edi-parse-preview-tbody');
+  const execBtn = document.getElementById('btn-exec-edi-upload');
+
+  if (previewBox) previewBox.style.display = 'block';
+  if (summaryText) summaryText.textContent = `⏳ '${file.name}' 엑셀 파일을 분석하고 있습니다...`;
+  if (tbody) tbody.innerHTML = '';
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, { type: 'array' });
+      const itemsMap = new Map();
+
+      for (const sheetName of wb.SheetNames) {
+        const sheet = wb.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+        if (!rows || rows.length < 2) continue;
+
+        let headerIdx = -1;
+        let colIdx = { code: 0, firstDate: 1, applyDate: 2, catName: 4, catCode: 5, name: 6, spec: 7, unit: 8, price: 9, mfr: 10 };
+
+        for (let r = 0; r < Math.min(rows.length, 25); r++) {
+          const rowStrs = (rows[r] || []).map(c => String(c || '').replace(/\s+/g, ''));
+          const codeCol = rowStrs.findIndex(c => c === '코드' || c === '보험코드' || c === '치료재료코드' || c === '품목코드');
+          const priceCol = rowStrs.findIndex(c => c.includes('상한금액') || c.includes('상한가'));
+          const nameCol = rowStrs.findIndex(c => c === '품명' || c === '제품명' || c === '품목명');
+
+          if (codeCol !== -1 && (priceCol !== -1 || nameCol !== -1)) {
+            headerIdx = r;
+            colIdx.code = codeCol;
+            if (nameCol !== -1) colIdx.name = nameCol;
+            if (priceCol !== -1) colIdx.price = priceCol;
+            const specCol = rowStrs.findIndex(c => c.includes('규격'));
+            const unitCol = rowStrs.findIndex(c => c.includes('단위'));
+            const mfrCol = rowStrs.findIndex(c => c.includes('제조') || c.includes('수입'));
+            const catNameCol = rowStrs.findIndex(c => c === '중분류' || c === '중분류명');
+            const catCodeCol = rowStrs.findIndex(c => c.includes('중분류코드'));
+            const firstCol = rowStrs.findIndex(c => c.includes('최초등재'));
+            const applyCol = rowStrs.findIndex(c => c.includes('적용일'));
+
+            if (specCol !== -1) colIdx.spec = specCol;
+            if (unitCol !== -1) colIdx.unit = unitCol;
+            if (mfrCol !== -1) colIdx.mfr = mfrCol;
+            if (catNameCol !== -1) colIdx.catName = catNameCol;
+            if (catCodeCol !== -1) colIdx.catCode = catCodeCol;
+            if (firstCol !== -1) colIdx.firstDate = firstCol;
+            if (applyCol !== -1) colIdx.applyDate = applyCol;
+            break;
+          }
+        }
+
+        if (headerIdx === -1) continue;
+
+        for (let r = headerIdx + 1; r < rows.length; r++) {
+          const row = rows[r];
+          if (!row || row.length === 0) continue;
+          const ediCode = String(row[colIdx.code] || '').trim();
+          if (!ediCode || ediCode.length < 5 || ediCode.includes('코드')) continue;
+
+          const itemName = String(row[colIdx.name] || '').trim();
+          const maxPrice = Math.round(parseCleanNumber(row[colIdx.price]));
+          if (!itemName && maxPrice <= 0) continue;
+
+          itemsMap.set(ediCode, {
+            edi_code: ediCode,
+            item_name: itemName || ediCode,
+            spec: String(row[colIdx.spec] || '').trim(),
+            unit: String(row[colIdx.unit] || '').trim(),
+            max_price: maxPrice,
+            manufacturer: String(row[colIdx.mfr] || '').trim(),
+            category_name: String(row[colIdx.catName] || '').trim(),
+            category_code: String(row[colIdx.catCode] || '').trim(),
+            first_date: formatExcelCellDate(row[colIdx.firstDate]),
+            apply_date: formatExcelCellDate(row[colIdx.applyDate]),
+            snapshot_date: '2026-10-01'
+          });
+        }
+      }
+
+      pendingEdiUpdateRows = Array.from(itemsMap.values());
+      if (pendingEdiUpdateRows.length === 0) {
+        if (summaryText) summaryText.innerHTML = `<span style="color:#f43f5e;">⚠️ 인식된 상한금액 데이터가 없습니다. 심평원 급여상한금액표 엑셀 파일인지 확인해주세요.</span>`;
+        if (execBtn) execBtn.style.display = 'none';
+        return;
+      }
+
+      if (summaryText) {
+        summaryText.innerHTML = `✅ 총 <strong>${pendingEdiUpdateRows.length.toLocaleString()}건</strong>의 치료재료 상한금액 항목이 추출되었습니다. (상위 8건 미리보기)`;
+      }
+      if (tbody) {
+        tbody.innerHTML = pendingEdiUpdateRows.slice(0, 8).map(item => `
+          <tr style="border-bottom:1px solid #1e293b;">
+            <td style="padding:6px 10px; font-weight:700; color:#38bdf8;">${escapeHtml(item.edi_code)}</td>
+            <td style="padding:6px 10px; color:#f8fafc;">${escapeHtml(item.item_name)}</td>
+            <td style="padding:6px 10px; color:#94a3b8;">${escapeHtml(item.spec || '-')}</td>
+            <td style="padding:6px 10px; text-align:right; font-weight:700; color:#34d399;">${item.max_price.toLocaleString()}원</td>
+            <td style="padding:6px 10px; color:#cbd5e1;">${escapeHtml(item.apply_date || '-')}</td>
+          </tr>
+        `).join('');
+      }
+      if (execBtn) {
+        execBtn.style.display = 'inline-block';
+        execBtn.disabled = false;
+        execBtn.textContent = `🚀 ${pendingEdiUpdateRows.length.toLocaleString()}건 상한금액 DB 일괄 업데이트 시작`;
+      }
+    } catch (err) {
+      console.error('EDI Excel parse error:', err);
+      if (summaryText) summaryText.innerHTML = `<span style="color:#f43f5e;">❌ 파일 분석 오류: ${escapeHtml(err.message)}</span>`;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+async function executeEdiMonthlyUpload() {
+  if (!pendingEdiUpdateRows || pendingEdiUpdateRows.length === 0) return;
+  const sb = getSupabaseClient();
+  if (!sb) {
+    alert('Supabase 연결을 확인할 수 없습니다.');
+    return;
+  }
+
+  const execBtn = document.getElementById('btn-exec-edi-upload');
+  const progWrap = document.getElementById('edi-upload-progress-wrap');
+  const progText = document.getElementById('edi-upload-progress-text');
+  const progPct = document.getElementById('edi-upload-progress-pct');
+  const progBar = document.getElementById('edi-upload-progress-bar');
+
+  if (execBtn) execBtn.disabled = true;
+  if (progWrap) progWrap.style.display = 'block';
+
+  const total = pendingEdiUpdateRows.length;
+  const batchSize = 400;
+  let uploaded = 0;
+
+  try {
+    for (let i = 0; i < total; i += batchSize) {
+      const batch = pendingEdiUpdateRows.slice(i, i + batchSize);
+      const { error } = await sb.from('edi_materials').upsert(batch, { onConflict: 'edi_code,snapshot_date' });
+      if (error) {
+        throw new Error(error.message || 'Supabase edi_materials upsert 오류');
+      }
+      uploaded += batch.length;
+      const pct = Math.min(100, Math.round((uploaded / total) * 100));
+      if (progText) progText.textContent = `심평원 상한금액 업데이트 진행 중... (${uploaded.toLocaleString()} / ${total.toLocaleString()}건)`;
+      if (progPct) progPct.textContent = `${pct}%`;
+      if (progBar) progBar.style.width = `${pct}%`;
+    }
+
+    await refreshProductSearchDataStats();
+    showToast(`🎉 심평원 상한금액 ${total.toLocaleString()}건이 성공적으로 업데이트되었습니다!`, 4500);
+    if (progText) progText.textContent = `✅ 총 ${total.toLocaleString()}건 상한금액 업데이트 완료!`;
+    if (execBtn) execBtn.textContent = `✅ 업데이트 완료`;
+  } catch (err) {
+    console.error('EDI upload error:', err);
+    alert('상한금액 업데이트 중 오류가 발생했습니다: ' + err.message);
+    if (execBtn) execBtn.disabled = false;
+  }
+}
+
+async function openSalesIncrementalUpdateModal() {
+  ensureDataUpdateModalsDOM();
+  pendingSalesAllParsedRows = [];
+  pendingSalesExistingKeySet = new Set();
+  pendingSalesFilteredRows = [];
+
+  const modal = document.getElementById('sales-incremental-update-modal');
+  const compareBox = document.getElementById('sales-compare-result-box');
+  const progWrap = document.getElementById('sales-upload-progress-wrap');
+  const execBtn = document.getElementById('btn-exec-sales-upload');
+  const fileInput = document.getElementById('sales-incremental-file-input');
+  const cutoffSelect = document.getElementById('sales-update-cutoff-select');
+
+  if (compareBox) compareBox.style.display = 'none';
+  if (progWrap) progWrap.style.display = 'none';
+  if (execBtn) execBtn.style.display = 'none';
+  if (fileInput) fileInput.value = '';
+  if (cutoffSelect) {
+    cutoffSelect.innerHTML = `<option value="auto">⚡ 전체 기간 비교 후 미등록분만 자동 추출 (권장)</option>`;
+  }
+  if (modal) modal.style.display = 'flex';
+
+  await refreshProductSearchDataStats();
+  const st = window._latestSalesStats || { salesCount: 89259, latestDate: '2026-09-30', latestJun: '2026-09-30', latestSeojun: '2026-09-30' };
+  const statusEl = document.getElementById('sales-modal-db-status');
+  if (statusEl) {
+    statusEl.innerHTML = `
+      📌 <strong>현재 DB 납품이력 총 ${st.salesCount.toLocaleString()}건</strong><br>
+      • <strong>준메디칼</strong> 최근 등록일: <strong style="color:#34d399;">${st.latestJun}</strong> &nbsp;|&nbsp;
+      • <strong>서준</strong> 최근 등록일: <strong style="color:#34d399;">${st.latestSeojun}</strong>
+      <span style="display:block; font-size:0.76rem; color:#94a3b8; margin-top:3px;">※ 1년치 판매현황 파일을 올리면 위 날짜 이후(또는 중간에 누락된 월) 데이터만 자동으로 골라내어 안전하게 추가합니다.</span>
+    `;
+  }
+}
+
+function closeSalesIncrementalUpdateModal() {
+  const modal = document.getElementById('sales-incremental-update-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function makeSaleRecordKey(r) {
+  const d = String(r.sale_date || '').trim();
+  const c = String(r.customer || '').trim();
+  const p = String(r.product_name || '').trim();
+  const q = Math.round(Number(r.qty || 0) * 100) / 100;
+  const u = Math.round(Number(r.unit_price || 0));
+  const comp = String(r.company || '준메디칼').trim();
+  return `${d}|${c}|${p}|${q}|${u}|${comp}`;
+}
+
+async function fetchExistingSalesKeysInRange(minDate, maxDate, company) {
+  const sb = getSupabaseClient();
+  const keySet = new Set();
+  const monthDbCountMap = new Map();
+  if (!sb || !minDate || !maxDate) return { keySet, monthDbCountMap };
+
+  const pageSize = 1000;
+  let offset = 0;
+  while (true) {
+    let query = sb
+      .from('sales')
+      .select('sale_date,customer,product_name,qty,unit_price,company')
+      .gte('sale_date', minDate)
+      .lte('sale_date', maxDate)
+      .order('id', { ascending: true })
+      .range(offset, offset + pageSize - 1);
+
+    if (company && company !== 'all') {
+      query = query.eq('company', company);
+    }
+
+    const { data, error } = await query;
+    if (error || !data || data.length === 0) break;
+
+    for (const row of data) {
+      keySet.add(makeSaleRecordKey(row));
+      const ym = String(row.sale_date || '').slice(0, 7);
+      if (ym) monthDbCountMap.set(ym, (monthDbCountMap.get(ym) || 0) + 1);
+    }
+
+    if (data.length < pageSize) break;
+    offset += pageSize;
+    if (offset >= 50000) break;
+  }
+  return { keySet, monthDbCountMap };
+}
+
+async function handleSalesIncrementalFileChange(files) {
+  if (!files || files.length === 0) return;
+  const file = files[0];
+  window._lastSelectedSalesFile = file;
+
+  const ok = await ensureXlsxLoaded();
+  if (!ok) {
+    alert('엑셀 파서 라이브러리를 불러오지 못했습니다.');
+    return;
+  }
+
+  const compareBox = document.getElementById('sales-compare-result-box');
+  const banner = document.getElementById('sales-compare-summary-banner');
+  const tbody = document.getElementById('sales-month-compare-tbody');
+  const execBtn = document.getElementById('btn-exec-sales-upload');
+
+  if (compareBox) compareBox.style.display = 'block';
+  if (banner) banner.innerHTML = `⏳ <strong>'${escapeHtml(file.name)}'</strong> 파일을 읽고 기존 Supabase DB와 월별 대조 분석 중입니다...`;
+  if (tbody) tbody.innerHTML = '';
+  if (execBtn) execBtn.style.display = 'none';
+
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, { type: 'array' });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+      if (!rows || rows.length < 2) {
+        if (banner) banner.innerHTML = `<span style="color:#f43f5e;">⚠️ 엑셀 파일에 데이터가 없습니다.</span>`;
+        return;
+      }
+
+      // 헤더 행 자동 탐색 ('일자', '판매처명'/'거래처명', '품목명')
+      let headerIdx = -1;
+      let colMap = { date: -1, customer: -1, prodCode: -1, prodName: -1, spec: -1, qty: -1, unitPrice: -1, supply: -1, vat: -1, dept: -1 };
+
+      for (let r = 0; r < Math.min(rows.length, 15); r++) {
+        const rowStrs = (rows[r] || []).map(c => String(c || '').replace(/\s+/g, ''));
+        const dCol = rowStrs.findIndex(c => c === '일자' || c === '전표일자' || c === '날짜' || c.includes('월/일'));
+        const cCol = rowStrs.findIndex(c => c.includes('판매처') || c.includes('거래처') || c === '병원명');
+        const pCol = rowStrs.findIndex(c => c.includes('품목명') || c === '품명' || c === '제품명');
+
+        if (dCol !== -1 && (cCol !== -1 || pCol !== -1)) {
+          headerIdx = r;
+          colMap.date = dCol;
+          colMap.customer = cCol;
+          colMap.prodName = pCol;
+          colMap.prodCode = rowStrs.findIndex(c => c.includes('품목코드') || c.includes('제품코드'));
+          colMap.spec = rowStrs.findIndex(c => c.includes('규격'));
+          colMap.qty = rowStrs.findIndex(c => c === '수량' || c.includes('판매수량'));
+          colMap.unitPrice = rowStrs.findIndex(c => c === '단가' || c.includes('판매단가'));
+          colMap.supply = rowStrs.findIndex(c => c.includes('공급가액') || c === '공급가');
+          colMap.vat = rowStrs.findIndex(c => c.includes('부가세') || c === '세액');
+          colMap.dept = rowStrs.findIndex(c => c.includes('부서'));
+          break;
+        }
+      }
+
+      if (headerIdx === -1) {
+        if (banner) banner.innerHTML = `<span style="color:#f43f5e;">⚠️ 엑셀에서 [일자, 판매처명(거래처명), 품목명] 헤더를 찾을 수 없습니다. 이카운트 판매현황 엑셀 형식인지 확인해주세요.</span>`;
+        return;
+      }
+
+      const compSelect = document.getElementById('sales-update-company-select')?.value || 'auto';
+      const defaultCompany = compSelect !== 'auto' ? compSelect : (file.name.includes('서준') ? '서준' : '준메디칼');
+
+      const parsedRows = [];
+      for (let r = headerIdx + 1; r < rows.length; r++) {
+        const row = rows[r];
+        if (!row || row.length === 0) continue;
+
+        const saleDate = formatExcelCellDate(row[colMap.date]);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(saleDate)) continue;
+
+        const customer = colMap.customer !== -1 ? String(row[colMap.customer] || '').trim() : '';
+        const productName = colMap.prodName !== -1 ? String(row[colMap.prodName] || '').trim() : '';
+        if (!customer || !productName || customer === 'nan' || customer.includes('합계') || productName.includes('합계')) continue;
+
+        const qty = colMap.qty !== -1 ? parseCleanNumber(row[colMap.qty]) : 0;
+        const supplyAmount = colMap.supply !== -1 ? Math.round(parseCleanNumber(row[colMap.supply])) : 0;
+        const vat = colMap.vat !== -1 ? Math.round(parseCleanNumber(row[colMap.vat])) : 0;
+        let unitPrice = colMap.unitPrice !== -1 ? Math.round(parseCleanNumber(row[colMap.unitPrice])) : 0;
+        if (unitPrice === 0 && qty > 0 && supplyAmount > 0) {
+          unitPrice = Math.round(supplyAmount / qty);
+        }
+
+        const prodCode = colMap.prodCode !== -1 ? String(row[colMap.prodCode] || '').trim() : '';
+        const spec = colMap.spec !== -1 ? String(row[colMap.spec] || '').trim() : '';
+        const rowCompany = (compSelect === 'auto' && colMap.dept !== -1 && String(row[colMap.dept] || '').includes('서준')) ? '서준' : defaultCompany;
+
+        parsedRows.push({
+          sale_date: saleDate,
+          customer: customer,
+          product_code: prodCode,
+          product_name: productName,
+          spec: spec,
+          qty: qty,
+          unit_price: unitPrice,
+          supply_amount: supplyAmount,
+          vat: vat,
+          company: rowCompany,
+          source_file: file.name
+        });
+      }
+
+      if (parsedRows.length === 0) {
+        if (banner) banner.innerHTML = `<span style="color:#f43f5e;">⚠️ 유효한 판매내역 행이 추출되지 않았습니다.</span>`;
+        return;
+      }
+
+      // 파일 내 동일 키 중복 제거 (유니크 제약과 동일 기준)
+      const uniqueFileMap = new Map();
+      for (const item of parsedRows) {
+        uniqueFileMap.set(makeSaleRecordKey(item), item);
+      }
+      pendingSalesAllParsedRows = Array.from(uniqueFileMap.values());
+
+      // 날짜 범위 산출
+      const dates = pendingSalesAllParsedRows.map(r => r.sale_date).sort();
+      const minDate = dates[0];
+      const maxDate = dates[dates.length - 1];
+
+      // Supabase에서 해당 기간 기존 데이터 조회
+      const { keySet, monthDbCountMap } = await fetchExistingSalesKeysInRange(minDate, maxDate, defaultCompany);
+      pendingSalesExistingKeySet = keySet;
+      window._pendingSalesMonthDbCountMap = monthDbCountMap;
+
+      // 월 목록 추출 및 기준월 드롭다운 구성
+      const months = Array.from(new Set(pendingSalesAllParsedRows.map(r => r.sale_date.slice(0, 7)))).sort();
+      const cutoffSelect = document.getElementById('sales-update-cutoff-select');
+      if (cutoffSelect) {
+        let firstMissingMonth = null;
+        for (const ym of months) {
+          const monthNewCount = pendingSalesAllParsedRows.filter(r => r.sale_date.startsWith(ym) && !pendingSalesExistingKeySet.has(makeSaleRecordKey(r))).length;
+          if (monthNewCount > 0 && !firstMissingMonth) {
+            firstMissingMonth = ym;
+          }
+        }
+
+        cutoffSelect.innerHTML = `<option value="auto">⚡ 전체 기간 비교 후 미등록분만 자동 추출 (${firstMissingMonth ? `${firstMissingMonth}월 이후 미등록 감지` : '전체 비교'})</option>` +
+          months.map(ym => `<option value="${ym}">${ym}월 (${ym}-01) 이후 미등록 데이터만 업데이트</option>`).join('');
+        cutoffSelect.value = 'auto';
+      }
+
+      recalcSalesIncrementalFilter();
+    } catch (err) {
+      console.error('Sales Excel parse error:', err);
+      if (banner) banner.innerHTML = `<span style="color:#f43f5e;">❌ 엑셀 비교 분석 오류: ${escapeHtml(err.message)}</span>`;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function onSalesCompanyOrCutoffChange() {
+  if (window._lastSelectedSalesFile) {
+    handleSalesIncrementalFileChange([window._lastSelectedSalesFile]);
+  }
+}
+
+function recalcSalesIncrementalFilter() {
+  if (!pendingSalesAllParsedRows || pendingSalesAllParsedRows.length === 0) return;
+
+  const cutoffVal = document.getElementById('sales-update-cutoff-select')?.value || 'auto';
+  const banner = document.getElementById('sales-compare-summary-banner');
+  const tbody = document.getElementById('sales-month-compare-tbody');
+  const execBtn = document.getElementById('btn-exec-sales-upload');
+  const monthDbCountMap = window._pendingSalesMonthDbCountMap || new Map();
+
+  const months = Array.from(new Set(pendingSalesAllParsedRows.map(r => r.sale_date.slice(0, 7)))).sort();
+
+  pendingSalesFilteredRows = pendingSalesAllParsedRows.filter(r => {
+    const isNew = !pendingSalesExistingKeySet.has(makeSaleRecordKey(r));
+    if (!isNew) return false;
+    if (cutoffVal !== 'auto' && r.sale_date.slice(0, 7) < cutoffVal) return false;
+    return true;
+  });
+
+  const totalExcel = pendingSalesAllParsedRows.length;
+  const totalAlreadyInDb = pendingSalesAllParsedRows.filter(r => pendingSalesExistingKeySet.has(makeSaleRecordKey(r))).length;
+  const totalNewTarget = pendingSalesFilteredRows.length;
+
+  const newMonths = Array.from(new Set(pendingSalesFilteredRows.map(r => r.sale_date.slice(0, 7)))).sort();
+  const rangeLabel = newMonths.length > 0 ? `${newMonths[0]}월 ~ ${newMonths[newMonths.length - 1]}월` : '없음';
+
+  if (banner) {
+    if (totalNewTarget > 0) {
+      banner.innerHTML = `
+        ✅ <strong>1년치 엑셀 vs 클라우드 DB 비교 완료!</strong><br>
+        • 엑셀 전체: <strong>${totalExcel.toLocaleString()}건</strong> &nbsp;|&nbsp;
+        • 이미 DB에 등록된 건수: <strong>${totalAlreadyInDb.toLocaleString()}건 (자동 제외)</strong><br>
+        • 🆕 <strong>신규 업데이트 대상: <span style="color:#34d399; font-size:0.95rem;">${totalNewTarget.toLocaleString()}건</span> (대상 월: ${rangeLabel})</strong>
+      `;
+    } else {
+      banner.innerHTML = `
+        ℹ️ <strong>비교 완료:</strong> 업로드하신 엑셀의 모든 내역(${totalExcel.toLocaleString()}건)이 이미 클라우드 DB에 등록되어 있습니다. (신규 추가 대상 0건)
+      `;
+    }
+  }
+
+  if (tbody) {
+    tbody.innerHTML = months.map(ym => {
+      const mRows = pendingSalesAllParsedRows.filter(r => r.sale_date.startsWith(ym));
+      const mNew = mRows.filter(r => !pendingSalesExistingKeySet.has(makeSaleRecordKey(r)));
+      const isExcludedByCutoff = (cutoffVal !== 'auto' && ym < cutoffVal);
+      const effectiveNew = isExcludedByCutoff ? 0 : mNew.length;
+      const dbExisting = monthDbCountMap.get(ym) || (mRows.length - mNew.length);
+
+      let statusBadge = `<span style="color:#94a3b8;">✅ 기존 등록완료</span>`;
+      if (effectiveNew > 0) {
+        statusBadge = `<span style="color:#34d399; font-weight:700;">🆕 ${effectiveNew.toLocaleString()}건 업데이트 대상</span>`;
+      } else if (isExcludedByCutoff && mNew.length > 0) {
+        statusBadge = `<span style="color:#f59e0b;">기준월 필터 제외 (${mNew.length}건)</span>`;
+      }
+
+      return `
+        <tr style="border-bottom:1px solid #1e293b; background:${effectiveNew > 0 ? 'rgba(16,185,129,0.08)' : 'transparent'};">
+          <td style="padding:6px 10px; font-weight:700; color:#f8fafc;">${ym}</td>
+          <td style="padding:6px 10px; text-align:right; color:#cbd5e1;">${mRows.length.toLocaleString()}건</td>
+          <td style="padding:6px 10px; text-align:right; color:#94a3b8;">${dbExisting.toLocaleString()}건</td>
+          <td style="padding:6px 10px; text-align:right; font-weight:700; color:${effectiveNew > 0 ? '#34d399' : '#64748b'};">${effectiveNew.toLocaleString()}건</td>
+          <td style="padding:6px 10px;">${statusBadge}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  if (execBtn) {
+    if (totalNewTarget > 0) {
+      execBtn.style.display = 'inline-block';
+      execBtn.disabled = false;
+      execBtn.textContent = `🚀 미등록 판매현황 ${totalNewTarget.toLocaleString()}건 (${rangeLabel}) 업데이트 실행`;
+    } else {
+      execBtn.style.display = 'none';
+    }
+  }
+}
+
+async function executeSalesIncrementalUpload() {
+  if (!pendingSalesFilteredRows || pendingSalesFilteredRows.length === 0) return;
+  const sb = getSupabaseClient();
+  if (!sb) {
+    alert('Supabase 연결을 확인할 수 없습니다.');
+    return;
+  }
+
+  const execBtn = document.getElementById('btn-exec-sales-upload');
+  const progWrap = document.getElementById('sales-upload-progress-wrap');
+  const progText = document.getElementById('sales-upload-progress-text');
+  const progPct = document.getElementById('sales-upload-progress-pct');
+  const progBar = document.getElementById('sales-upload-progress-bar');
+
+  if (execBtn) execBtn.disabled = true;
+  if (progWrap) progWrap.style.display = 'block';
+
+  const total = pendingSalesFilteredRows.length;
+  const batchSize = 250;
+  let uploaded = 0;
+
+  try {
+    for (let i = 0; i < total; i += batchSize) {
+      const batch = pendingSalesFilteredRows.slice(i, i + batchSize);
+      const { error } = await sb.from('sales').upsert(batch, {
+        onConflict: 'sale_date,customer,product_name,qty,unit_price,company',
+        ignoreDuplicates: true
+      });
+      if (error) {
+        throw new Error(error.message || 'Supabase sales upsert 오류');
+      }
+      uploaded += batch.length;
+      const pct = Math.min(100, Math.round((uploaded / total) * 100));
+      if (progText) progText.textContent = `미등록 판매현황 업로드 진행 중... (${uploaded.toLocaleString()} / ${total.toLocaleString()}건)`;
+      if (progPct) progPct.textContent = `${pct}%`;
+      if (progBar) progBar.style.width = `${pct}%`;
+    }
+
+    // 업로드 완료된 키들을 기존 Set에 추가하여 중복 재실행 방지
+    for (const r of pendingSalesFilteredRows) {
+      pendingSalesExistingKeySet.add(makeSaleRecordKey(r));
+    }
+
+    await refreshProductSearchDataStats();
+    recalcSalesIncrementalFilter();
+
+    showToast(`🎉 미등록 판매현황 ${total.toLocaleString()}건이 성공적으로 추가 업데이트되었습니다!`, 4500);
+    if (progText) progText.textContent = `✅ 총 ${total.toLocaleString()}건 판매현황 증분 업데이트 완료!`;
+  } catch (err) {
+    console.error('Sales incremental upload error:', err);
+    alert('판매현황 업데이트 중 오류가 발생했습니다: ' + err.message);
+    if (execBtn) execBtn.disabled = false;
+  }
 }

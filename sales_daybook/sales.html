@@ -16,11 +16,12 @@
   <meta name="apple-mobile-web-app-title" content="MEDI-SALES">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   
-  <link rel="stylesheet" href="app.css?v=jun-V1-041">
+  <link rel="stylesheet" href="app.css?v=jun-V1-042">
   <!-- Supabase JS Client (Loaded in Head for Realtime Multi-PC Sync) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="sales_database.js?v=jun-V1-016"></script>
-  <script src="app.js?v=jun-V1-041"></script>
+  <script src="app.js?v=jun-V1-042"></script>
 </head>
 <body>
 
@@ -55,7 +56,7 @@
         <div class="brand-icon">🩺</div>
         <div class="brand-text">
           <div class="brand-title-wrap">
-            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-041</span>
+            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-042</span>
             <button type="button" class="btn-cloud-sync" onclick="fetchLatestFromSupabase(true)" title="클라우드 최신 실시간 동기화">🔄</button>
             <h1>MEDI-SALES 360°</h1>
           </div>
@@ -512,11 +513,23 @@
         
         <!-- 검색 상단 헤더 & 검색창 -->
         <div class="prod-search-header-box">
-          <div class="prod-search-title-wrap">
-            <h2 class="prod-search-main-title">🔍 제품·단가·보험코드 실시간 조회</h2>
-            <p class="prod-search-sub-desc">
-              심평원 치료재료 <strong>상한금액 24,515건</strong> 및 자사 5개년 <strong>납품이력 89,259건</strong>을 즉시 조회합니다.
-            </p>
+          <div class="prod-search-title-wrap" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+            <div>
+              <h2 class="prod-search-main-title">🔍 제품·단가·보험코드 실시간 조회</h2>
+              <p class="prod-search-sub-desc">
+                심평원 치료재료 <strong id="live-edi-count-label">상한금액 24,517건</strong> 및 자사 5개년 <strong id="live-sales-count-label">납품이력 89,259건</strong><span id="live-sales-latest-date-label" style="font-size:0.78rem; color:#38bdf8; margin-left:4px;">(최근 납품일: 2026-09-30)</span>을 즉시 조회합니다.
+              </p>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+              <button type="button" onclick="openEdiMonthlyUpdateModal()" style="display:inline-flex; align-items:center; gap:6px; padding:8px 13px; background:rgba(16,185,129,0.16); border:1px solid rgba(16,185,129,0.45); border-radius:8px; color:#6ee7b7; font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(16,185,129,0.28)'" onmouseout="this.style.background='rgba(16,185,129,0.16)'">
+                <span>📋</span>
+                <span>상한금액표(월별) 업데이트</span>
+              </button>
+              <button type="button" onclick="openSalesIncrementalUpdateModal()" style="display:inline-flex; align-items:center; gap:6px; padding:8px 13px; background:rgba(56,189,248,0.16); border:1px solid rgba(56,189,248,0.45); border-radius:8px; color:#7dd3fc; font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(56,189,248,0.28)'" onmouseout="this.style.background='rgba(56,189,248,0.16)'">
+                <span>📈</span>
+                <span>판매현황(1년치 비교·증분) 업데이트</span>
+              </button>
+            </div>
           </div>
 
           <div class="prod-search-input-wrapper">
@@ -1769,7 +1782,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=jun-V1-041').then(reg => {
+        navigator.serviceWorker.register('sw.js?v=jun-V1-042').then(reg => {
           reg.update();
           console.log('⚡ PWA Service Worker Active & Updated:', reg.scope);
         }).catch(err => console.warn('SW register error:', err));
