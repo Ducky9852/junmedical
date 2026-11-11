@@ -190,10 +190,10 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(10, 14, 23, 0.82);
+  background: rgba(10, 14, 23, 0.88);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-glass);
-  padding: 14px 28px;
+  padding: 10px 24px;
 }
 
 .header-container {
@@ -202,13 +202,15 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 10px 16px;
+  flex-wrap: wrap;
 }
 
 .brand-section {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .brand-icon {
@@ -276,33 +278,36 @@ header {
 }
 
 .brand-text h1 {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
   letter-spacing: -0.5px;
   background: linear-gradient(135deg, #fff 30%, #9ca3af 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
+  white-space: nowrap;
 }
 
 .brand-text p {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
   font-weight: 400;
   margin-top: 2px;
+  white-space: nowrap;
 }
 
 .nav-tabs {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   background: rgba(15, 23, 42, 0.75);
   border: 1px solid var(--border-glass);
-  padding: 3px 4px;
-  border-radius: 30px;
-  gap: 3px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  scrollbar-width: none;
+  padding: 6px 10px;
+  border-radius: 18px;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1 1 540px;
+  overflow: visible;
 }
 
 .nav-tabs::-webkit-scrollbar {
@@ -1128,7 +1133,7 @@ main {
   width: 100%;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-glass);
-  padding: 10px 14px 10px 38px;
+  padding: 10px 14px 10px 42px !important;
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-size: 0.88rem;
@@ -1615,6 +1620,13 @@ main {
   font-variant-east-asian: normal !important;
   font-feature-settings: normal !important;
   outline: none;
+}
+
+.search-icon ~ input[type="text"],
+.search-icon ~ input[type="search"],
+.search-input-wrap input[type="text"],
+.product-search-wrap input[type="text"] {
+  padding-left: 42px !important;
 }
 
 .modal-select option {
