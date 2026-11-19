@@ -1,9 +1,9 @@
-const APP_VERSION = "jun-V1-042";
+const APP_VERSION = "jun-V1-043";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V22_JUN_V1_042";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V22_JUN_V1_043";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -4227,9 +4227,15 @@ const _DEFAULT_JUN_GK = (() => {
   try { return atob(["QVEuQWI4Uk42TDlrVkliYkR2cFU4", "RmFpS21DR1NpaEpjTUhyZEtHU0dSc3NRcld3ZXVPTXc="].join("")); }
   catch (e) { return ""; }
 })();
+const _RETIRED_GEMINI_MODELS = new Set(["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro"]);
+let _savedGeminiModel = localStorage.getItem(GEMINI_CONFIG_KEY + "_MODEL") || "gemini-3.5-flash";
+if (_RETIRED_GEMINI_MODELS.has(_savedGeminiModel)) {
+  _savedGeminiModel = "gemini-3.5-flash";
+  localStorage.setItem(GEMINI_CONFIG_KEY + "_MODEL", _savedGeminiModel);
+}
 let geminiConfig = {
   apiKey: localStorage.getItem(GEMINI_CONFIG_KEY + "_KEY") || _DEFAULT_JUN_GK,
-  model: localStorage.getItem(GEMINI_CONFIG_KEY + "_MODEL") || "gemini-3.5-flash",
+  model: _savedGeminiModel,
   engineType: localStorage.getItem(GEMINI_CONFIG_KEY + "_ENGINE") || "gemini"
 };
 
@@ -4290,7 +4296,8 @@ async function callGeminiAPI(text) {
   const apiKey = geminiConfig.apiKey;
   if (!apiKey) return null;
 
-  const model = geminiConfig.model || 'gemini-1.5-flash';
+  let model = geminiConfig.model || 'gemini-3.5-flash';
+  if (_RETIRED_GEMINI_MODELS.has(model)) model = 'gemini-3.5-flash';
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   const prompt = `당신은 의료기기 전문 유통기업 '준메디칼'의 영업 분석 AI 비서입니다.
@@ -4344,15 +4351,26 @@ ${text}
     ],
     generationConfig: {
       responseMimeType: "application/json",
-      temperature: 0.1
+      temperature: 0.1,
+      thinkingConfig: {
+        thinkingBudget: 0
+      }
     }
   };
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5500);
+  let res;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!res.ok) {
     const errText = await res.text();
@@ -5544,50 +5562,59 @@ async function saveParsedLogToDB() {
   recalcGlobalStats();
   initHeaderMetrics();
 
-  // 4. Sync to Supabase Cloud DB
-  const client = getSupabaseClient();
-  if (client) {
-    try {
-      const { data: insertedLog, error: logErr } = await client.from('activity_logs').insert([logEntry]).select();
-      if (logErr) console.warn('Supabase activity_log insert error:', logErr);
-      else if (insertedLog && insertedLog[0]) logEntry.id = insertedLog[0].id;
-
-      for (const exLog of extraLogEntries) {
-        const { data: insEx, error: exErr } = await client.from('activity_logs').insert([exLog]).select();
-        if (!exErr && insEx && insEx[0]) exLog.id = insEx[0].id;
-      }
-
-      if (deal) await syncPipelineDealToCloud(deal);
-      for (const exDeal of extraDeals) {
-        await syncPipelineDealToCloud(exDeal);
-      }
-      for (const rd of resolvedAsDeals) {
-        await syncPipelineDealToCloud(rd);
-      }
-      if (hosp) {
-        const { error: hospErr } = await client.from('hospitals').upsert([hosp], { onConflict: 'name' });
-        if (hospErr) console.warn('Supabase hospital upsert error:', hospErr);
-      }
-      console.log('⚡ AI Smart Log successfully saved to Supabase cloud!');
-    } catch(err) {
-      console.warn('Supabase cloud insert error:', err);
-    }
-  }
-
-  // Automatically Post to Slack #영업일지 channel
-  sendSalesLogToSlack(logEntry);
-  for (const exLog of extraLogEntries) {
-    sendSalesLogToSlack(exLog);
-  }
-
+  // Immediately reset form & show feedback so the user has zero wait time
   if (extraLogEntries.length > 0) {
     showToast(`🎉 [${hospName}] 복합 영업일지가 총 ${1 + extraLogEntries.length}건(품목·활동별 자동 분리)으로 저장되었습니다!`, 4500);
   } else {
     showToast(`🎉 [${hospName}] 영업일지가 성공적으로 저장되었습니다! 다음 일지를 바로 작성하실 수 있습니다.`, 4000);
   }
-
-  // Cleanly refresh and reset AI input form for seamless continuous logging
   resetAiSalesForm();
+
+  // Automatically Post to Slack #영업일지 channel (non-blocking)
+  sendSalesLogToSlack(logEntry);
+  for (const exLog of extraLogEntries) {
+    sendSalesLogToSlack(exLog);
+  }
+
+  // 4. Sync to Supabase Cloud DB in parallel (non-blocking background execution)
+  const client = getSupabaseClient();
+  if (client) {
+    (async () => {
+      try {
+        const tasks = [
+          client.from('activity_logs').insert([logEntry]).select().then(({ data, error }) => {
+            if (error) console.warn('Supabase activity_log insert error:', error);
+            else if (data && data[0]) logEntry.id = data[0].id;
+          })
+        ];
+        for (const exLog of extraLogEntries) {
+          tasks.push(
+            client.from('activity_logs').insert([exLog]).select().then(({ data, error }) => {
+              if (!error && data && data[0]) exLog.id = data[0].id;
+            })
+          );
+        }
+        if (deal) tasks.push(syncPipelineDealToCloud(deal));
+        for (const exDeal of extraDeals) {
+          tasks.push(syncPipelineDealToCloud(exDeal));
+        }
+        for (const rd of resolvedAsDeals) {
+          tasks.push(syncPipelineDealToCloud(rd));
+        }
+        if (hosp) {
+          tasks.push(
+            client.from('hospitals').upsert([hosp], { onConflict: 'name' }).then(({ error }) => {
+              if (error) console.warn('Supabase hospital upsert error:', error);
+            })
+          );
+        }
+        await Promise.all(tasks);
+        console.log('⚡ AI Smart Log successfully saved to Supabase cloud in parallel!');
+      } catch(err) {
+        console.warn('Supabase cloud insert error:', err);
+      }
+    })();
+  }
 }
 
 function resetAiSalesForm() {
@@ -7548,7 +7575,10 @@ async function runEcountVisionAnalysis(b64Data, mimeType) {
           }
         ],
         generationConfig: {
-          response_mime_type: "application/json"
+          response_mime_type: "application/json",
+          thinkingConfig: {
+            thinkingBudget: 0
+          }
         }
       };
 

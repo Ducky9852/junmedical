@@ -16,12 +16,12 @@
   <meta name="apple-mobile-web-app-title" content="MEDI-SALES">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   
-  <link rel="stylesheet" href="app.css?v=jun-V1-042">
+  <link rel="stylesheet" href="app.css?v=jun-V1-043">
   <!-- Supabase JS Client (Loaded in Head for Realtime Multi-PC Sync) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="sales_database.js?v=jun-V1-016"></script>
-  <script src="app.js?v=jun-V1-042"></script>
+  <script src="app.js?v=jun-V1-043"></script>
 </head>
 <body>
 
@@ -56,7 +56,7 @@
         <div class="brand-icon">🩺</div>
         <div class="brand-text">
           <div class="brand-title-wrap">
-            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-042</span>
+            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-043</span>
             <button type="button" class="btn-cloud-sync" onclick="fetchLatestFromSupabase(true)" title="클라우드 최신 실시간 동기화">🔄</button>
             <h1>MEDI-SALES 360°</h1>
           </div>
@@ -1388,8 +1388,8 @@
         <div class="modal-field">
           <label class="modal-label">AI 모델 선택</label>
           <select id="gemini-model-select" class="modal-select">
-            <option value="gemini-1.5-flash">Gemini 1.5 Flash (권장: 초고속 & 완전 무료)</option>
-            <option value="gemini-2.0-flash">Gemini 2.0 Flash (최신 모델)</option>
+            <option value="gemini-3.5-flash">Gemini 3.5 Flash (권장: 초고속 1초 응답)</option>
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash (안정형)</option>
           </select>
         </div>
       </div>
@@ -1782,7 +1782,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=jun-V1-042').then(reg => {
+        navigator.serviceWorker.register('sw.js?v=jun-V1-043').then(reg => {
           reg.update();
           console.log('⚡ PWA Service Worker Active & Updated:', reg.scope);
         }).catch(err => console.warn('SW register error:', err));
