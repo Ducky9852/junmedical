@@ -1,9 +1,9 @@
-const APP_VERSION = "jun-V1-043";
+const APP_VERSION = "jun-V1-044";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V22_JUN_V1_043";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V22_JUN_V1_044";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -223,13 +223,23 @@ function isActiveDemoOrSampleDeal(d) {
   );
 }
 
+// Helper: Normalize any date string (e.g. "2026/11/5" -> "2026/11/05") so string sorting is always chronological
+function normalizeStandardDate(rawDate) {
+  if (!rawDate) return '';
+  const d = String(rawDate).trim();
+  if (d === '-' || !d) return '';
+  const m = d.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})/);
+  if (m) {
+    return `${m[1]}/${m[2].padStart(2, '0')}/${m[3].padStart(2, '0')}`;
+  }
+  return d.replace(/[\-\.]/g, '/');
+}
+
 // Helper: Compare hospitals by latest activity/visit date descending (최근 방문일자 우선 정렬)
 function compareHospitalVisitDate(a, b) {
   const getCleanDate = (h) => {
     if (!h) return '';
-    const d = (h.last_activity_date || h.last_visit || '').trim();
-    if (d === '-' || !d) return '';
-    return d.replace(/-/g, '/');
+    return normalizeStandardDate(h.last_activity_date || h.last_visit || '');
   };
   const dateA = getCleanDate(a);
   const dateB = getCleanDate(b);
@@ -381,6 +391,7 @@ function syncHospitalsFromLogs() {
     if (!h || !h.name) return;
     const stdName = normalizeHospitalName(h.name);
     h.name = stdName;
+    if (h.last_activity_date) h.last_activity_date = normalizeStandardDate(h.last_activity_date);
     const canonKey = getCanonicalHospitalKey(stdName);
     
     if (!uniqueHospMap.has(canonKey)) {
@@ -401,6 +412,7 @@ function syncHospitalsFromLogs() {
   // 2. Ensure hospitals from activity_logs exist in unique map
   (window.SALES_DB.activity_logs || []).forEach(log => {
     if (!log.hospital) return;
+    if (log.date) log.date = normalizeStandardDate(log.date);
     const stdName = normalizeHospitalName(log.hospital);
     log.hospital = stdName; // standardize in log
     const canonKey = getCanonicalHospitalKey(stdName);
@@ -3598,10 +3610,10 @@ function renderExcelLogsTable() {
            prodCode.includes(query);
   });
 
-  // Sort by date descending (Newest first)
+  // Sort by date descending (Newest first, zero-padded via normalizeStandardDate)
   currentFilteredExcelLogs.sort((a, b) => {
-    const dateA = (a.date || '').replace(/[\/\-\.]/g, '');
-    const dateB = (b.date || '').replace(/[\/\-\.]/g, '');
+    const dateA = normalizeStandardDate(a.date || '').replace(/[\/\-\.]/g, '');
+    const dateB = normalizeStandardDate(b.date || '').replace(/[\/\-\.]/g, '');
     if (dateA !== dateB) return dateB.localeCompare(dateA);
     const idA = typeof a.id === 'number' ? a.id : (typeof a.origIndex === 'number' ? a.origIndex : 0);
     const idB = typeof b.id === 'number' ? b.id : (typeof b.origIndex === 'number' ? b.origIndex : 0);
