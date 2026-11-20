@@ -1,9 +1,9 @@
-const APP_VERSION = "jun-V1-044";
+const APP_VERSION = "jun-V1-045";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V22_JUN_V1_044";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V22_JUN_V1_045";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -660,6 +660,12 @@ async function fetchLatestFromSupabase(showToastOnManual = false) {
       const existingCodes = new Set(window.SALES_DB.products.map(p => (p.code || p.id || '').toUpperCase()));
       recentErpProds.forEach(ep => {
         if (!ep || !ep.code) return;
+        if (ep.code === '__SMART_ORDER_QUEUE__') {
+          if (typeof updateSmartOrderBadgeFromQueue === 'function') {
+            updateSmartOrderBadgeFromQueue(ep.keywords || []);
+          }
+          return;
+        }
         const cUpper = ep.code.toUpperCase();
         if (!existingCodes.has(cUpper)) {
           window.SALES_DB.products.unshift({
@@ -8680,3 +8686,506 @@ async function executeSalesIncrementalUpload() {
     if (execBtn) execBtn.disabled = false;
   }
 }
+
+// =========================================================================
+// [방안 B] 🛒 슬랙 #발주 실시간 스마트 발주 검수 & 이카운트 주문서 자동 전송 시스템
+// =========================================================================
+
+let smartOrderQueueList = [];
+let activeSmartOrderTs = '';
+let smartOrderPollTimer = null;
+
+function updateSmartOrderBadgeFromQueue(queueArr) {
+  if (Array.isArray(queueArr)) {
+    smartOrderQueueList = queueArr;
+  }
+  const pendingCnt = (smartOrderQueueList || []).filter(o => !o.web_status || o.web_status === 'pending' || o.web_status === 'error').length;
+  const badge = document.getElementById('badge-smart-order-count');
+  if (badge) {
+    badge.textContent = String(pendingCnt);
+    badge.style.background = pendingCnt > 0 ? '#f59e0b' : 'rgba(255,255,255,0.2)';
+    badge.style.color = pendingCnt > 0 ? '#000' : '#cbd5e1';
+  }
+}
+
+async function fetchSmartOrderQueueFromSupabase() {
+  const sb = getSupabaseClient();
+  if (!sb) return smartOrderQueueList;
+  try {
+    const { data, error } = await sb
+      .from('erp_products')
+      .select('keywords')
+      .eq('code', '__SMART_ORDER_QUEUE__')
+      .limit(1);
+    if (!error && data && data[0] && Array.isArray(data[0].keywords)) {
+      smartOrderQueueList = data[0].keywords;
+      updateSmartOrderBadgeFromQueue(smartOrderQueueList);
+    }
+  } catch (e) {
+    console.warn('fetchSmartOrderQueueFromSupabase warning:', e);
+  }
+  return smartOrderQueueList;
+}
+
+async function saveSmartOrderQueueToSupabase(queueItems) {
+  const sb = getSupabaseClient();
+  if (!sb) return false;
+  try {
+    const payload = {
+      code: '__SMART_ORDER_QUEUE__',
+      name: '[시스템] 스마트 발주 실시간 검수 큐',
+      spec: 'SYSTEM_QUEUE',
+      vendor: 'JUN_ORDER_BOT',
+      category: 'SYSTEM',
+      keywords: queueItems,
+      aliases: [],
+      price_in: 0,
+      price_out: 0
+    };
+    const { error } = await sb.from('erp_products').upsert([payload], { onConflict: 'code' });
+    if (error) {
+      console.warn('saveSmartOrderQueueToSupabase error:', error);
+      return false;
+    }
+    updateSmartOrderBadgeFromQueue(queueItems);
+    return true;
+  } catch (e) {
+    console.warn('saveSmartOrderQueueToSupabase exception:', e);
+    return false;
+  }
+}
+
+function ensureSmartOrderReviewModalDOM() {
+  if (document.getElementById('smart-order-review-modal')) return;
+  const modal = document.createElement('div');
+  modal.id = 'smart-order-review-modal';
+  modal.style.cssText = 'display:none; position:fixed; inset:0; z-index:99999; background:rgba(2,6,23,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:14px;';
+  modal.innerHTML = `
+    <div style="background:#0f172a; border:1px solid rgba(245,158,11,0.5); border-radius:16px; width:100%; max-width:1180px; max-height:92vh; display:flex; flex-direction:column; overflow:hidden; color:#f8fafc; box-shadow:0 25px 60px -15px rgba(0,0,0,0.8);">
+      <!-- Header -->
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 22px; background:#1e293b; border-bottom:1px solid rgba(255,255,255,0.1);">
+        <div>
+          <h3 style="margin:0; font-size:1.15rem; font-weight:800; color:#fbbf24; display:flex; align-items:center; gap:8px;">
+            <span>🛒</span>
+            <span>슬랙 #발주 실시간 스마트 검수 & 이카운트 주문서 자동 전송</span>
+          </h3>
+          <p style="margin:4px 0 0; font-size:0.78rem; color:#94a3b8;">
+            슬랙에 올라온 발주 초안의 틀린 품목코드·박스환산 수량·복합 품목을 클릭 몇 번으로 교정하고 버튼 한 번으로 이카운트 주문서 전송 + 매핑사전 자동 학습까지 완료합니다.
+          </p>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" onclick="refreshSmartOrderReviewModal()" style="padding:6px 12px; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); border-radius:8px; color:#7dd3fc; font-size:0.78rem; font-weight:700; cursor:pointer;">🔄 새로고침</button>
+          <button type="button" onclick="closeSmartOrderReviewModal()" style="background:none; border:none; color:#94a3b8; font-size:1.35rem; cursor:pointer; padding:2px 6px;">✕</button>
+        </div>
+      </div>
+
+      <!-- Body: Left Queue Sidebar + Right Order Line Editor -->
+      <div style="display:grid; grid-template-columns:280px 1fr; flex:1; min-height:0; overflow:hidden;">
+        <!-- Left: Order Drafts List -->
+        <div style="border-right:1px solid rgba(255,255,255,0.1); background:#020617; display:flex; flex-direction:column; overflow-y:auto; padding:12px;">
+          <div style="font-size:0.78rem; font-weight:700; color:#94a3b8; margin-bottom:8px; padding:0 4px;">📋 최근 슬랙 발주 초안 목록</div>
+          <div id="smart-order-queue-sidebar" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+
+        <!-- Right: Selected Draft Editor -->
+        <div id="smart-order-detail-pane" style="display:flex; flex-direction:column; overflow-y:auto; padding:18px 22px;">
+          <div style="text-align:center; padding:60px 20px; color:#64748b;">좌측에서 검수할 발주 초안을 선택해주세요.</div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+async function openSmartOrderReviewModal(targetTs = '') {
+  ensureSmartOrderReviewModalDOM();
+  const modal = document.getElementById('smart-order-review-modal');
+  if (modal) modal.style.display = 'flex';
+
+  await Promise.all([fetchSmartOrderQueueFromSupabase(), getErpProducts()]);
+
+  if (targetTs) {
+    activeSmartOrderTs = String(targetTs);
+  } else if (!activeSmartOrderTs && smartOrderQueueList.length > 0) {
+    activeSmartOrderTs = String(smartOrderQueueList[0].draft_ts);
+  }
+  renderSmartOrderReviewModal();
+}
+
+function closeSmartOrderReviewModal() {
+  const modal = document.getElementById('smart-order-review-modal');
+  if (modal) modal.style.display = 'none';
+  if (smartOrderPollTimer) {
+    clearInterval(smartOrderPollTimer);
+    smartOrderPollTimer = null;
+  }
+}
+
+async function refreshSmartOrderReviewModal() {
+  await fetchSmartOrderQueueFromSupabase();
+  renderSmartOrderReviewModal();
+  showToast('🔄 슬랙 발주 대기열 최신 상태를 불러왔습니다.');
+}
+
+function selectSmartOrderDraft(ts) {
+  activeSmartOrderTs = String(ts);
+  renderSmartOrderReviewModal();
+}
+
+function renderSmartOrderReviewModal() {
+  const sidebar = document.getElementById('smart-order-queue-sidebar');
+  const pane = document.getElementById('smart-order-detail-pane');
+  if (!sidebar || !pane) return;
+
+  if (!smartOrderQueueList || smartOrderQueueList.length === 0) {
+    sidebar.innerHTML = `<div style="padding:20px 10px; font-size:0.8rem; color:#64748b; text-align:center;">현재 대기 중인 발주 초안이 없습니다.</div>`;
+    pane.innerHTML = `<div style="text-align:center; padding:60px 20px; color:#64748b;">슬랙 #발주 채널에 새 발주 메시지가 올라오면 이곳에 즉시 표시됩니다.</div>`;
+    return;
+  }
+
+  if (!smartOrderQueueList.some(o => String(o.draft_ts) === String(activeSmartOrderTs))) {
+    activeSmartOrderTs = String(smartOrderQueueList[0].draft_ts);
+  }
+
+  sidebar.innerHTML = smartOrderQueueList.map(o => {
+    const ts = String(o.draft_ts);
+    const isSel = (ts === String(activeSmartOrderTs));
+    const lines = o.lines || [];
+    const warnCnt = lines.filter(l => !l.code || l.mark === '⚠️' || l.mark === '⛔').length;
+    const st = o.web_status || 'pending';
+
+    let stBadge = `<span style="background:rgba(245,158,11,0.2); color:#fbbf24; padding:2px 7px; border-radius:6px; font-size:0.7rem; font-weight:700;">⏳ 검수대기 (${lines.length}건)</span>`;
+    if (st === 'completed') {
+      stBadge = `<span style="background:rgba(16,185,129,0.2); color:#34d399; padding:2px 7px; border-radius:6px; font-size:0.7rem; font-weight:700;">✅ 전송완료</span>`;
+    } else if (st === 'web_approve_requested' || st === 'web_update_requested') {
+      stBadge = `<span style="background:rgba(56,189,248,0.2); color:#38bdf8; padding:2px 7px; border-radius:6px; font-size:0.7rem; font-weight:700;">🚀 서버 처리중...</span>`;
+    } else if (st === 'cancelled') {
+      stBadge = `<span style="background:rgba(148,163,184,0.2); color:#94a3b8; padding:2px 7px; border-radius:6px; font-size:0.7rem;">❌ 취소됨</span>`;
+    } else if (st === 'error') {
+      stBadge = `<span style="background:rgba(244,63,94,0.2); color:#fda4af; padding:2px 7px; border-radius:6px; font-size:0.7rem; font-weight:700;">⛔ 오류 확인</span>`;
+    } else if (warnCnt === 0) {
+      stBadge = `<span style="background:rgba(16,185,129,0.18); color:#6ee7b7; padding:2px 7px; border-radius:6px; font-size:0.7rem; font-weight:700;">✅ 전품목 매칭됨 (${lines.length}건)</span>`;
+    }
+
+    const timeStr = o.created_at || new Date(parseFloat(ts) * 1000).toLocaleString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+    return `
+      <div onclick="selectSmartOrderDraft('${escapeHtml(ts)}')" style="padding:11px 12px; border-radius:10px; cursor:pointer; border:1px solid ${isSel ? '#f59e0b' : '#1e293b'}; background:${isSel ? 'rgba(245,158,11,0.14)' : '#0f172a'}; transition:all 0.15s;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+          <strong style="font-size:0.9rem; color:#f8fafc;">🏥 ${escapeHtml(o['거래처'] || '거래처 미지정')}</strong>
+          ${stBadge}
+        </div>
+        <div style="font-size:0.72rem; color:#94a3b8; display:flex; justify-content:space-between;">
+          <span>품목 ${lines.length}종 ${warnCnt > 0 ? `(⚠️ 확인 ${warnCnt}건)` : ''}</span>
+          <span>${escapeHtml(timeStr)}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const curOrder = smartOrderQueueList.find(o => String(o.draft_ts) === String(activeSmartOrderTs));
+  if (!curOrder) return;
+
+  const lines = curOrder.lines || [];
+  const st = curOrder.web_status || 'pending';
+  const isCompleted = (st === 'completed');
+  const isProcessing = (st === 'web_approve_requested' || st === 'web_update_requested' || st === 'web_cancel_requested');
+
+  let statusBanner = '';
+  if (isCompleted) {
+    statusBanner = `
+      <div style="padding:12px 16px; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.45); border-radius:10px; color:#a7f3d0; font-size:0.86rem; font-weight:700; margin-bottom:14px;">
+        🎉 ${escapeHtml(curOrder.result_msg || '이카운트 주문서 전송이 완료되었습니다!')}
+      </div>
+    `;
+  } else if (isProcessing) {
+    statusBanner = `
+      <div style="padding:12px 16px; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.45); border-radius:10px; color:#bae6fd; font-size:0.86rem; font-weight:700; margin-bottom:14px;">
+        ⏳ 오라클 발주 서버로 요청을 전달했습니다. 약 3~5초 내로 이카운트 주문서 등록 및 슬랙 댓글 반영이 완료됩니다...
+      </div>
+    `;
+  } else if (st === 'error' && curOrder.result_msg) {
+    statusBanner = `
+      <div style="padding:12px 16px; background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.45); border-radius:10px; color:#fecdd3; font-size:0.85rem; font-weight:700; margin-bottom:14px;">
+        ${escapeHtml(curOrder.result_msg)}
+      </div>
+    `;
+  }
+
+  const rowsHtml = lines.map((l, idx) => {
+    const code = l.code || '';
+    const name = l['정식명'] || '';
+    const alias = l['별칭'] || '';
+    const qty = l['수량'] !== undefined ? l['수량'] : 1;
+    const note = l.note || '';
+    const hasBoxNote = Boolean(note && note.includes('×'));
+    const mark = code ? (l.mark === '⚠️' ? '⚠️' : '✅') : '⛔';
+    const rowBg = !code ? 'rgba(244,63,94,0.08)' : (mark === '⚠️' ? 'rgba(245,158,11,0.07)' : 'transparent');
+
+    return `
+      <tr style="border-bottom:1px solid #1e293b; background:${rowBg};">
+        <td style="padding:8px; text-align:center; font-size:1rem;">${mark}</td>
+        <td style="padding:8px;">
+          <input type="text" value="${escapeHtml(alias)}" onchange="updateSmartOrderLineField(${idx}, '별칭', this.value)"
+            style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:6px 8px; color:#f8fafc; font-size:0.82rem; font-weight:600;" ${isCompleted ? 'disabled' : ''}>
+        </td>
+        <td style="padding:8px; position:relative;">
+          <div style="display:flex; gap:6px; align-items:center;">
+            <input type="text" id="smart-order-code-input-${idx}" value="${escapeHtml(code)}" placeholder="품목코드/이름 검색..."
+              oninput="onOrderLineProductSearch(${idx}, this.value)"
+              onfocus="onOrderLineProductSearch(${idx}, this.value)"
+              style="width:130px; background:#020617; border:1px solid ${code ? '#10b981' : '#f43f5e'}; border-radius:6px; padding:6px 8px; color:#38bdf8; font-size:0.82rem; font-weight:700;" ${isCompleted ? 'disabled' : ''}>
+            <span style="font-size:0.8rem; color:#e2e8f0; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(name)}">
+              ${escapeHtml(name || '← 코드를 입력하거나 검색해 선택하세요')}
+            </span>
+          </div>
+          <div id="smart-order-prod-dropdown-${idx}" style="display:none; position:absolute; left:8px; right:8px; top:40px; z-index:999; background:#0f172a; border:1px solid #38bdf8; border-radius:8px; max-height:190px; overflow-y:auto; box-shadow:0 12px 30px rgba(0,0,0,0.8);"></div>
+        </td>
+        <td style="padding:8px; width:165px;">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <input type="number" step="any" value="${qty}" onchange="updateSmartOrderLineField(${idx}, '수량', parseFloat(this.value)||0)"
+              style="width:74px; background:#1e293b; border:1px solid #334155; border-radius:6px; padding:6px 8px; color:#34d399; font-size:0.85rem; font-weight:800; text-align:right;" ${isCompleted ? 'disabled' : ''}>
+            ${hasBoxNote ? `
+              <button type="button" onclick="revertOrderLineBoxFactor(${idx})" title="박스 환산 전 원래 수량으로 되돌리기"
+                style="padding:3px 6px; background:rgba(245,158,11,0.18); border:1px solid rgba(245,158,11,0.45); border-radius:5px; color:#fcd34d; font-size:0.68rem; cursor:pointer; white-space:nowrap;">
+                ${escapeHtml(note)} 취소
+              </button>
+            ` : `<span style="font-size:0.72rem; color:#94a3b8;">${escapeHtml(note)}</span>`}
+          </div>
+        </td>
+        <td style="padding:8px; text-align:center; width:75px;">
+          <input type="checkbox" ${l.learn !== false ? 'checked' : ''} onchange="updateSmartOrderLineField(${idx}, 'learn', this.checked)" title="전송 시 이 거래처의 품목 매칭사전에 자동 등록" ${isCompleted ? 'disabled' : ''}>
+        </td>
+        <td style="padding:8px; text-align:center; width:50px;">
+          ${!isCompleted ? `<button type="button" onclick="removeSmartOrderLine(${idx})" style="background:none; border:none; color:#f43f5e; cursor:pointer; font-size:0.9rem;" title="이 품목 행 삭제">🗑️</button>` : '-'}
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  pane.innerHTML = `
+    ${statusBanner}
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.08);">
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <label style="font-size:0.82rem; font-weight:700; color:#94a3b8;">🏥 이카운트 주문 거래처:</label>
+        <input type="text" value="${escapeHtml(curOrder['거래처'] || '')}" onchange="updateSmartOrderBuyer(this.value)"
+          style="background:#1e293b; border:1px solid #38bdf8; border-radius:8px; padding:7px 12px; color:#fff; font-size:0.95rem; font-weight:800; width:210px;" ${isCompleted ? 'disabled' : ''}>
+        ${curOrder['발주처'] && curOrder['발주처'] !== curOrder['거래처'] ? `<span style="font-size:0.78rem; color:#94a3b8;">(원문 발주처: ${escapeHtml(curOrder['발주처'])})</span>` : ''}
+      </div>
+      <div style="display:flex; gap:8px;">
+        ${!isCompleted ? `
+          <button type="button" onclick="addSmartOrderLine()" style="padding:7px 12px; background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); border-radius:8px; color:#7dd3fc; font-size:0.8rem; font-weight:700; cursor:pointer;">
+            ➕ 품목 행 추가 (복합품목 분리)
+          </button>
+        ` : ''}
+      </div>
+    </div>
+
+    <div style="flex:1; overflow-y:auto; border:1px solid #334155; border-radius:10px; background:#020617; margin-bottom:16px;">
+      <table style="width:100%; border-collapse:collapse; font-size:0.82rem; text-align:left;">
+        <thead style="background:#1e293b; color:#cbd5e1; position:sticky; top:0; z-index:5;">
+          <tr>
+            <th style="padding:9px 8px; width:44px; text-align:center;">상태</th>
+            <th style="padding:9px 8px; width:230px;">발주서 품명 (별칭)</th>
+            <th style="padding:9px 8px;">매칭된 이카운트 품목코드 & 품목명 (클릭하여 검색·교체)</th>
+            <th style="padding:9px 8px; width:165px;">전송 수량 (박스환산)</th>
+            <th style="padding:9px 8px; width:75px; text-align:center;">사전학습</th>
+            <th style="padding:9px 8px; width:50px; text-align:center;">삭제</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.1);">
+      <div style="font-size:0.76rem; color:#94a3b8;">
+        💡 품목코드를 수정하고 전송하면 슬랙에 <code>매칭추가</code>를 따로 칠 필요 없이 <strong>구글 시트 매핑사전에 자동 학습</strong>됩니다.
+      </div>
+      <div style="display:flex; gap:10px;">
+        ${!isCompleted ? `
+          <button type="button" onclick="submitSmartOrderWebAction('web_cancel_requested')" style="padding:10px 14px; background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.4); border-radius:8px; color:#fda4af; font-size:0.82rem; font-weight:700; cursor:pointer;" ${isProcessing ? 'disabled' : ''}>
+            ❌ 발주 취소
+          </button>
+          <button type="button" onclick="submitSmartOrderWebAction('web_update_requested')" style="padding:10px 16px; background:#0284c7; border:none; border-radius:8px; color:#fff; font-size:0.84rem; font-weight:700; cursor:pointer;" ${isProcessing ? 'disabled' : ''}>
+            💾 초안 수정 & 사전학습 반영 (슬랙 댓글 갱신)
+          </button>
+          <button type="button" onclick="submitSmartOrderWebAction('web_approve_requested')" style="padding:10px 20px; background:#059669; border:none; border-radius:8px; color:#fff; font-size:0.88rem; font-weight:800; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.4);" ${isProcessing ? 'disabled' : ''}>
+            📤 이카운트 주문서 확정 전송
+          </button>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function updateSmartOrderBuyer(val) {
+  const curOrder = smartOrderQueueList.find(o => String(o.draft_ts) === String(activeSmartOrderTs));
+  if (curOrder) curOrder['거래처'] = val.trim();
+}
+
+function updateSmartOrderLineField(lineIdx, field, val) {
+  const curOrder = smartOrderQueueList.find(o => String(o.draft_ts) === String(activeSmartOrderTs));
+  if (!curOrder || !curOrder.lines || !curOrder.lines[lineIdx]) return;
+  curOrder.lines[lineIdx][field] = val;
+}
+
+function revertOrderLineBoxFactor(lineIdx) {
+  const curOrder = smartOrderQueueList.find(o => String(o.draft_ts) === String(activeSmartOrderTs));
+  if (!curOrder || !curOrder.lines || !curOrder.lines[lineIdx]) return;
+  const line = curOrder.lines[lineIdx];
+  const m = String(line.note || '').match(/\((\d+(?:\.\d+)?)/);
+  if (m) {
+    line['수량'] = parseFloat(m[1]);
+    line.note = '';
+    renderSmartOrderReviewModal();
+    showToast(`✅ 박스 환산을 취소하고 원래 발주 수량(${line['수량']})으로 변경했습니다.`);
+  }
+}
+
+function addSmartOrderLine() {
+  const curOrder = smartOrderQueueList.find(o => String(o.draft_ts) === String(activeSmartOrderTs));
+  if (!curOrder) return;
+  if (!curOrder.lines) curOrder.lines = [];
+  curOrder.lines.push({
+    '별칭': '추가 품목명 입력',
+    '수량': 1,
+    'note': '',
+    'code': '',
+    '정식명': '',
+    'mark': '⚠️',
+    'learn': true
+  });
+  renderSmartOrderReviewModal();
+}
+
+function removeSmartOrderLine(lineIdx) {
+  const curOrder = smartOrderQueueList.find(o => String(o.draft_ts) === String(activeSmartOrderTs));
+  if (!curOrder || !curOrder.lines) return;
+  curOrder.lines.splice(lineIdx, 1);
+  renderSmartOrderReviewModal();
+}
+
+function onOrderLineProductSearch(lineIdx, query) {
+  const curOrder = smartOrderQueueList.find(o => String(o.draft_ts) === String(activeSmartOrderTs));
+  if (curOrder && curOrder.lines && curOrder.lines[lineIdx]) {
+    curOrder.lines[lineIdx].code = query.trim();
+  }
+  const dd = document.getElementById(`smart-order-prod-dropdown-${lineIdx}`);
+  if (!dd) return;
+
+  const q = (query || '').trim().toLowerCase();
+  const aliasHint = (curOrder?.lines?.[lineIdx]?.['별칭'] || '').trim().toLowerCase();
+  const searchTerm = q || aliasHint;
+
+  const master = (erpProductsCache && erpProductsCache.length > 0)
+    ? erpProductsCache
+    : ((window.SALES_DB && window.SALES_DB.products) ? window.SALES_DB.products : []);
+
+  const matches = master.filter(p => {
+    if (!p || p.code === '__SMART_ORDER_QUEUE__') return false;
+    const code = (p.code || p.id || '').toLowerCase();
+    const name = (p.name || '').toLowerCase();
+    const spec = (p.spec || '').toLowerCase();
+    if (!searchTerm) return true;
+    return code.includes(searchTerm) || name.includes(searchTerm) || spec.includes(searchTerm);
+  }).slice(0, 15);
+
+  if (matches.length === 0) {
+    dd.style.display = 'none';
+    return;
+  }
+
+  dd.innerHTML = matches.map(p => {
+    const c = p.code || p.id || '';
+    const n = p.name || '';
+    const s = p.spec ? ` (${p.spec})` : '';
+    const safeC = c.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    const safeN = (n + s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    return `
+      <div onclick="pickOrderLineProduct(${lineIdx}, '${safeC}', '${safeN}')"
+        style="padding:7px 10px; border-bottom:1px solid #1e293b; cursor:pointer; font-size:0.78rem; display:flex; justify-content:space-between; align-items:center;"
+        onmouseover="this.style.background='rgba(56,189,248,0.18)'" onmouseout="this.style.background='transparent'">
+        <span><strong style="color:#38bdf8;">[${escapeHtml(c)}]</strong> <span style="color:#f8fafc;">${escapeHtml(n)}</span> <span style="color:#94a3b8;">${escapeHtml(s)}</span></span>
+        <span style="color:#34d399; font-size:0.7rem; font-weight:700;">선택</span>
+      </div>
+    `;
+  }).join('');
+  dd.style.display = 'block';
+}
+
+function pickOrderLineProduct(lineIdx, code, name) {
+  const curOrder = smartOrderQueueList.find(o => String(o.draft_ts) === String(activeSmartOrderTs));
+  if (!curOrder || !curOrder.lines || !curOrder.lines[lineIdx]) return;
+  curOrder.lines[lineIdx].code = code;
+  curOrder.lines[lineIdx]['정식명'] = name;
+  curOrder.lines[lineIdx].mark = '✅';
+  curOrder.lines[lineIdx].learn = true;
+  renderSmartOrderReviewModal();
+}
+
+async function submitSmartOrderWebAction(actionStatus) {
+  const curOrder = smartOrderQueueList.find(o => String(o.draft_ts) === String(activeSmartOrderTs));
+  if (!curOrder) return;
+
+  if (actionStatus === 'web_approve_requested') {
+    const validLines = (curOrder.lines || []).filter(l => (l.code || '').trim() && Number(l['수량'] || 0) > 0);
+    if (validLines.length === 0) {
+      alert('매칭된 품목코드가 있는 항목이 없습니다. 품목코드를 먼저 지정해주세요.');
+      return;
+    }
+  }
+
+  curOrder.web_status = actionStatus;
+  renderSmartOrderReviewModal();
+
+  const ok = await saveSmartOrderQueueToSupabase(smartOrderQueueList);
+  if (!ok) {
+    alert('클라우드 큐 저장 중 오류가 발생했습니다.');
+    return;
+  }
+
+  if (actionStatus === 'web_approve_requested') {
+    showToast('🚀 오라클 발주 서버로 이카운트 주문서 확정 전송을 요청했습니다! (약 3~5초 소요)');
+  } else if (actionStatus === 'web_update_requested') {
+    showToast('💾 초안 수정사항 및 사전 학습을 서버로 전달했습니다!');
+  } else {
+    showToast('❌ 발주 취소 요청을 전달했습니다.');
+  }
+
+  // Poll every 2 seconds for up to 16 seconds to show the live Ecount slip result
+  if (smartOrderPollTimer) clearInterval(smartOrderPollTimer);
+  let tries = 0;
+  smartOrderPollTimer = setInterval(async () => {
+    tries++;
+    await fetchSmartOrderQueueFromSupabase();
+    const updated = smartOrderQueueList.find(o => String(o.draft_ts) === String(activeSmartOrderTs));
+    if (updated && updated.web_status !== actionStatus) {
+      clearInterval(smartOrderPollTimer);
+      smartOrderPollTimer = null;
+      renderSmartOrderReviewModal();
+      if (updated.web_status === 'completed') {
+        showToast(`🎉 ${updated.result_msg || '이카운트 주문서 등록이 완료되었습니다!'}`, 5000);
+      } else if (updated.web_status === 'pending') {
+        showToast(`✅ ${updated.result_msg || '슬랙 초안 및 사전 갱신이 완료되었습니다!'}`, 4000);
+      }
+    }
+    if (tries >= 8) {
+      clearInterval(smartOrderPollTimer);
+      smartOrderPollTimer = null;
+    }
+  }, 2000);
+}
+
+// URL 파라미터(?order_ts=... 또는 ?tab=order-review)로 접속 시 자동으로 스마트 발주 검수창 오픈
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(async () => {
+    await fetchSmartOrderQueueFromSupabase();
+    const params = new URLSearchParams(window.location.search);
+    const orderTs = params.get('order_ts');
+    const tabParam = params.get('tab');
+    if (orderTs || tabParam === 'order-review') {
+      openSmartOrderReviewModal(orderTs || '');
+    }
+  }, 600);
+});

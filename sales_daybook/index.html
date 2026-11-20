@@ -18,12 +18,12 @@
   <meta name="apple-mobile-web-app-title" content="MEDI-SALES">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-  <link rel="stylesheet" href="app.css?v=jun-V1-044">
+  <link rel="stylesheet" href="app.css?v=jun-V1-045">
   <!-- Supabase JS Client (Loaded in Head for Realtime Multi-PC Sync) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="sales_database.js?v=jun-V1-016"></script>
-  <script src="app.js?v=jun-V1-044"></script>
+  <script src="app.js?v=jun-V1-045"></script>
 </head>
 
 <body>
@@ -60,7 +60,7 @@
         <div class="brand-icon">🩺</div>
         <div class="brand-text">
           <div class="brand-title-wrap">
-            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-044</span>
+            <span class="app-version-badge" id="app-version-tag" title="시스템 빌드 버전">jun-V1-045</span>
             <button type="button" class="btn-cloud-sync" onclick="fetchLatestFromSupabase(true)"
               title="클라우드 최신 실시간 동기화">🔄</button>
             <h1>MEDI-SALES 360°</h1>
@@ -71,6 +71,11 @@
 
       <!-- Navigation Tabs -->
       <nav class="nav-tabs" aria-label="메인 내비게이션">
+        <button class="nav-tab" onclick="openSmartOrderReviewModal()"
+          style="border-color:rgba(245,158,11,0.55); background:rgba(245,158,11,0.16);">
+          <span style="color:#fbbf24; font-weight:800;">🛒 스마트 발주 검수</span>
+          <span class="badge" id="badge-smart-order-count" style="background:#f59e0b; color:#000;">0</span>
+        </button>
         <button class="nav-tab" onclick="openEcountProductRegisterModal()"
           style="border-color:rgba(16,185,129,0.5); background:rgba(16,185,129,0.15);">
           <span style="color:#34d399; font-weight:700;">📸 이카운트 품목등록</span>
@@ -1970,7 +1975,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=jun-V1-044').then(reg => {
+        navigator.serviceWorker.register('sw.js?v=jun-V1-045').then(reg => {
           reg.update();
           console.log('⚡ PWA Service Worker Active & Updated:', reg.scope);
         }).catch(err => console.warn('SW register error:', err));
