@@ -1,9 +1,9 @@
-const APP_VERSION = "jun-V1-045";
+const APP_VERSION = "jun-V1-046";
 window.APP_VERSION = APP_VERSION;
 console.log(`🩺 [JUN MEDICAL] MEDI-SALES 360° System Build Version: [${APP_VERSION}] loaded.`);
 
 const MASTER_ACCESS_PIN = "jun2026!"; // 준메디칼 사내 기본 비밀번호 (언제든 변경 가능)
-const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V22_JUN_V1_045";
+const DB_STORAGE_KEY = "JUN_SALES_DB_PERSISTED_V22_JUN_V1_046";
 const SUPABASE_URL = "https://hkvguhttmxclyaeskznk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZvInHl5ds9HXTJ_cMF7-g_0P-SefMJ";
 
@@ -8909,6 +8909,12 @@ function renderSmartOrderReviewModal() {
         ${escapeHtml(curOrder.result_msg)}
       </div>
     `;
+  } else if (st === 'pending' && curOrder.result_msg) {
+    statusBanner = `
+      <div style="padding:11px 15px; background:rgba(16,185,129,0.13); border:1px solid rgba(16,185,129,0.4); border-radius:10px; color:#a7f3d0; font-size:0.84rem; font-weight:700; margin-bottom:14px;">
+        ✅ ${escapeHtml(curOrder.result_msg)} (이제 우측 하단 [📤 이카운트 주문서 확정 전송]을 누르시면 전표가 생성됩니다)
+      </div>
+    `;
   }
 
   const rowsHtml = lines.map((l, idx) => {
@@ -9153,28 +9159,31 @@ async function submitSmartOrderWebAction(actionStatus) {
     showToast('❌ 발주 취소 요청을 전달했습니다.');
   }
 
-  // Poll every 2 seconds for up to 16 seconds to show the live Ecount slip result
+  // Poll every 1.2 seconds for up to 35 tries (42s) to show the live Ecount slip result immediately
   if (smartOrderPollTimer) clearInterval(smartOrderPollTimer);
   let tries = 0;
   smartOrderPollTimer = setInterval(async () => {
     tries++;
     await fetchSmartOrderQueueFromSupabase();
+    const anyStillProcessing = (smartOrderQueueList || []).some(o =>
+      o.web_status === 'web_approve_requested' || o.web_status === 'web_update_requested' || o.web_status === 'web_cancel_requested'
+    );
     const updated = smartOrderQueueList.find(o => String(o.draft_ts) === String(activeSmartOrderTs));
-    if (updated && updated.web_status !== actionStatus) {
+    renderSmartOrderReviewModal();
+    if (!anyStillProcessing) {
       clearInterval(smartOrderPollTimer);
       smartOrderPollTimer = null;
-      renderSmartOrderReviewModal();
-      if (updated.web_status === 'completed') {
+      if (updated && updated.web_status === 'completed') {
         showToast(`🎉 ${updated.result_msg || '이카운트 주문서 등록이 완료되었습니다!'}`, 5000);
-      } else if (updated.web_status === 'pending') {
+      } else if (updated && updated.web_status === 'pending') {
         showToast(`✅ ${updated.result_msg || '슬랙 초안 및 사전 갱신이 완료되었습니다!'}`, 4000);
       }
     }
-    if (tries >= 8) {
+    if (tries >= 35) {
       clearInterval(smartOrderPollTimer);
       smartOrderPollTimer = null;
     }
-  }, 2000);
+  }, 1200);
 }
 
 // URL 파라미터(?order_ts=... 또는 ?tab=order-review)로 접속 시 자동으로 스마트 발주 검수창 오픈
